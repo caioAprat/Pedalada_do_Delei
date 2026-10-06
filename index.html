@@ -503,6 +503,44 @@ input[type=range]{width:140px;padding:0;border:0;background:none;accent-color:va
 
 ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:9px}::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.25)}
 
+/* ===== Surpresa escondida no rodapé ===== */
+.ovo{margin-left:4px;padding:2px 9px;border:1px dashed transparent;border-radius:99px;background:none;font:inherit;font-size:11px;font-weight:600;color:var(--di);opacity:.22;cursor:pointer;transition:opacity .5s,color .5s,border-color .5s}
+.ovo:hover,.ovo:focus-visible{opacity:1;color:var(--er);border-color:rgba(238,127,142,.4)}
+.susto{position:fixed;inset:0;z-index:500;display:grid;place-items:center;overflow:hidden;cursor:wait;background:rgba(3,2,4,.86);backdrop-filter:blur(16px) saturate(.3);animation:sustoEntra 1.2s ease both}
+@keyframes sustoEntra{from{background:rgba(3,2,4,0);backdrop-filter:blur(0) saturate(1)}}
+.susto>.susto-msg,.susto>.cara,.susto>.susto-fim{grid-area:1/1}
+.susto.fim{cursor:pointer}
+.susto.saindo{animation:sustoSai .45s ease forwards}
+@keyframes sustoSai{to{opacity:0}}
+.susto-vinheta{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 35%,rgba(120,0,10,.55) 100%);animation:pulsoVinheta 1.1s ease-in-out infinite alternate}
+@keyframes pulsoVinheta{from{opacity:.35}to{opacity:.9}}
+.susto.bang .susto-vinheta{background:radial-gradient(ellipse at center,transparent 22%,rgba(170,0,15,.8) 100%);animation-duration:.25s}
+.susto-msg{font-size:clamp(26px,5vw,52px);font-weight:800;letter-spacing:.06em;color:#e8dcdc;text-shadow:0 0 18px rgba(255,0,30,.6);white-space:pre;animation:respira 2.4s ease-in-out infinite}
+.susto-msg span{display:inline-block;animation:letra .6s ease both;animation-delay:calc(var(--i) * 80ms)}
+@keyframes letra{from{opacity:0;filter:blur(10px);transform:translateY(12px) scale(1.5)}}
+@keyframes respira{50%{letter-spacing:.1em;text-shadow:0 0 34px rgba(255,0,30,.9)}}
+.susto.bang .susto-msg,.susto.fim .susto-msg{opacity:0}
+.cara{width:min(80vmin,560px);opacity:0;pointer-events:none;filter:drop-shadow(0 0 50px rgba(255,0,0,.5))}
+.cara svg{display:block;width:100%;height:auto;stroke:none;fill:none}
+.susto.bang .cara{opacity:1;animation:caraPula 1.8s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes caraPula{0%{transform:scale(.15) rotate(-8deg);filter:brightness(3) blur(6px)}12%{transform:scale(1.28) rotate(3deg);filter:brightness(1.5) drop-shadow(0 0 60px red)}20%{transform:scale(1.1) rotate(-2deg) translate(-8px,5px)}28%{transform:scale(1.2) rotate(2deg) translate(8px,-5px)}36%{transform:scale(1.12) translate(-5px,3px)}44%{transform:scale(1.16) translate(4px,-2px)}100%{transform:scale(1.14)}}
+.susto.fim .cara{opacity:0;transition:opacity .6s}
+.susto.bang::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;animation:flash .8s ease-out}
+@keyframes flash{0%{opacity:1;background:#fff}12%{opacity:.9;background:#ff0022}35%{opacity:.2;background:#ff0022}50%{opacity:.6;background:#fff}100%{opacity:0;background:#ff0022}}
+.susto-scan{position:absolute;inset:0;pointer-events:none;opacity:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 3px)}
+.susto.bang .susto-scan{opacity:1;animation:scan .35s steps(4) infinite}
+@keyframes scan{to{background-position:0 12px}}
+.susto-fim{display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 16px;text-align:center;opacity:0;pointer-events:none}
+.susto.fim .susto-fim{opacity:1;animation:fimEntra .7s var(--eb) both}
+@keyframes fimEntra{from{opacity:0;transform:scale(.5) rotate(-4deg);filter:blur(8px)}}
+.susto-fim b{position:relative;font-size:clamp(34px,7vw,84px);font-weight:800;letter-spacing:-.02em;line-height:1.05;color:#fff;text-shadow:0 0 30px rgba(255,0,40,.75)}
+.susto-fim b::before,.susto-fim b::after{content:attr(data-t);position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:.75;clip-path:inset(0 0 100% 0)}
+.susto-fim b::before{color:#0ff;animation:glitch1 1.6s steps(1) infinite}
+.susto-fim b::after{color:#f0f;animation:glitch2 1.3s steps(1) infinite}
+@keyframes glitch1{20%{transform:translate(-4px,1px);clip-path:inset(10% 0 60% 0)}40%{transform:translate(4px,-1px);clip-path:inset(50% 0 20% 0)}60%{transform:none;clip-path:inset(0 0 100% 0)}}
+@keyframes glitch2{30%{transform:translate(4px,2px);clip-path:inset(60% 0 5% 0)}70%{transform:translate(-3px,-2px);clip-path:inset(20% 0 55% 0)}}
+.susto-fim small{font-size:14px;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.6)}
+
 /* ===== Modo Leve: sem efeitos pesados, mas tudo continua visível ===== */
 body.modo-leve .fundo{display:none}
 body.modo-leve *,body.modo-leve *::before,body.modo-leve *::after{animation:none!important;backdrop-filter:none!important;text-shadow:none!important}
@@ -685,7 +723,7 @@ body.modo-leve .tile::before{display:none}
         <div id="listaPassos"></div>
       </div>
     </section>
-    <div class="rodape"><span>Feito por Caio A.</span><span class="ver" id="lblVersao"></span></div>
+    <div class="rodape"><span>Feito por Caio A.</span><span class="ver" id="lblVersao"></span><button type="button" class="ovo" onclick="brunoSusto()">Clique aqui se você é o Bruno</button></div>
   </main>
 
   <aside class="rail rail-dir" aria-label="Painel do dia">
@@ -713,7 +751,7 @@ body.modo-leve .tile::before{display:none}
    Pedalada do Delei
    Ao publicar uma versão nova, aumente VERSAO aqui e no sw.js.
    ========================================================= */
-const VERSAO = '4.0.0';
+const VERSAO = '4.0.1';
 
 const $ = id => document.getElementById(id);
 const DB = 'pedalada_db_produtos', BK = DB + '_bkp', HIST_KEY = 'pedalada_hist_v3',
@@ -1601,9 +1639,90 @@ $('listaPassos').addEventListener('pointermove', e => {
   t.style.setProperty('--mx', (e.clientX - r.left) + 'px'); t.style.setProperty('--my', (e.clientY - r.top) + 'px');
 });
 
+/* ===== SURPRESA ESCONDIDA (botão do rodapé) ===== */
+const CARA_SVG = `<svg viewBox="0 0 200 240" aria-hidden="true">
+  <defs>
+    <radialGradient id="sPele" cx="50%" cy="42%" r="60%"><stop offset="0" stop-color="#e6e0d2"/><stop offset=".55" stop-color="#8f897c"/><stop offset="1" stop-color="#15110f"/></radialGradient>
+    <radialGradient id="sOlho" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ff2a2a"/><stop offset=".35" stop-color="#9b0000"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <filter id="sDist"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="7"><animate attributeName="seed" values="7;12;3;9" dur=".4s" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" scale="7"/></filter>
+  </defs>
+  <g filter="url(#sDist)">
+    <path d="M100 6C158 6 190 58 186 116C182 178 150 234 100 236C50 234 18 178 14 116C10 58 42 6 100 6Z" fill="url(#sPele)"/>
+    <path d="M60 30 72 58 64 74M150 40l-10 22 8 16M100 8v20l-6 10M40 150l14 10-4 14" stroke="#2a211c" stroke-width="1.6" fill="none"/>
+    <ellipse cx="66" cy="102" rx="25" ry="33" transform="rotate(-12 66 102)" fill="#050303"/>
+    <ellipse cx="134" cy="102" rx="25" ry="33" transform="rotate(12 134 102)" fill="#050303"/>
+    <circle cx="68" cy="106" r="14" fill="url(#sOlho)"/><circle cx="132" cy="106" r="14" fill="url(#sOlho)"/>
+    <circle cx="68" cy="106" r="2.6" fill="#fff"/><circle cx="132" cy="106" r="2.6" fill="#fff"/>
+    <path d="M64 134c-2 14 2 26-1 40M137 134c3 12-1 22 2 34" stroke="#7a0000" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M94 128 100 146 106 128Z" fill="#0a0606"/>
+    <ellipse cx="100" cy="190" rx="36" ry="40" fill="#030202"/>
+    <path d="M68 158 76 182 84 158 92 186 100 158 108 186 116 158 124 182 132 158Z" fill="#d8d0bc"/>
+    <path d="M70 224 78 202 86 224 94 198 102 224 110 198 118 224 126 204 132 224Z" fill="#cfc6b0"/>
+  </g>
+</svg>`;
+function somSusto(tipo){
+  if (!config.sons) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+    const t = actx.currentTime, v = Math.max(.2, config.volume / 100);
+    if (tipo === 'suspense') {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(55, t); o.frequency.linearRampToValueAtTime(46, t + 1.7);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.2 * v, t + .7); g.gain.exponentialRampToValueAtTime(.0001, t + 1.75);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 1.8);
+      return;
+    }
+    // Grito: vozes ásperas com vibrato + chiado
+    const g = actx.createGain();
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.3 * v, t + .03);
+    g.gain.setValueAtTime(.3 * v, t + .7); g.gain.exponentialRampToValueAtTime(.0001, t + 1.5);
+    g.connect(actx.destination);
+    [620, 740, 910, 1180].forEach((f, i) => {
+      const o = actx.createOscillator(), lfo = actx.createOscillator(), lg = actx.createGain(), og = actx.createGain();
+      o.type = i % 2 ? 'square' : 'sawtooth';
+      o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * .55, t + 1.5);
+      lfo.frequency.value = 11 + i * 3; lg.gain.value = f * .06; lfo.connect(lg).connect(o.frequency);
+      og.gain.value = .2; o.connect(og).connect(g);
+      o.start(t); lfo.start(t); o.stop(t + 1.55); lfo.stop(t + 1.55);
+    });
+    const len = actx.sampleRate * 1.5 | 0, buf = actx.createBuffer(1, len, actx.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    const src = actx.createBufferSource(), bp = actx.createBiquadFilter(), ng = actx.createGain();
+    src.buffer = buf; bp.type = 'bandpass'; bp.frequency.value = 1800; bp.Q.value = .8; ng.gain.value = .45;
+    src.connect(bp).connect(ng).connect(g); src.start(t); src.stop(t + 1.5);
+  } catch(e) {}
+}
+let sustoTimers = [];
+function brunoSusto(){
+  if ($('susto')) return;
+  fecharPaineis(); fecharDialogo(null);
+  const frase = 'Bruno... é você?';
+  const el = document.createElement('div');
+  el.id = 'susto'; el.className = 'susto'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Surpresa');
+  el.innerHTML = `<div class="susto-vinheta"></div>
+    <div class="susto-msg">${[...frase].map((c, i) => `<span style="--i:${i}">${esc(c)}</span>`).join('')}</div>
+    <div class="cara">${CARA_SVG}</div><div class="susto-scan"></div>
+    <div class="susto-fim"><b data-t="TE PEGUEI, BRUNO!">TE PEGUEI, BRUNO!</b><small>clique em qualquer lugar para fechar</small></div>`;
+  el.addEventListener('click', () => { if (el.classList.contains('fim')) fecharSusto(); });
+  document.body.appendChild(el);
+  somSusto('suspense');
+  sustoTimers = [
+    setTimeout(() => { el.classList.add('bang'); somSusto('grito'); if (navigator.vibrate) navigator.vibrate([90, 40, 140]); }, 1800),
+    setTimeout(() => el.classList.add('fim'), 3600),
+    setTimeout(fecharSusto, 10000)
+  ];
+}
+function fecharSusto(){
+  sustoTimers.forEach(clearTimeout); sustoTimers = [];
+  const el = $('susto'); if (!el || el.classList.contains('saindo')) return;
+  el.classList.add('saindo'); setTimeout(() => el.remove(), 450);
+}
+
 /* ===== TECLADO ===== */
 const emCampo = el => el && /INPUT|TEXTAREA|SELECT/.test(el.tagName);
 document.addEventListener('keydown', e => {
+  if ($('susto')) { e.preventDefault(); if (e.key === 'Escape') fecharSusto(); return; }
   if (dialogoAberto()) {
     if (e.key === 'Escape') { e.preventDefault(); fecharDialogo(null); }
     else if (e.key === 'Enter' && document.activeElement === $('dlgIn')) { e.preventDefault(); $('dlgSim').click(); }
