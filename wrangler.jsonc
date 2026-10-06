@@ -1,0 +1,10 @@
+// Configuração da publicação no Cloudflare (Workers).
+// Publica os arquivos do app (index.html, sw.js, manifest.json, icon.svg) como site estático.
+// Não há build: o Cloudflare só envia os arquivos desta pasta, menos os listados em .assetsignore.
+{
+  "name": "pedalada-do-delei",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "."
+  }
+}

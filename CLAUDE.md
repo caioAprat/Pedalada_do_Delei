@@ -16,7 +16,9 @@ documentos de requisição (REQ). Fluxo em 3 fases:
 - `index.html` — o app inteiro (HTML, CSS e JavaScript no mesmo arquivo). Não há build, npm nem framework.
 - `sw.js` — service worker (funcionar offline e avisar "Nova versão disponível").
 - `manifest.json` e `icon.svg` — instalação como aplicativo.
-- Publicação: Cloudflare Pages ligado a este repositório (cada mudança na branch principal publica sozinha).
+- Publicação: Cloudflare Workers (projeto `pedalada-do-delei`) ligado a este repositório; cada mudança na
+  branch principal publica sozinha. `wrangler.jsonc` diz para publicar a pasta como site estático e
+  `.assetsignore` tira do site o que não é do app. Não apague esses dois arquivos.
 
 ## Regras obrigatórias
 - A cada mudança publicada, aumente a versão em DOIS lugares: `const VERSAO` no `index.html`
