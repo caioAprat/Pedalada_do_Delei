@@ -626,6 +626,10 @@ body.modo-leve .tile::before{display:none}
         <div><span class="cfg-lbl">Sons</span><span class="cfg-desc">Toca um som curto ao copiar e ao terminar cada passo.</span></div>
         <label class="toggle"><input type="checkbox" id="cfgSons" onchange="salvarConfig()"><span class="slider"></span></label>
       </div>
+      <div class="cfg-row" id="rowFlutuante">
+        <div><span class="cfg-lbl">Janela flutuante automática</span><span class="cfg-desc">Ao calcular um ajuste, abre uma janelinha que fica por cima do ERP com o documento e o %. Funciona no Chrome e no Edge.</span></div>
+        <label class="toggle"><input type="checkbox" id="cfgFlutuante" onchange="salvarConfig()"><span class="slider"></span></label>
+      </div>
       <div class="cfg-row" id="rowVolume">
         <div><span class="cfg-lbl">Volume</span><span class="cfg-desc">Solte o controle para ouvir um exemplo.</span></div>
         <input type="range" id="cfgVolume" min="5" max="100" step="5" onchange="salvarConfig(true);tocarSom('copy')">
@@ -750,7 +754,7 @@ body.modo-leve .tile::before{display:none}
    Pedalada do Delei
    Ao publicar uma versão nova, aumente VERSAO aqui e no sw.js.
    ========================================================= */
-const VERSAO = '4.0.2';
+const VERSAO = '4.1.0';
 
 const $ = id => document.getElementById(id);
 const DB = 'pedalada_db_produtos', BK = DB + '_bkp', HIST_KEY = 'pedalada_hist_v3',
@@ -817,11 +821,12 @@ const IC = {
   decOff: sv('<rect x="3" y="3" width="18" height="18" rx="3"/>'),
   edit: sv('<path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/>'),
   tag: sv('<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><path d="M7.5 7.5h.01"/>'),
+  pip: sv('<rect x="2" y="4" width="20" height="16" rx="2"/><rect x="12" y="11" width="7" height="6" rx="1"/>'),
   fix: sv('<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>')
 };
 
 let historicoGlobal = [], mem = {}, sol = null, tt = null, ultimaPrevia = null;
-let config = { modoLeve:false, margemSeguranca:95, sons:true, volume:60, estrategia:'menos', evitarUsadas:false };
+let config = { modoLeve:false, margemSeguranca:95, sons:true, volume:60, estrategia:'menos', evitarUsadas:false, flutuante:false };
 let docsDisponiveis = [], produtoAtual = { cod:'', nome:'' }, filtro = { de:'', ate:'' };
 let faseAtual = 'fase1', motivoAtual = '', fichaInfo = null, correcao = null;
 let filtroHist = { periodo:'tudo', status:'' };
@@ -858,6 +863,8 @@ function carregarConfig(){
   config.margemSeguranca = Math.min(99, Math.max(1, parseInt(config.margemSeguranca, 10) || 95));
   $('cfgLeve').checked = !!config.modoLeve;
   $('cfgSons').checked = !!config.sons;
+  $('cfgFlutuante').checked = !!config.flutuante;
+  $('rowFlutuante').hidden = !pipSuportado();
   $('cfgVolume').value = config.volume;
   $('cfgMargem').value = config.margemSeguranca;
   $('optUsadas').checked = !!config.evitarUsadas;
@@ -866,6 +873,7 @@ function carregarConfig(){
 function salvarConfig(silencioso){
   config.modoLeve = $('cfgLeve').checked;
   config.sons = $('cfgSons').checked;
+  config.flutuante = $('cfgFlutuante').checked;
   config.volume = parseInt($('cfgVolume').value, 10) || 60;
   let m = parseInt($('cfgMargem').value, 10);
   if (isNaN(m) || m < 1) m = 1; if (m > 99) m = 99;
@@ -1047,7 +1055,7 @@ function abandonar(){
   return false;
 }
 function limparGeral(){
-  fecharDialogo(null);
+  fecharDialogo(null); fecharFlutuante();
   abandonar();
   $('textoPdf').value = ''; $('saldoAtual').value = ''; $('saldoAlvo').value = '';
   docsDisponiveis = []; produtoAtual = { cod:'', nome:'' }; filtro = { de:'', ate:'' };
@@ -1061,6 +1069,7 @@ function limparGeral(){
 function corrigirSaldos(){
   const s = sol; if (!s) return;
   const interrompido = abandonar();
+  fecharFlutuante();
   sol = null; ls.del(SESS_KEY);
   motivoAtual = s.motivo || '';
   $('saldoAtual').value = fmtCampo(s.atual); $('saldoAlvo').value = fmtCampo(s.alvo);
@@ -1398,6 +1407,7 @@ function processarFase2(copiarPrimeiro){
   if (document.activeElement) document.activeElement.blur();
   renderResumo(); mudarTela('fase3');
   renderPasso(0, { autoDoc: !!copiarPrimeiro });
+  if (config.flutuante && pipSuportado()) abrirFlutuante(true);
 }
 
 function renderResumo(){
@@ -1407,21 +1417,24 @@ function renderResumo(){
     (temCod ? `<span class="chip">Produto <b>${esc(s.produto.cod)}</b></span>` : '') +
     `<span class="chip">Saldo <b>${br(s.atual)}</b> para <b>${br(s.alvo)}</b></span>` +
     `<span class="chip op"><b>${rotuloOp(s.op)}</b> ${br(s.dif)} pçs</span>` +
-    `<button class="link" onclick="corrigirSaldos()" title="Voltar para a tela de saldos">${IC.edit}Corrigir saldos</button>`;
+    `<button class="link" onclick="corrigirSaldos()" title="Voltar para a tela de saldos">${IC.edit}Corrigir saldos</button>` +
+    (pipSuportado() ? `<button class="link" onclick="abrirFlutuante()" title="Abre uma janelinha que fica por cima do ERP">${IC.pip}${pipWin ? 'Janela flutuante aberta' : 'Janela flutuante'}</button>` : '');
   const f = $('alertaFalta');
   f.hidden = !(s.rest > 0);
   f.innerHTML = s.rest > 0 ? IC.warn + `<span>Os documentos não bastam: faltam <b>${br(s.rest)} pçs</b> sem cobertura. Adicione mais REQs ou faça o restante depois.</span>` : '';
 }
 
 /* ===== FASE 3: PASSOS ===== */
-function copiar(t){
+/* Copia usando a janela que recebeu o clique (o app ou a janela flutuante) */
+function copiar(t, win = window){
+  const doc = win.document, nav = win.navigator;
   const reserva = () => {
-    const a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', '');
-    a.style.cssText = 'position:fixed;opacity:0;left:-9999px'; document.body.appendChild(a); a.select();
-    let ok = false; try { ok = document.execCommand('copy'); } catch(e) {}
+    const a = doc.createElement('textarea'); a.value = t; a.setAttribute('readonly', '');
+    a.style.cssText = 'position:fixed;opacity:0;left:-9999px'; doc.body.appendChild(a); a.select();
+    let ok = false; try { ok = doc.execCommand('copy'); } catch(e) {}
     a.remove(); if (!ok) throw new Error('falha ao copiar');
   };
-  return (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).catch(reserva);
+  return (nav.clipboard ? nav.clipboard.writeText(t) : Promise.reject()).catch(reserva);
 }
 const completo = p => p.cDoc && p.cPct;
 const hintTxt = p => completo(p) ? 'Passo concluído' : (!p.cDoc ? '<kbd>Enter</kbd> copia o documento' : '<kbd>Enter</kbd> copia o percentual');
@@ -1433,6 +1446,7 @@ function desarmarPulo(){ rt.pular = null; clearTimeout(rt.pularT); }
 function renderProg(){
   const s = sol; if (!s) return;
   $('progresso').innerHTML = s.passos.map((p, i) => `<button class="seg${completo(p) ? ' feito' : (p.pulado ? ' pulado' : '')}${i === s.idx ? ' atual' : ''}" onclick="irPasso(${i})" title="Passo ${i + 1}: documento ${esc(p.numeroDoc)}" aria-label="Ir para o passo ${i + 1}"></button>`).join('');
+  renderPip();
 }
 
 function renderPasso(idx, opts = {}){
@@ -1506,6 +1520,7 @@ function renderFim(cls){
   $('listaPassos').innerHTML = `<div class="wz fim ${bom ? 'ok' : 'er'}${cls || ''}" id="wizCard">
     <div class="fim-ico">${bom ? IC.ok : IC.warn}</div><h3>${titulo}</h3><p>${texto}</p>
     <div class="conf" id="confBox">${conf}</div></div>`;
+  renderPip();
 }
 function mostrarDiferenca(){ const r = $('difRow'); r.hidden = false; $('saldoErp').focus(); }
 function conferir(tipo){
@@ -1514,6 +1529,7 @@ function conferir(tipo){
   const e = historicoGlobal.find(h => h.id === s.calcId) || registrar(s.status || statusDe(s)); if (!e) return;
   if (tipo === 'ok') {
     e.conferencia = { tipo:'ok', hora: horaAgora() };
+    renderPip();
     // Se este ajuste corrigia outro, o anterior sai das pendências
     if (s.corrigeId) { const o = historicoGlobal.find(h => h.id === s.corrigeId); if (o) o.resolvido = true; }
     salvarHistorico(); registrarProduto(s, e);
@@ -1576,10 +1592,11 @@ function armarPulo(){
   const h = $('wzHint'), b = $('btnProx');
   if (h) { h.classList.remove('feito'); h.classList.add('alerta'); h.innerHTML = 'Passo não copiado. Avance de novo para pular.'; }
   if (b) { b.classList.remove('cutucar'); void b.offsetWidth; b.classList.add('cutucar'); }
-  tocarSom('warn');
+  tocarSom('warn'); renderPip();
   rt.pularT = setTimeout(() => {
     rt.pular = null;
     if (sol === s && s.idx < s.passos.length && h && document.body.contains(h)) { const p = s.passos[s.idx]; h.classList.remove('alerta'); h.innerHTML = hintTxt(p); h.classList.toggle('feito', completo(p)); }
+    renderPip();
   }, 4000);
 }
 
@@ -1607,10 +1624,10 @@ function desfazerPasso(){
   else if (s.idx > 0) { limpa(s.passos[s.idx - 1]); irPasso(s.idx - 1); toast('Passo anterior desmarcado no app. Nada foi alterado no ERP.', 'warn'); }
 }
 
-function acaoCopiar(tipo, avancar){
+function acaoCopiar(tipo, avancar, win){
   const s = sol; if (!s || s.idx >= s.passos.length) return;
   const idx = s.idx, p = s.passos[idx], val = tipo === 'doc' ? p.numeroDoc : p.pctStr;
-  copiar(val).then(() => {
+  copiar(val, win || window).then(() => {
     if (sol !== s) return;
     if (tipo === 'doc') p.cDoc = true; else p.cPct = true;
     if (completo(p)) p.pulado = false;
@@ -1628,6 +1645,7 @@ function acaoCopiar(tipo, avancar){
       const c = $('wizCard'); if (c) c.classList.add('concluido');
       rt.timer = setTimeout(() => { rt.timer = null; if (sol === s && s.idx === idx) irPasso(idx + 1, { auto: true }); }, 850);
     }
+    renderPip();
   }).catch(() => toast('Não foi possível copiar. Clique no botão de novo.', 'err'));
 }
 
@@ -1637,6 +1655,99 @@ $('listaPassos').addEventListener('pointermove', e => {
   const r = t.getBoundingClientRect();
   t.style.setProperty('--mx', (e.clientX - r.left) + 'px'); t.style.setProperty('--my', (e.clientY - r.top) + 'px');
 });
+
+/* ===== JANELA FLUTUANTE (fica por cima do ERP, sem precisar de Alt+Tab) ===== */
+let pipWin = null;
+const pipSuportado = () => 'documentPictureInPicture' in window;
+const PIP_CSS = `*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1218;color:#e8ebf2;padding:12px;user-select:none}
+#pip{display:flex;flex-direction:column;gap:8px}
+button{font:inherit;color:inherit;cursor:pointer}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:#9aa1b2}
+.top b{color:#e8ebf2}
+.op{font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:99px;border:1px solid rgba(255,255,255,.12);white-space:nowrap}
+.op.estorno{color:#a9e6c9;border-color:rgba(92,207,156,.35)}.op.adicao{color:#f6c3cb;border-color:rgba(238,127,142,.35)}
+.tile{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:9px 12px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);text-align:left;transition:border-color .2s,background .2s}
+.tile:hover{border-color:rgba(108,130,238,.6)}
+.tile small{font-size:11.5px;font-weight:700;color:#9aa1b2}
+.tile b{font-size:26px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1.1}
+.tile b i{font-style:normal;font-size:.55em;color:#9aa1b2;margin-left:2px}
+.tile.feito{border-color:rgba(92,207,156,.6);background:rgba(92,207,156,.08)}
+.tile.feito small{color:#5ccf9c}
+.dec{font-size:12.5px;font-weight:700;text-align:center;padding:6px;border-radius:9px;color:#9aa1b2;border:1px dashed rgba(255,255,255,.12)}
+.dec.on{background:#e6c35c;color:#3a2a05;border:1px solid #e6c35c}
+.nav{display:flex;align-items:center;gap:6px}
+.nav button{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);font-weight:700;font-size:13px;white-space:nowrap}
+.nav button:disabled{opacity:.35;cursor:default}
+.nav .pri{background:#6c82ee;border-color:#6c82ee;color:#fff}
+.nav .ok{flex:1;padding:11px;background:#5ccf9c;border-color:#5ccf9c;color:#0b2a1c;font-size:15px}
+.hint{flex:1;text-align:center;font-size:11.5px;font-weight:600;color:#6b7183;line-height:1.3}
+.hint.feito{color:#5ccf9c}.hint.alerta{color:#e6c35c}
+.fim{text-align:center;padding:8px 0}
+.fim p{font-size:13px;color:#9aa1b2}
+.fim .alvo{display:block;font-size:30px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums}
+.fim .ok{color:#5ccf9c;font-size:18px}.fim .warn{color:#e6c35c;font-size:15px}
+.obs{font-size:11.5px;color:#6b7183;text-align:center}
+.x{border:0;background:none;font-size:20px;line-height:1;color:#9aa1b2;padding:0 4px}
+.x:hover{color:#ee7f8e}`;
+async function abrirFlutuante(auto){
+  if (!pipSuportado()) { if (!auto) toast('Seu navegador não tem janela flutuante. Use o Chrome ou o Edge atualizados.', 'warn'); return; }
+  if (!sol) return;
+  if (pipWin) { try { pipWin.focus(); } catch(e) {} return; }
+  try { pipWin = await documentPictureInPicture.requestWindow({ width: 340, height: 300 }); }
+  catch(e) { pipWin = null; if (!auto) toast('Não foi possível abrir a janela flutuante.', 'err'); return; }
+  const w = pipWin, d = w.document;
+  d.title = 'Pedalada';
+  const st = d.createElement('style'); st.textContent = PIP_CSS; d.head.appendChild(st);
+  d.body.innerHTML = '<div id="pip"></div>';
+  d.addEventListener('click', e => { const b = e.target.closest('[data-pip]'); if (b && !b.disabled) acaoPip(b.dataset.pip); });
+  d.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); acaoPip('enter'); }
+    else if (e.key === 'ArrowRight') acaoPip('prox');
+    else if (e.key === 'ArrowLeft') acaoPip('ant');
+  });
+  w.addEventListener('pagehide', () => { if (pipWin === w) pipWin = null; renderResumo(); });
+  if (!auto && !config.flutuante) {
+    config.flutuante = true; $('cfgFlutuante').checked = true; ls.set(CFG_KEY, JSON.stringify(config));
+    toast('Da próxima vez a janela flutuante abre sozinha ao calcular. Dá para desligar em Configurações.', 'ok');
+  }
+  renderPip(); renderResumo();
+}
+function fecharFlutuante(){ const w = pipWin; pipWin = null; if (w) { try { w.close(); } catch(e) {} } }
+function acaoPip(a){
+  const s = sol; if (!s) return;
+  if (a === 'fechar') { fecharFlutuante(); renderResumo(); return; }
+  if (a === 'ok') { conferir('ok'); return; }
+  if (s.idx >= s.passos.length || rt.busy) return;
+  if (a === 'doc' || a === 'pct') acaoCopiar(a, true, pipWin);
+  else if (a === 'prox') irPasso(s.idx + 1);
+  else if (a === 'ant') irPasso(s.idx - 1);
+  else if (a === 'enter') {
+    const p = s.passos[s.idx];
+    if (!p.cDoc) acaoCopiar('doc', false, pipWin);
+    else if (!p.cPct) acaoCopiar('pct', true, pipWin);
+    else irPasso(s.idx + 1, { auto: true });
+  }
+}
+function renderPip(){
+  if (!pipWin || !sol) return;
+  const box = pipWin.document.getElementById('pip'); if (!box) return;
+  const s = sol, n = s.passos.length;
+  if (s.idx >= n) {
+    const e = historicoGlobal.find(h => h.id === s.calcId), c = e && e.conferencia;
+    box.innerHTML = `<div class="top"><span>Ajuste finalizado</span><button class="x" data-pip="fechar" title="Fechar janela">×</button></div>
+      <div class="fim">${c ? (c.tipo === 'ok' ? '<b class="ok">Conferido ✓</b>' : `<b class="warn">Diferença de ${esc(br(c.diferenca))} pçs registrada</b>`) : `<p>Confira no ERP. O saldo deve estar em</p><b class="alvo">${esc(br(s.alvo))}</b>`}</div>
+      ${c ? '' : '<div class="nav"><button class="ok" data-pip="ok">Ajuste OK!</button></div><p class="obs">Deu diferença? Registre na tela do app.</p>'}`;
+    return;
+  }
+  const p = s.passos[s.idx], feito = completo(p), pular = rt.pular === s.idx;
+  const dica = pular ? 'Não copiado. Clique de novo para pular.' : (feito ? 'Passo concluído ✓' : (!p.cDoc ? 'Enter copia o documento' : 'Enter copia o %'));
+  box.innerHTML = `<div class="top"><span>Passo <b>${s.idx + 1}</b> de ${n}</span><span class="op ${s.op}">${esc(rotuloOp(s.op))}</span></div>
+    <button class="tile${p.cDoc ? ' feito' : ''}" data-pip="doc"><small>Documento${p.cDoc ? ' · copiado ✓' : ''}</small><b>${esc(p.numeroDoc)}</b></button>
+    <button class="tile${p.cPct ? ' feito' : ''}" data-pip="pct"><small>Percentual${p.cPct ? ' · copiado ✓' : ''}</small><b>${esc(p.pctStr)}<i>%</i></b></button>
+    <div class="dec${p.dec ? ' on' : ''}">${p.dec ? 'Marque a opção de decimais no ERP' : 'Deixe decimais desmarcado'}</div>
+    <div class="nav"><button data-pip="ant"${s.idx ? '' : ' disabled'} title="Passo anterior">‹</button><span class="hint${feito ? ' feito' : ''}${pular ? ' alerta' : ''}">${dica}</span><button class="pri" data-pip="prox">${s.idx === n - 1 ? 'Concluir' : 'Próximo'} ›</button></div>`;
+}
 
 /* ===== SURPRESA ESCONDIDA (botão do rodapé) ===== */
 let sustoTimers = [], sustoAudio = null, sustoRaf = 0;
