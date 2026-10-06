@@ -23,7 +23,11 @@ documentos de requisição (REQ). Fluxo em 3 fases:
   e `const VERSAO` no `sw.js`. Os dois devem ser iguais. Sem isso, o aviso de atualização não aparece.
 - Não mude os nomes das chaves do localStorage, senão os dados dela somem:
   `pedalada_db_produtos`, `pedalada_db_produtos_bkp`, `pedalada_hist_v3`, `pedalada_sess_v4`, `pedalada_cfg_v1`
-  (e o IndexedDB `pedalada`, store `kv`, chave `db`).
+  (e o IndexedDB `pedalada`, store `kv`, chaves `db` e `hist` — cópia de segurança dos produtos e do histórico).
+- Campos de número são texto com leitura no formato brasileiro (`lerNumero`). Para colocar um número
+  num campo por código, use `fmtCampo` (nunca o número cru com ponto, que seria lido como milhar).
+- As laterais mostram só informação útil (pendências, gráfico da ficha, painel do dia, calculadora,
+  relatórios). Não colocar textos de tutorial ou listas de atalhos nelas.
 - Mantenha tudo em um único `index.html`, sem dependências externas além da fonte do Google.
 - Antes de terminar, revise se não há erro de JavaScript e se o fluxo das 3 fases continua funcionando.
 
