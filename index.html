@@ -508,7 +508,7 @@ input[type=range]{width:140px;padding:0;border:0;background:none;accent-color:va
 .ovo:hover,.ovo:focus-visible{opacity:1;color:var(--er);border-color:rgba(238,127,142,.4)}
 .susto{position:fixed;inset:0;z-index:500;display:grid;place-items:center;overflow:hidden;cursor:wait;background:rgba(3,2,4,.86);backdrop-filter:blur(16px) saturate(.3);animation:sustoEntra 1.2s ease both}
 @keyframes sustoEntra{from{background:rgba(3,2,4,0);backdrop-filter:blur(0) saturate(1)}}
-.susto>.susto-msg,.susto>.cara,.susto>.susto-fim{grid-area:1/1}
+.susto>.susto-msg,.susto>.susto-fim{grid-area:1/1}
 .susto.fim{cursor:pointer}
 .susto.saindo{animation:sustoSai .45s ease forwards}
 @keyframes sustoSai{to{opacity:0}}
@@ -520,17 +520,16 @@ input[type=range]{width:140px;padding:0;border:0;background:none;accent-color:va
 @keyframes letra{from{opacity:0;filter:blur(10px);transform:translateY(12px) scale(1.5)}}
 @keyframes respira{50%{letter-spacing:.1em;text-shadow:0 0 34px rgba(255,0,30,.9)}}
 .susto.bang .susto-msg,.susto.fim .susto-msg{opacity:0}
-.cara{width:min(80vmin,560px);opacity:0;pointer-events:none;filter:drop-shadow(0 0 50px rgba(255,0,0,.5))}
-.cara svg{display:block;width:100%;height:auto;stroke:none;fill:none}
-.susto.bang .cara{opacity:1;animation:caraPula 1.8s cubic-bezier(.2,1.6,.4,1) both}
-@keyframes caraPula{0%{transform:scale(.15) rotate(-8deg);filter:brightness(3) blur(6px)}12%{transform:scale(1.28) rotate(3deg);filter:brightness(1.5) drop-shadow(0 0 60px red)}20%{transform:scale(1.1) rotate(-2deg) translate(-8px,5px)}28%{transform:scale(1.2) rotate(2deg) translate(8px,-5px)}36%{transform:scale(1.12) translate(-5px,3px)}44%{transform:scale(1.16) translate(4px,-2px)}100%{transform:scale(1.14)}}
-.susto.fim .cara{opacity:0;transition:opacity .6s}
+.susto-tela{position:absolute;inset:0;width:100%;height:100%;opacity:0;pointer-events:none}
+.susto.bang .susto-tela{opacity:1;animation:telaTreme .09s steps(2) 10}
+@keyframes telaTreme{50%{transform:translate(-10px,6px) scale(1.03)}}
+.susto.fim .susto-tela{opacity:0;transition:opacity .7s}
 .susto.bang::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;animation:flash .8s ease-out}
 @keyframes flash{0%{opacity:1;background:#fff}12%{opacity:.9;background:#ff0022}35%{opacity:.2;background:#ff0022}50%{opacity:.6;background:#fff}100%{opacity:0;background:#ff0022}}
 .susto-scan{position:absolute;inset:0;pointer-events:none;opacity:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 3px)}
 .susto.bang .susto-scan{opacity:1;animation:scan .35s steps(4) infinite}
 @keyframes scan{to{background-position:0 12px}}
-.susto-fim{display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 16px;text-align:center;opacity:0;pointer-events:none}
+.susto-fim{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 16px;text-align:center;opacity:0;pointer-events:none}
 .susto.fim .susto-fim{opacity:1;animation:fimEntra .7s var(--eb) both}
 @keyframes fimEntra{from{opacity:0;transform:scale(.5) rotate(-4deg);filter:blur(8px)}}
 .susto-fim b{position:relative;font-size:clamp(34px,7vw,84px);font-weight:800;letter-spacing:-.02em;line-height:1.05;color:#fff;text-shadow:0 0 30px rgba(255,0,40,.75)}
@@ -751,7 +750,7 @@ body.modo-leve .tile::before{display:none}
    Pedalada do Delei
    Ao publicar uma versão nova, aumente VERSAO aqui e no sw.js.
    ========================================================= */
-const VERSAO = '4.0.1';
+const VERSAO = '4.0.2';
 
 const $ = id => document.getElementById(id);
 const DB = 'pedalada_db_produtos', BK = DB + '_bkp', HIST_KEY = 'pedalada_hist_v3',
@@ -1640,81 +1639,235 @@ $('listaPassos').addEventListener('pointermove', e => {
 });
 
 /* ===== SURPRESA ESCONDIDA (botão do rodapé) ===== */
-const CARA_SVG = `<svg viewBox="0 0 200 240" aria-hidden="true">
-  <defs>
-    <radialGradient id="sPele" cx="50%" cy="42%" r="60%"><stop offset="0" stop-color="#e6e0d2"/><stop offset=".55" stop-color="#8f897c"/><stop offset="1" stop-color="#15110f"/></radialGradient>
-    <radialGradient id="sOlho" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ff2a2a"/><stop offset=".35" stop-color="#9b0000"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
-    <filter id="sDist"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="7"><animate attributeName="seed" values="7;12;3;9" dur=".4s" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" scale="7"/></filter>
-  </defs>
-  <g filter="url(#sDist)">
-    <path d="M100 6C158 6 190 58 186 116C182 178 150 234 100 236C50 234 18 178 14 116C10 58 42 6 100 6Z" fill="url(#sPele)"/>
-    <path d="M60 30 72 58 64 74M150 40l-10 22 8 16M100 8v20l-6 10M40 150l14 10-4 14" stroke="#2a211c" stroke-width="1.6" fill="none"/>
-    <ellipse cx="66" cy="102" rx="25" ry="33" transform="rotate(-12 66 102)" fill="#050303"/>
-    <ellipse cx="134" cy="102" rx="25" ry="33" transform="rotate(12 134 102)" fill="#050303"/>
-    <circle cx="68" cy="106" r="14" fill="url(#sOlho)"/><circle cx="132" cy="106" r="14" fill="url(#sOlho)"/>
-    <circle cx="68" cy="106" r="2.6" fill="#fff"/><circle cx="132" cy="106" r="2.6" fill="#fff"/>
-    <path d="M64 134c-2 14 2 26-1 40M137 134c3 12-1 22 2 34" stroke="#7a0000" stroke-width="3" stroke-linecap="round" fill="none"/>
-    <path d="M94 128 100 146 106 128Z" fill="#0a0606"/>
-    <ellipse cx="100" cy="190" rx="36" ry="40" fill="#030202"/>
-    <path d="M68 158 76 182 84 158 92 186 100 158 108 186 116 158 124 182 132 158Z" fill="#d8d0bc"/>
-    <path d="M70 224 78 202 86 224 94 198 102 224 110 198 118 224 126 204 132 224Z" fill="#cfc6b0"/>
-  </g>
-</svg>`;
-function somSusto(tipo){
-  if (!config.sons) return;
+let sustoTimers = [], sustoAudio = null, sustoRaf = 0;
+
+/* --- Sons (tudo gerado aqui, sem arquivos de áudio) --- */
+function ruidoBuf(A, seg){
+  const n = Math.max(1, A.sampleRate * seg | 0), b = A.createBuffer(1, n, A.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+  return b;
+}
+/* Grito feminino: voz áspera com vibrato passando por filtros de "boca aberta" (formantes), com distorção */
+function grito(A, saida, s, dur, f0){
+  const o = A.createOscillator(); o.type = 'sawtooth';
+  o.frequency.setValueAtTime(f0 * .75, s);
+  o.frequency.exponentialRampToValueAtTime(f0 * 1.08, s + .12);
+  o.frequency.setValueAtTime(f0 * 1.08, s + dur * .55);
+  o.frequency.exponentialRampToValueAtTime(f0 * .6, s + dur);
+  const vib = A.createOscillator(), vg = A.createGain(); vib.frequency.value = 6.5; vg.gain.value = f0 * .035; vib.connect(vg).connect(o.frequency);
+  const jit = A.createOscillator(), jg = A.createGain(); jit.type = 'square'; jit.frequency.value = 31; jg.gain.value = f0 * .015; jit.connect(jg).connect(o.frequency);
+  const ar = A.createBufferSource(), ag = A.createGain(); ar.buffer = ruidoBuf(A, dur); ag.gain.value = .35;
+  const mix = A.createGain(); o.connect(mix); ar.connect(ag).connect(mix);
+  const soma = A.createGain();
+  [[850, 6, 1], [1250, 7, .7], [2900, 9, .45], [3400, 10, .3]].forEach(([f, q, g]) => {
+    const b = A.createBiquadFilter(), gg = A.createGain(); b.type = 'bandpass'; b.frequency.value = f; b.Q.value = q; gg.gain.value = g * 4;
+    mix.connect(b).connect(gg).connect(soma);
+  });
+  const dist = A.createWaveShaper(), curva = new Float32Array(1024);
+  for (let i = 0; i < 1024; i++) { const x = i / 512 - 1; curva[i] = Math.tanh(x * 6); }
+  dist.curve = curva;
+  const env = A.createGain();
+  env.gain.setValueAtTime(.0001, s); env.gain.exponentialRampToValueAtTime(.55, s + .04);
+  env.gain.setValueAtTime(.55, s + dur - .3); env.gain.exponentialRampToValueAtTime(.0001, s + dur);
+  soma.connect(dist).connect(env).connect(saida);
+  [o, vib, jit, ar].forEach(n => { n.start(s); n.stop(s + dur + .05); });
+}
+function sustoSom(BANG){
+  if (!config.sons) return null;
   try {
     actx = actx || new (window.AudioContext || window.webkitAudioContext)();
     if (actx.state === 'suspended') actx.resume();
-    const t = actx.currentTime, v = Math.max(.2, config.volume / 100);
-    if (tipo === 'suspense') {
-      const o = actx.createOscillator(), g = actx.createGain();
-      o.type = 'sine'; o.frequency.setValueAtTime(55, t); o.frequency.linearRampToValueAtTime(46, t + 1.7);
-      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.2 * v, t + .7); g.gain.exponentialRampToValueAtTime(.0001, t + 1.75);
-      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 1.8);
-      return;
-    }
-    // Grito: vozes ásperas com vibrato + chiado
-    const g = actx.createGain();
-    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.3 * v, t + .03);
-    g.gain.setValueAtTime(.3 * v, t + .7); g.gain.exponentialRampToValueAtTime(.0001, t + 1.5);
-    g.connect(actx.destination);
-    [620, 740, 910, 1180].forEach((f, i) => {
-      const o = actx.createOscillator(), lfo = actx.createOscillator(), lg = actx.createGain(), og = actx.createGain();
-      o.type = i % 2 ? 'square' : 'sawtooth';
-      o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * .55, t + 1.5);
-      lfo.frequency.value = 11 + i * 3; lg.gain.value = f * .06; lfo.connect(lg).connect(o.frequency);
-      og.gain.value = .2; o.connect(og).connect(g);
-      o.start(t); lfo.start(t); o.stop(t + 1.55); lfo.stop(t + 1.55);
+    const A = actx, t0 = A.currentTime + .02, v = Math.max(.25, config.volume / 100), tB = t0 + BANG;
+    const comp = A.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 6;
+    const master = A.createGain(); master.gain.value = .9 * v;
+    comp.connect(master).connect(A.destination);
+    // Eco de corredor
+    const rev = A.createConvolver(), n = A.sampleRate * 2.2 | 0, ir = A.createBuffer(2, n, A.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3); }
+    rev.buffer = ir;
+    const revG = A.createGain(); revG.gain.value = .45; rev.connect(revG).connect(comp);
+    const saida = A.createGain(); saida.connect(comp); saida.connect(rev);
+    const env = (g, pts) => { g.gain.setValueAtTime(.0001, t0); pts.forEach(([t, val]) => g.gain.exponentialRampToValueAtTime(Math.max(val, .0001), t0 + t)); };
+
+    // 1) Chiado de TV (começa no clique)
+    const chi = A.createBufferSource(), hp = A.createBiquadFilter(), chiG = A.createGain();
+    chi.buffer = ruidoBuf(A, BANG + 2.5); hp.type = 'highpass'; hp.frequency.value = 2500;
+    env(chiG, [[.08, .05], [BANG - .05, .09], [BANG + .1, .28], [BANG + 2.2, .0001]]);
+    chi.connect(hp).connect(chiG).connect(saida); chi.start(t0); chi.stop(t0 + BANG + 2.5);
+    // 2) Acorde dissonante que cresce
+    [[440, 0], [466.2, 0], [622.3, 0], [932.3, 0]].forEach(([f]) => {
+      const o = A.createOscillator(), g = A.createGain(); o.type = 'triangle';
+      o.frequency.setValueAtTime(f, t0); o.frequency.linearRampToValueAtTime(f * 1.06, tB);
+      env(g, [[.15, .015], [BANG - .02, .07], [BANG + .05, .0001]]);
+      o.connect(g).connect(saida); o.start(t0); o.stop(tB + .1);
     });
-    const len = actx.sampleRate * 1.5 | 0, buf = actx.createBuffer(1, len, actx.sampleRate), d = buf.getChannelData(0);
-    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
-    const src = actx.createBufferSource(), bp = actx.createBiquadFilter(), ng = actx.createGain();
-    src.buffer = buf; bp.type = 'bandpass'; bp.frequency.value = 1800; bp.Q.value = .8; ng.gain.value = .45;
-    src.connect(bp).connect(ng).connect(g); src.start(t); src.stop(t + 1.5);
-  } catch(e) {}
+    // 3) Coração acelerando
+    for (let tb = .05, iv = .75; tb < BANG - .15; tb += iv, iv = Math.max(.3, iv * .78)) {
+      [0, .2].forEach((d, k) => {
+        const s = t0 + tb + d, o = A.createOscillator(), g = A.createGain();
+        o.frequency.setValueAtTime(120, s); o.frequency.exponentialRampToValueAtTime(48, s + .14);
+        g.gain.setValueAtTime(.0001, s); g.gain.exponentialRampToValueAtTime(k ? .4 : .6, s + .01); g.gain.exponentialRampToValueAtTime(.0001, s + .18);
+        o.connect(g).connect(comp); o.start(s); o.stop(s + .2);
+        const cl = A.createBufferSource(), cf = A.createBiquadFilter(), cg = A.createGain();
+        cl.buffer = ruidoBuf(A, .05); cf.type = 'bandpass'; cf.frequency.value = 700; cg.gain.setValueAtTime(k ? .25 : .4, s); cg.gain.exponentialRampToValueAtTime(.0001, s + .05);
+        cl.connect(cf).connect(cg).connect(comp); cl.start(s);
+      });
+    }
+    // 4) Sussurros
+    const sus = A.createBufferSource(), bp = A.createBiquadFilter(), susG = A.createGain();
+    sus.buffer = ruidoBuf(A, BANG); bp.type = 'bandpass'; bp.frequency.value = 3200; bp.Q.value = 3;
+    susG.gain.setValueAtTime(0, t0);
+    for (let s = .15; s < BANG - .05; s += .09) susG.gain.linearRampToValueAtTime(Math.random() < .45 ? 0 : .1 + Math.random() * .25, t0 + s);
+    sus.connect(bp).connect(susG).connect(saida); sus.start(t0);
+    // 5) Pancada
+    const boom = A.createOscillator(), bG = A.createGain();
+    boom.frequency.setValueAtTime(150, tB); boom.frequency.exponentialRampToValueAtTime(35, tB + .6);
+    bG.gain.setValueAtTime(.0001, tB); bG.gain.exponentialRampToValueAtTime(1, tB + .01); bG.gain.exponentialRampToValueAtTime(.0001, tB + .9);
+    boom.connect(bG).connect(comp); boom.start(tB); boom.stop(tB + 1);
+    const hit = A.createBufferSource(), hG = A.createGain(); hit.buffer = ruidoBuf(A, .6);
+    hG.gain.setValueAtTime(.9, tB); hG.gain.exponentialRampToValueAtTime(.0001, tB + .5);
+    hit.connect(hG).connect(saida); hit.start(tB);
+    // 6) Violinos estridentes
+    [1318, 1396, 1480, 1568].forEach((f, i) => {
+      const o = A.createOscillator(), g = A.createGain(), l = A.createOscillator(), lg = A.createGain();
+      o.type = 'sawtooth'; o.frequency.value = f; l.frequency.value = 7 + i; lg.gain.value = 25; l.connect(lg).connect(o.frequency);
+      g.gain.setValueAtTime(.0001, tB); g.gain.exponentialRampToValueAtTime(.05, tB + .02); g.gain.exponentialRampToValueAtTime(.0001, tB + 1.6);
+      o.connect(g).connect(saida); o.start(tB); l.start(tB); o.stop(tB + 1.7); l.stop(tB + 1.7);
+    });
+    // 7) Gritos
+    grito(A, saida, tB + .02, 1.5, 1050);
+    grito(A, saida, tB + .55, 1.35, 1380);
+    grito(A, saida, tB + .95, 1.2, 820);
+    return { master };
+  } catch(e) { return null; }
 }
-let sustoTimers = [];
+
+/* --- A menina (desenhada aqui mesmo, sem imagens externas) --- */
+function desenharMenina(){
+  const W = 600, H = 900, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  let semente = 1337; const rnd = () => (semente = semente * 16807 % 2147483647) / 2147483647;
+  // Vestido branco sujo
+  let gr = g.createLinearGradient(0, 600, 0, H); gr.addColorStop(0, '#c4c4bb'); gr.addColorStop(1, '#4d4d48');
+  g.fillStyle = gr; g.beginPath(); g.moveTo(70, H); g.bezierCurveTo(100, 700, 180, 615, 300, 605); g.bezierCurveTo(420, 615, 500, 700, 530, H); g.closePath(); g.fill();
+  for (let i = 0; i < 60; i++) { g.fillStyle = `rgba(${rnd() < .3 ? '70,20,15' : '55,48,40'},${rnd() * .18})`; g.beginPath(); g.ellipse(120 + rnd() * 360, 650 + rnd() * 250, 6 + rnd() * 30, 4 + rnd() * 18, rnd() * 3, 0, 7); g.fill(); }
+  // Pescoço
+  g.fillStyle = '#727870'; g.fillRect(262, 460, 76, 170);
+  // Cabelo de trás
+  g.fillStyle = '#040404'; g.beginPath(); g.moveTo(105, 870); g.bezierCurveTo(60, 520, 110, 85, 300, 75); g.bezierCurveTo(490, 85, 540, 520, 495, 870); g.closePath(); g.fill();
+  // Rosto pálido e comprido (mandíbula aberta)
+  gr = g.createRadialGradient(272, 300, 15, 295, 345, 190); gr.addColorStop(0, '#cdd1c6'); gr.addColorStop(.5, '#8b9287'); gr.addColorStop(1, '#232722');
+  g.fillStyle = gr; g.beginPath(); g.ellipse(298, 345, 120, 182, 0, 0, 7); g.fill();
+  for (let i = 0; i < 220; i++) { g.fillStyle = `rgba(${rnd() < .55 ? '35,45,40' : '95,30,30'},${rnd() * .14})`; g.beginPath(); g.ellipse(195 + rnd() * 210, 185 + rnd() * 330, 2 + rnd() * 12, 2 + rnd() * 9, rnd() * 3, 0, 7); g.fill(); }
+  g.strokeStyle = 'rgba(45,65,90,.32)'; g.lineWidth = 1.2;
+  for (let i = 0; i < 16; i++) { let x = 200 + rnd() * 200, y = 200 + rnd() * 280; g.beginPath(); g.moveTo(x, y); for (let k = 0; k < 6; k++) { x += (rnd() - .5) * 22; y += 6 + rnd() * 12; g.lineTo(x, y); } g.stroke(); }
+  // Olhos: órbita funda, branco amarelado e irregular, veias, íris cinza com aro escuro
+  const olho = (x, y, forca) => {
+    let o = g.createRadialGradient(x, y, 10, x, y, 70); o.addColorStop(0, `rgba(0,0,0,${.92 * forca})`); o.addColorStop(.6, `rgba(20,10,10,${.5 * forca})`); o.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = o; g.beginPath(); g.ellipse(x, y, 70, 56, 0, 0, 7); g.fill();
+    g.save(); g.beginPath(); g.ellipse(x, y, 36, 22, -.1, 0, 7); g.clip(); g.globalAlpha = forca;
+    o = g.createRadialGradient(x, y, 4, x, y, 40); o.addColorStop(0, '#f1ead2'); o.addColorStop(.6, '#d8c6a8'); o.addColorStop(1, '#7a2219');
+    g.fillStyle = o; g.fillRect(x - 40, y - 26, 80, 52);
+    for (let i = 0; i < 40; i++) { g.fillStyle = `rgba(150,60,40,${rnd() * .25})`; g.beginPath(); g.arc(x + (rnd() - .5) * 70, y + (rnd() - .5) * 40, 1 + rnd() * 4, 0, 7); g.fill(); }
+    g.strokeStyle = 'rgba(175,15,15,.8)'; g.lineWidth = .9;
+    for (let i = 0; i < 26; i++) { const a = rnd() * 7; let px = x + Math.cos(a) * 38, py = y + Math.sin(a) * 23; g.beginPath(); g.moveTo(px, py); for (let k = 0; k < 5; k++) { px += (x - px) * .2 + (rnd() - .5) * 7; py += (y - py) * .2 + (rnd() - .5) * 6; g.lineTo(px, py); } g.stroke(); }
+    o = g.createRadialGradient(x + 2, y + 1, 2, x + 2, y + 1, 13); o.addColorStop(0, '#050505'); o.addColorStop(.35, '#0a0a0a'); o.addColorStop(.45, '#6d6f6a'); o.addColorStop(.9, '#3a3c38'); o.addColorStop(1, '#0d0d0d');
+    g.fillStyle = o; g.beginPath(); g.arc(x + 2, y + 1, 13, 0, 7); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.8)'; g.beginPath(); g.arc(x + 6, y - 4, 2, 0, 7); g.fill();
+    g.restore(); g.globalAlpha = 1;
+    g.strokeStyle = 'rgba(110,15,15,.85)'; g.lineWidth = 2.5; g.beginPath(); g.ellipse(x, y + 2, 36, 22, -.1, .1, Math.PI - .1); g.stroke();
+    g.strokeStyle = 'rgba(0,0,0,.8)'; g.lineWidth = 3; g.beginPath(); g.ellipse(x, y - 1, 36, 22, -.1, Math.PI + .1, -.1); g.stroke();
+  };
+  olho(250, 312, 1); olho(352, 318, .8);
+  // Boca escancarada num grito
+  gr = g.createRadialGradient(296, 470, 5, 296, 470, 62); gr.addColorStop(0, '#000'); gr.addColorStop(.7, '#0d0404'); gr.addColorStop(1, '#3b1a18');
+  g.fillStyle = gr; g.beginPath(); g.ellipse(296, 468, 34, 62, .04, 0, 7); g.fill();
+  g.strokeStyle = 'rgba(70,40,38,.9)'; g.lineWidth = 4; g.beginPath(); g.ellipse(296, 468, 36, 64, .04, 0, 7); g.stroke();
+  g.fillStyle = 'rgba(200,190,160,.75)';
+  for (let i = 0; i < 6; i++) { const tx = 272 + i * 9; g.beginPath(); g.moveTo(tx, 412); g.lineTo(tx + 4, 424 + rnd() * 5); g.lineTo(tx + 8, 413); g.fill(); }
+  // Cabelo da frente: duas cortinas molhadas, abertas no meio (mostra olho e boca), fechando no queixo
+  for (let i = 0; i < 1000; i++) {
+    const x0 = 135 + rnd() * 330;
+    const naFresta = x0 > 212 && x0 < 335;
+    if (naFresta && rnd() < .9) continue;
+    const y0 = 95 + Math.abs(x0 - 300) * .35 + rnd() * 25, len = 560 + rnd() * 300, dx = (rnd() - .5) * 50;
+    const lado = x0 < 273 ? -1 : 1, fora = naFresta ? (rnd() - .5) * 30 : lado * (25 + rnd() * 40);
+    const tom = 3 + rnd() * 12 | 0;
+    g.strokeStyle = rnd() < .06 ? 'rgba(120,130,140,.2)' : `rgba(${tom},${tom},${tom + 2},${naFresta ? .25 + rnd() * .35 : .55 + rnd() * .45})`;
+    g.lineWidth = naFresta ? .5 + rnd() * 1.2 : .5 + rnd() * 2.6;
+    g.beginPath(); g.moveTo(x0, y0);
+    g.bezierCurveTo(x0 + fora * 1.2, y0 + len * .25, x0 + fora * .6 + dx * .5 - lado * 20, y0 + len * .6, x0 - lado * 25 + dx, y0 + len);
+    g.stroke();
+  }
+  return c;
+}
+/* Estática de TV + a menina avançando aos trancos + imagem falhando */
+function animarSusto(cv){
+  const ctx = cv.getContext('2d'), menina = desenharMenina();
+  const W = cv.width = innerWidth, H = cv.height = innerHeight;
+  const sn = document.createElement('canvas'); sn.width = 160; sn.height = 90;
+  const sx = sn.getContext('2d'), img = sx.createImageData(160, 90);
+  const vin = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .25, W / 2, H / 2, Math.max(W, H) * .75);
+  vin.addColorStop(0, 'rgba(0,0,0,0)'); vin.addColorStop(1, 'rgba(0,0,0,.85)');
+  const ini = performance.now(); let escala = .45, ox = 0, oy = 0;
+  const quadro = agora => {
+    const t = (agora - ini) / 1000;
+    if (t > 2.6 || !cv.isConnected) return;
+    for (let i = 0; i < img.data.length; i += 4) { const v = Math.random() * 255 | 0; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+    sx.putImageData(img, 0, 0);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(sn, 0, 0, W, H);
+    ctx.fillStyle = `rgba(0,0,0,${t < .12 ? .2 : .6})`; ctx.fillRect(0, 0, W, H);
+    ctx.imageSmoothingEnabled = true;
+    // Avança aos trancos: só muda de posição em alguns quadros, às vezes dá um salto
+    const p = Math.min(1, t / 1.6), alvo = .55 + Math.pow(p, 2) * 2.1;
+    if (t < .05 || Math.random() < .28) { escala = alvo + (Math.random() < .15 ? .3 : 0); ox = (Math.random() - .5) * 34; oy = (Math.random() - .5) * 22; }
+    if (t > .1 && Math.random() > .07) {
+      const b = Math.min(W / 600, H / 900) * escala;
+      // No começo mira o rosto inteiro; no fim, o olho
+      const ax = 290 - 40 * p, ay = 380 - 68 * p;
+      const x = W / 2 - ax * b + ox, y = H * .48 - ay * b + oy;
+      ctx.drawImage(menina, x, y, 600 * b, 900 * b);
+      if (Math.random() < .25) { ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = .35; ctx.drawImage(menina, x + 10, y, 600 * b, 900 * b); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; }
+    }
+    // Estática por cima e falhas horizontais
+    ctx.globalAlpha = .16; ctx.imageSmoothingEnabled = false; ctx.drawImage(sn, 0, 0, W, H); ctx.globalAlpha = 1;
+    for (let k = 0, q = 2 + Math.random() * 6 | 0; k < q; k++) { const sy = Math.random() * H, sh = 6 + Math.random() * 60; ctx.drawImage(cv, 0, sy, W, sh, (Math.random() - .5) * 90, sy, W, sh); }
+    if (Math.random() < .06) { ctx.fillStyle = 'rgba(150,0,0,.3)'; ctx.fillRect(0, 0, W, H); }
+    ctx.fillStyle = vin; ctx.fillRect(0, 0, W, H);
+    sustoRaf = requestAnimationFrame(quadro);
+  };
+  sustoRaf = requestAnimationFrame(quadro);
+}
+
 function brunoSusto(){
   if ($('susto')) return;
   fecharPaineis(); fecharDialogo(null);
-  const frase = 'Bruno... é você?';
+  const BANG = 1.8, frase = 'Bruno... é você?';
   const el = document.createElement('div');
   el.id = 'susto'; el.className = 'susto'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Surpresa');
   el.innerHTML = `<div class="susto-vinheta"></div>
     <div class="susto-msg">${[...frase].map((c, i) => `<span style="--i:${i}">${esc(c)}</span>`).join('')}</div>
-    <div class="cara">${CARA_SVG}</div><div class="susto-scan"></div>
+    <canvas class="susto-tela"></canvas><div class="susto-scan"></div>
     <div class="susto-fim"><b data-t="TE PEGUEI, BRUNO!">TE PEGUEI, BRUNO!</b><small>clique em qualquer lugar para fechar</small></div>`;
   el.addEventListener('click', () => { if (el.classList.contains('fim')) fecharSusto(); });
   document.body.appendChild(el);
-  somSusto('suspense');
+  sustoAudio = sustoSom(BANG);   // os sons começam já no clique
   sustoTimers = [
-    setTimeout(() => { el.classList.add('bang'); somSusto('grito'); if (navigator.vibrate) navigator.vibrate([90, 40, 140]); }, 1800),
-    setTimeout(() => el.classList.add('fim'), 3600),
-    setTimeout(fecharSusto, 10000)
+    setTimeout(() => { el.classList.add('bang'); animarSusto(el.querySelector('.susto-tela')); if (navigator.vibrate) navigator.vibrate([90, 40, 140, 40, 200]); }, BANG * 1000),
+    setTimeout(() => el.classList.add('fim'), BANG * 1000 + 2400),
+    setTimeout(fecharSusto, BANG * 1000 + 9000)
   ];
 }
 function fecharSusto(){
   sustoTimers.forEach(clearTimeout); sustoTimers = [];
+  cancelAnimationFrame(sustoRaf);
+  if (sustoAudio && actx) {
+    const m = sustoAudio.master, t = actx.currentTime;
+    try { m.gain.cancelScheduledValues(t); m.gain.setValueAtTime(m.gain.value, t); m.gain.linearRampToValueAtTime(0, t + .2); } catch(e) {}
+    setTimeout(() => { try { m.disconnect(); } catch(e) {} }, 400);
+    sustoAudio = null;
+  }
   const el = $('susto'); if (!el || el.classList.contains('saindo')) return;
   el.classList.add('saindo'); setTimeout(() => el.remove(), 450);
 }
