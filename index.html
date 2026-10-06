@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#060912">
+<meta name="theme-color" content="#0b0d12">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>Pedalada do Delei</title>
@@ -13,10 +13,12 @@
 <style>
 :root{
   color-scheme:dark;
-  --bg:#060912;--sf:rgba(16,22,38,.72);--sf2:rgba(255,255,255,.045);--sf3:rgba(6,9,18,.62);
-  --ln:rgba(148,163,184,.16);--ln2:rgba(148,163,184,.3);
-  --tx:#eef2ff;--mu:#9aa6c0;--di:#6f7b99;--lt:#a5bcff;
-  --pri:#5b8cff;--pu:#8b5cf6;--ok:#34d399;--warn:#facc15;--er:#fb7185;
+  --bg:#0b0d12;--sf:rgba(19,22,30,.92);--sf2:rgba(255,255,255,.04);--sf3:rgba(9,11,16,.72);
+  --ln:rgba(255,255,255,.08);--ln2:rgba(255,255,255,.16);
+  --tx:#e8ebf2;--mu:#9aa1b2;--di:#6b7183;--lt:#aab8f5;
+  --pri:#6c82ee;--pu:#8a7ce8;--ok:#5ccf9c;--warn:#e6c35c;--er:#ee7f8e;
+  --r-sm:10px;--r-md:14px;--r-lg:20px;
+  --sh:0 1px 0 rgba(255,255,255,.04) inset,0 18px 40px -24px rgba(0,0,0,.9);
   --e:cubic-bezier(.22,1,.36,1);--eb:cubic-bezier(.34,1.56,.64,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -28,106 +30,140 @@ input:focus-visible,textarea:focus-visible{outline:none}
 svg{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
 [hidden]{display:none!important}
 
-/* ===== Fundo vivo ===== */
-body::before,body::after{content:"";position:fixed;z-index:0;width:70vmax;height:70vmax;border-radius:50%;filter:blur(100px);opacity:.22;pointer-events:none;animation:drift 32s ease-in-out infinite alternate}
-body::before{background:radial-gradient(circle,var(--pri),transparent 60%);top:-32vmax;left:-22vmax}
-body::after{background:radial-gradient(circle,var(--pu),transparent 60%);bottom:-36vmax;right:-26vmax;animation-delay:-16s}
-.fundo{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px) 0 0/28px 28px;-webkit-mask-image:radial-gradient(ellipse at 50% 22%,#000,transparent 72%);mask-image:radial-gradient(ellipse at 50% 22%,#000,transparent 72%)}
-@keyframes drift{to{transform:translate(10vmax,8vmax) scale(1.15)}}
+/* ===== Fundo (estático e leve) ===== */
+.fundo{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(1200px 600px at 50% -10%,rgba(108,130,238,.10),transparent 70%),radial-gradient(900px 500px at 100% 100%,rgba(138,124,232,.05),transparent 70%)}
 /* Pausa as animações quando você está em outra janela (ex.: no ERP) */
-body.pausado::before,body.pausado::after,body.pausado *{animation-play-state:paused!important}
+body.pausado *{animation-play-state:paused!important}
 
 /* ===== Barra do topo ===== */
 .top{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;padding:16px clamp(14px,3vw,32px);pointer-events:none}
 .top-grp{display:flex;gap:10px;pointer-events:auto}
-.pill{display:inline-flex;align-items:center;gap:9px;padding:11px 18px;border-radius:99px;border:1px solid var(--ln);background:var(--sf);color:var(--tx);font-size:14.5px;font-weight:700;cursor:pointer;backdrop-filter:blur(16px);transition:border-color .25s,box-shadow .25s,background .25s,color .25s}
-.pill:hover{border-color:rgba(91,140,255,.6);box-shadow:0 0 0 4px rgba(91,140,255,.12),0 12px 30px -12px rgba(91,140,255,.7);background:rgba(25,33,53,.85)}
+.pill{display:inline-flex;align-items:center;gap:9px;padding:10px 16px;border-radius:99px;border:1px solid var(--ln);background:var(--sf);color:var(--tx);font-size:14px;font-weight:700;cursor:pointer;transition:border-color .25s,background .25s,color .25s}
+.pill:hover{border-color:var(--ln2);background:#1b1f2a}
 .pill:active{transform:scale(.96)}
 .pill-ico{padding:11px}
-.pill-reset{color:var(--er);border-color:rgba(251,113,133,.3);background:rgba(251,113,133,.06)}
-.pill-reset:hover{border-color:rgba(251,113,133,.7);box-shadow:0 0 0 4px rgba(251,113,133,.12);background:rgba(251,113,133,.12)}
+.pill-reset{color:var(--er);border-color:rgba(238,127,142,.3);background:rgba(238,127,142,.06)}
+.pill-reset:hover{border-color:rgba(238,127,142,.6);background:rgba(238,127,142,.12)}
 .pill-reset:hover svg{animation:girar .6s var(--e)}
 @keyframes girar{from{transform:rotate(0)}to{transform:rotate(-360deg)}}
 
-.rodape{position:fixed;right:18px;bottom:12px;z-index:5;display:flex;gap:10px;align-items:center;font-size:12px;font-weight:600;color:var(--mu);opacity:.6;pointer-events:none}
+.rodape{display:flex;justify-content:center;gap:10px;align-items:center;margin-top:18px;font-size:12px;font-weight:600;color:var(--di)}
 .rodape .ver{padding:2px 8px;border-radius:99px;border:1px solid var(--ln);font-variant-numeric:tabular-nums}
 
 /* ===== Estrutura em 3 colunas ===== */
-.layout{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,680px) minmax(0,1fr);gap:32px;max-width:1520px;margin:0 auto;padding:80px clamp(14px,3vw,40px) 64px}
+.layout{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,680px) minmax(0,1fr);gap:28px;max-width:1520px;margin:0 auto;padding:80px clamp(14px,3vw,40px) 64px}
 .centro{grid-column:2;min-width:0}
-.rail{position:sticky;top:80px;align-self:start;width:100%;max-width:290px;display:flex;flex-direction:column;gap:14px}
+.rail{position:sticky;top:80px;align-self:start;width:100%;max-width:300px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 100px);overflow-y:auto;scrollbar-width:thin}
 .rail-esq{grid-column:1;grid-row:1;justify-self:end}
 .rail-dir{grid-column:3;grid-row:1;justify-self:start}
-.rbox{padding:18px;border-radius:20px;background:rgba(12,17,31,.55);border:1px solid var(--ln);backdrop-filter:blur(14px)}
-.rtit{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:800;color:var(--lt);margin-bottom:12px}
-.rtit svg{width:16px;height:16px}
-.rtx{font-size:13.5px;color:var(--mu);line-height:1.5}
-.rvazio{font-size:13.5px;color:var(--di)}
+.rbox{padding:16px;border-radius:var(--r-lg);background:var(--sf);border:1px solid var(--ln);box-shadow:var(--sh)}
+.rtit{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--di);margin-bottom:12px}
+.rtit .ct{font-size:11px;letter-spacing:0;padding:1px 8px;border-radius:99px;background:rgba(238,127,142,.14);color:var(--er);border:1px solid rgba(238,127,142,.35)}
+.rtit .ct.zero{background:var(--sf2);color:var(--di);border-color:var(--ln)}
+.rvazio{font-size:13px;color:var(--di)}
+.rbtn{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;border:1px solid var(--ln);background:none;color:var(--mu);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s}
+.rbtn:hover{color:var(--tx);border-color:var(--ln2);background:var(--sf2)}
+.rbtn.pri{color:var(--lt);border-color:rgba(108,130,238,.45);background:rgba(108,130,238,.1)}
+.rbtn.pri:hover{background:rgba(108,130,238,.2)}
+.rbtn svg{width:13px;height:13px}
 
-/* Passo a passo (lateral esquerda, fase 1) */
-.como{list-style:none;display:flex;flex-direction:column;gap:12px;counter-reset:c}
-.como li{display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:13.5px;color:var(--mu);line-height:1.45}
-.como li::before{counter-increment:c;content:counter(c);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12.5px;font-weight:800;color:var(--tx);background:rgba(91,140,255,.22);border:1px solid rgba(91,140,255,.35)}
-.como b{color:var(--tx)}
-.ult{display:flex;flex-direction:column;gap:8px}
-.ult-it{display:grid;grid-template-columns:8px 1fr auto;gap:10px;align-items:center;font-size:13px;color:var(--mu)}
+/* Pendências e últimos ajustes */
+.pend{display:flex;flex-direction:column;gap:8px}
+.pend-it{padding:10px 12px;border-radius:12px;background:var(--sf2);border:1px solid var(--ln)}
+.pend-it .l1{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;color:var(--mu)}
+.pend-it .l1 b{color:var(--tx);font-weight:800;font-variant-numeric:tabular-nums}
+.pend-it .l2{margin-top:3px;font-size:12.5px;color:var(--mu);line-height:1.4}
+.pend-it .l2 em{font-style:normal;font-weight:700}
+.pend-it .l2 em.er{color:var(--er)}.pend-it .l2 em.warn{color:var(--warn)}
+.pend-ac{display:flex;gap:6px;margin-top:8px}
+.ult{display:flex;flex-direction:column;gap:2px}
+.ult-it{display:grid;grid-template-columns:8px 1fr auto;gap:10px;align-items:center;width:100%;padding:7px 8px;margin:0 -8px;border:0;border-radius:9px;background:none;font-family:inherit;font-size:13px;color:var(--mu);text-align:left;cursor:pointer;transition:background .2s;box-sizing:content-box}
+.ult-it:hover{background:var(--sf2)}
 .ult-it b{color:var(--tx);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.ult-it small{font-size:12px;color:var(--di);font-variant-numeric:tabular-nums}
 .ponto{width:8px;height:8px;border-radius:50%;background:var(--di)}
-.ponto.ok{background:var(--ok);box-shadow:0 0 8px rgba(52,211,153,.6)}.ponto.warn{background:var(--warn)}.ponto.er{background:var(--er)}
+.ponto.ok{background:var(--ok)}.ponto.warn{background:var(--warn)}.ponto.er{background:var(--er)}
 
-/* Gráfico de documentos (lateral esquerda, fase 2) */
-.prod-r b{display:block;font-size:17px;font-weight:800;letter-spacing:-.3px}
-.prod-r span{display:block;font-size:13px;color:var(--mu);margin-top:2px}
+/* Produto, ficha e documentos (fase 2) */
+.prod-r b{display:block;font-size:16px;font-weight:800;letter-spacing:-.2px}
+.prod-r span{display:block;font-size:12.5px;color:var(--mu);margin-top:3px;line-height:1.4}
+.graf svg{display:block;width:100%;height:auto;stroke-width:1.6}
+.graf-leg{display:flex;justify-content:space-between;margin-top:4px;font-size:11.5px;color:var(--di);font-variant-numeric:tabular-nums}
+.graf-ch{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:11.5px;font-weight:600;color:var(--mu)}
+.graf-ch i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:7px 12px;font-size:13px;color:var(--mu)}
+.kv b{color:var(--tx);font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.kv b.er{color:var(--er)}
 .barras{display:flex;flex-direction:column;gap:9px}
 .barra{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:12.5px;color:var(--mu);font-variant-numeric:tabular-nums}
-.barra .nm{font-weight:700;color:var(--tx)}
-.barra .tr{grid-column:1/-1;height:7px;border-radius:99px;background:rgba(148,163,184,.12);overflow:hidden}
-.barra .tr i{display:block;height:100%;border-radius:inherit;background:rgba(148,163,184,.35);transition:width .5s var(--e),background .3s}
-.barra.usa .tr i{background:linear-gradient(90deg,var(--pri),var(--pu));box-shadow:0 0 10px rgba(91,140,255,.6)}
-.barra.usa .nm{color:var(--lt)}
+.barra .bn{font-weight:700;color:var(--tx)}
+.barra .tr{grid-column:1/-1;height:6px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+.barra .tr i{display:block;height:100%;border-radius:inherit;background:rgba(255,255,255,.18);transition:width .5s var(--e),background .3s}
+.barra.usa .tr i{background:var(--pri)}
+.barra.usa .bn{color:var(--lt)}
 .barra.off{opacity:.35}
 .barra .usa-q{color:var(--lt);font-weight:700}
+.hprod{display:flex;flex-direction:column;gap:8px}
+.hprod div{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--mu)}
+.hprod b{color:var(--tx);font-weight:700}
 
-/* Lista de passos (lateral esquerda, fase 3) */
-.rpassos{display:flex;flex-direction:column;gap:6px}
-.rp{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:9px 10px;border-radius:12px;border:1px solid transparent;background:none;color:var(--mu);text-align:left;cursor:pointer;font-size:13.5px;transition:background .2s,border-color .2s}
+/* Passos e progresso (fase 3) */
+.anel{display:flex;align-items:center;gap:14px}
+.anel svg{width:62px;height:62px;stroke-width:6;flex:none}
+.anel b{display:block;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.anel span{display:block;font-size:12.5px;color:var(--mu);margin-top:2px;font-variant-numeric:tabular-nums}
+.rpassos{display:flex;flex-direction:column;gap:4px}
+.rp{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:8px 10px;border-radius:11px;border:1px solid transparent;background:none;color:var(--mu);text-align:left;cursor:pointer;font-size:13.5px;transition:background .2s,border-color .2s}
 .rp:hover{background:var(--sf2)}
-.rp .n{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:rgba(148,163,184,.14);color:var(--tx)}
+.rp .n{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:rgba(255,255,255,.07);color:var(--tx)}
 .rp b{display:block;color:var(--tx);font-weight:700;font-variant-numeric:tabular-nums}
 .rp small{font-size:12px;font-variant-numeric:tabular-nums}
 .rp .mk{display:flex;gap:4px}
 .rp .mk span{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:10.5px;font-weight:800;border:1px solid var(--ln);color:var(--di)}
-.rp .mk span.on{color:#052e1c;background:var(--ok);border-color:var(--ok)}
-.rp.atual{background:rgba(91,140,255,.1);border-color:rgba(91,140,255,.45)}
+.rp .mk span.on{color:#0b2a1c;background:var(--ok);border-color:var(--ok)}
+.rp.atual{background:rgba(108,130,238,.1);border-color:rgba(108,130,238,.4)}
 .rp.atual .n{background:var(--pri)}
-.rp.feito .n{background:var(--ok);color:#052e1c}
-.rp.pulado .n{background:rgba(250,204,21,.25);color:var(--warn)}
+.rp.feito .n{background:var(--ok);color:#0b2a1c}
+.rp.pulado .n{background:rgba(230,195,92,.22);color:var(--warn)}
 
-/* Fases (lateral direita) */
-.fases{list-style:none;display:flex;flex-direction:column;gap:4px;position:relative}
-.fases li{display:grid;grid-template-columns:30px 1fr;gap:12px;padding:8px 0;color:var(--di);transition:color .4s}
-.fases .bol{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;border:1.5px solid var(--ln2);color:var(--mu);transition:.4s var(--e)}
-.fases b{display:block;font-size:14.5px;font-weight:800}
-.fases small{display:block;font-size:12.5px;line-height:1.35;margin-top:2px}
-body.fase-1 .fases li[data-f="1"],body.fase-2 .fases li[data-f="2"],body.fase-3 .fases li[data-f="3"]{color:var(--tx)}
-body.fase-1 .fases li[data-f="1"] .bol,body.fase-2 .fases li[data-f="2"] .bol,body.fase-3 .fases li[data-f="3"] .bol{border-color:var(--ok);color:#052e1c;background:var(--ok);box-shadow:0 0 0 5px rgba(52,211,153,.14),0 0 22px rgba(52,211,153,.55);animation:neon 2.6s ease-in-out infinite alternate}
-body.fase-1 .fases li[data-f="1"] b,body.fase-2 .fases li[data-f="2"] b,body.fase-3 .fases li[data-f="3"] b{color:var(--ok);text-shadow:0 0 18px rgba(52,211,153,.55)}
-body.fase-2 .fases li[data-f="1"] .bol,body.fase-3 .fases li[data-f="1"] .bol,body.fase-3 .fases li[data-f="2"] .bol{border-color:rgba(52,211,153,.5);color:var(--ok)}
-@keyframes neon{from{box-shadow:0 0 0 5px rgba(52,211,153,.12),0 0 16px rgba(52,211,153,.4)}to{box-shadow:0 0 0 7px rgba(52,211,153,.08),0 0 30px rgba(52,211,153,.75)}}
-
-.atalhos{display:flex;flex-direction:column;gap:9px}
-.atalho{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:13px;color:var(--mu)}
-kbd{display:inline-block;background:rgba(0,0,0,.45);border:1px solid var(--ln2);padding:2px 8px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:700;box-shadow:inset 0 -2px 0 rgba(255,255,255,.08);color:var(--tx);white-space:nowrap}
-.hoje{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.hoje div{padding:10px 8px;border-radius:12px;background:var(--sf2);border:1px solid var(--ln);text-align:center}
-.hoje b{display:block;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+/* Painel do dia (lateral direita) */
+.hoje{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hoje div{padding:8px 11px;border-radius:12px;background:var(--sf2);border:1px solid var(--ln);min-width:0}
+.hoje b{display:block;font-size:18px;font-weight:800;letter-spacing:-.4px;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hoje span{font-size:11.5px;color:var(--mu)}
+.hoje .er b{color:var(--er)}
+.sem{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;height:62px}
+.sem div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;min-width:0}
+.sem i{display:block;width:100%;max-width:20px;min-height:3px;border-radius:5px 5px 2px 2px;background:rgba(108,130,238,.32)}
+.sem .hj i{background:var(--pri)}
+.sem span{font-size:10.5px;font-weight:700;color:var(--di)}
+.sem .hj span{color:var(--lt)}
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.calc label{display:block;font-size:11.5px;font-weight:700;color:var(--mu);margin-bottom:5px}
+.calc input{padding:9px 11px;font-size:14.5px}
+.calc-res{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 10px 9px 14px;border-radius:12px;background:var(--sf3);border:1px solid var(--ln)}
+.calc-res b{font-size:19px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.calc-res b small{font-size:.6em;color:var(--mu);margin-left:2px}
+.racoes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.racoes .btn{width:100%;padding:9px 8px;font-size:13px}
+
+/* Fases (linha discreta no topo do cartão) */
+.stepper{display:flex;align-items:center;gap:10px;margin:0 0 18px;font-size:12.5px;font-weight:700;color:var(--di)}
+.stepper span{display:flex;align-items:center;gap:7px;white-space:nowrap;transition:color .3s}
+.stepper i{width:7px;height:7px;border-radius:50%;background:var(--ln2);transition:background .3s}
+.stepper .sep{flex:1;height:1px;background:var(--ln)}
+body.fase-1 .stepper [data-f="1"],body.fase-2 .stepper [data-f="2"],body.fase-3 .stepper [data-f="3"]{color:var(--tx)}
+body.fase-1 .stepper [data-f="1"] i,body.fase-2 .stepper [data-f="2"] i,body.fase-3 .stepper [data-f="3"] i{background:var(--pri);box-shadow:0 0 0 3px rgba(108,130,238,.2)}
+body.fase-2 .stepper [data-f="1"] i,body.fase-3 .stepper [data-f="1"] i,body.fase-3 .stepper [data-f="2"] i{background:var(--ok)}
+.contexto{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px 10px 14px;margin-bottom:14px;border-radius:12px;background:rgba(108,130,238,.08);border:1px solid rgba(108,130,238,.3);font-size:13.5px;color:var(--lt);line-height:1.4}
+.contexto b{color:var(--tx)}
+kbd{display:inline-block;background:rgba(0,0,0,.45);border:1px solid var(--ln2);padding:1px 7px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:700;color:var(--tx);white-space:nowrap}
 
 /* ===== Cabeçalho ===== */
 .hero{display:flex;align-items:center;justify-content:center;gap:16px;margin:0 0 26px;text-align:left}
-.logo{flex:none;width:58px;height:58px;display:grid;place-items:center;border-radius:18px;color:#fff;background:linear-gradient(135deg,var(--pri),var(--pu));box-shadow:0 14px 40px -10px rgba(91,140,255,.75),inset 0 1px 0 rgba(255,255,255,.4)}
+.logo{flex:none;width:52px;height:52px;display:grid;place-items:center;border-radius:16px;color:#fff;background:linear-gradient(145deg,var(--pri),var(--pu));box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 10px 24px -14px rgba(0,0,0,.9)}
 .logo svg{width:30px;height:30px}
-h1{font-size:clamp(28px,4.6vw,40px);font-weight:800;letter-spacing:-1.2px;line-height:1.05;background:linear-gradient(100deg,#fff 15%,var(--lt) 60%,#c4b5fd);-webkit-background-clip:text;background-clip:text;color:transparent}
+h1{font-size:clamp(26px,4.2vw,36px);font-weight:800;letter-spacing:-1px;line-height:1.05;color:var(--tx)}
 .sub{margin-top:4px;font-size:15px;font-weight:500;color:var(--mu)}
 body.fase-2 .hero,body.fase-3 .hero{margin-bottom:14px;gap:12px}
 body.fase-2 .logo,body.fase-3 .logo{width:38px;height:38px;border-radius:12px}
@@ -136,11 +172,7 @@ body.fase-2 h1,body.fase-3 h1{font-size:24px;letter-spacing:-.6px}
 body.fase-2 .sub,body.fase-3 .sub{display:none}
 
 /* ===== Cartão principal ===== */
-@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
-.card{width:100%;position:relative;padding:clamp(20px,3vw,30px);border-radius:28px;background:var(--sf);backdrop-filter:blur(24px) saturate(140%);box-shadow:0 30px 80px -20px rgba(0,0,0,.8);transition:box-shadow .4s var(--e)}
-.card:hover{box-shadow:0 30px 90px -20px rgba(91,140,255,.22)}
-.card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:linear-gradient(var(--ang),rgba(91,140,255,.75),transparent 30%,transparent 70%,rgba(139,92,246,.75));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;animation:borda 10s linear infinite}
-@keyframes borda{to{--ang:360deg}}
+.card{width:100%;position:relative;padding:clamp(20px,3vw,28px);border-radius:24px;background:var(--sf);border:1px solid var(--ln);box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 40px 80px -40px rgba(0,0,0,.95)}
 
 /* As telas aparecem SEMPRE; a animação só adiciona a entrada (corrige a tela em branco no Modo Leve) */
 .tela-fluxo{display:none}
@@ -148,17 +180,19 @@ body.fase-2 .sub,body.fase-3 .sub{display:none}
 @keyframes telaEntra{from{opacity:0;transform:translateY(14px)}}
 
 /* ===== Fase 1 ===== */
-.magic{padding:20px;border-radius:20px;background:linear-gradient(135deg,rgba(91,140,255,.08),rgba(139,92,246,.05));border:1px dashed rgba(91,140,255,.35);transition:border-color .3s,box-shadow .3s,background .3s}
-.magic:focus-within{border-color:var(--pri);border-style:solid;box-shadow:0 0 0 4px rgba(91,140,255,.14),0 0 40px -10px rgba(91,140,255,.5);background:linear-gradient(135deg,rgba(91,140,255,.13),rgba(139,92,246,.08))}
+.magic{padding:20px;border-radius:var(--r-lg);background:var(--sf3);border:1px dashed rgba(108,130,238,.35);transition:border-color .3s,box-shadow .3s}
+.magic:focus-within{border-color:rgba(108,130,238,.7);border-style:solid;box-shadow:0 0 0 4px rgba(108,130,238,.1)}
 .magic-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.magic-ico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(91,140,255,.18);color:var(--lt)}
+.magic-ico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(108,130,238,.14);color:var(--lt)}
 .magic-ico svg{width:22px;height:22px}
 .magic-top b{display:block;font-size:16.5px}
 .magic-top span{display:block;font-size:13.5px;color:var(--mu)}
-textarea,input{width:100%;font-family:inherit;color:var(--tx);background:rgba(6,9,18,.6);border:1.5px solid var(--ln);border-radius:12px;outline:0;transition:border-color .25s,box-shadow .25s,background .25s}
+textarea,input,select{width:100%;font-family:inherit;color:var(--tx);background:rgba(8,10,15,.7);border:1.5px solid var(--ln);border-radius:12px;outline:0;transition:border-color .25s,box-shadow .25s,background .25s}
 textarea{height:130px;padding:14px 16px;font:500 13.5px/1.5 ui-monospace,Consolas,'Cascadia Mono',monospace;resize:vertical}
 input{padding:14px 16px;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
-textarea:focus,input:focus{border-color:var(--pri);background:rgba(6,9,18,.92);box-shadow:0 0 0 4px rgba(91,140,255,.18)}
+textarea:focus,input:focus,select:focus{border-color:rgba(108,130,238,.8);background:rgba(8,10,15,.95);box-shadow:0 0 0 4px rgba(108,130,238,.14)}
+select{padding:9px 10px;font-size:14px;font-weight:600;cursor:pointer}
+select option{background:#13161e}
 ::placeholder{color:var(--di);font-weight:500}
 input[type=number]{-moz-appearance:textfield}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
@@ -168,14 +202,12 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 /* ===== Botões ===== */
 .btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;font-weight:700;border-radius:12px;transition:background .25s,box-shadow .25s,border-color .25s,color .25s,filter .25s}
 .btn:active:not(:disabled){transform:scale(.97)}
-.btn-pri{padding:13px 22px;font-size:15.5px;color:#fff;background:linear-gradient(135deg,#3b6cf5,#7c4dff);box-shadow:0 12px 30px -12px rgba(91,140,255,.9)}
-.btn-pri::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%);transform:translateX(-100%);transition:transform .8s ease}
-.btn-pri:hover{box-shadow:0 0 0 4px rgba(91,140,255,.18),0 18px 40px -12px rgba(91,140,255,1);filter:brightness(1.08)}
-.btn-pri:hover::after{transform:translateX(100%)}
+.btn-pri{padding:13px 22px;font-size:15.5px;color:#fff;background:var(--pri);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 24px -14px rgba(108,130,238,.9)}
+.btn-pri:hover{filter:brightness(1.1);box-shadow:0 0 0 4px rgba(108,130,238,.16),inset 0 1px 0 rgba(255,255,255,.18)}
 .btn-sec{padding:13px 20px;font-size:15px;color:var(--mu);background:var(--sf2);border:1px solid var(--ln)}
 .btn-sec:hover{color:var(--tx);background:rgba(255,255,255,.1);border-color:var(--ln2)}
 .btn.mini{padding:9px 14px;font-size:13.5px;background:var(--sf2);border:1px solid var(--ln);color:var(--lt)}
-.btn.mini:hover{background:rgba(91,140,255,.18);border-color:rgba(91,140,255,.5)}
+.btn.mini:hover{background:rgba(108,130,238,.14);border-color:rgba(108,130,238,.45)}
 .link{background:none;border:0;color:var(--mu);font-size:14px;font-weight:600;cursor:pointer;padding:8px 12px;border-radius:8px;transition:color .2s,background .2s;display:inline-flex;align-items:center;gap:6px}
 .link:hover{color:var(--tx);background:rgba(255,255,255,.07)}
 
@@ -184,7 +216,7 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 .prod-l{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .prod-l b{font-size:17px;color:var(--lt);letter-spacing:-.3px}
 .prod-l span{display:block;color:var(--mu);font-size:14px;margin-top:3px}
-.aviso-hoje{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.35);color:#fde68a;font-size:14px;font-weight:600;line-height:1.45}
+.aviso-hoje{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(230,195,92,.07);border:1px solid rgba(230,195,92,.3);color:#efd994;font-size:14px;font-weight:600;line-height:1.45}
 .aviso-hoje svg{color:var(--warn);margin-top:2px}
 .docs-header{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;margin-top:14px;padding:12px 0 0;border:0;border-top:1px dashed var(--ln);background:none;color:inherit;cursor:pointer;text-align:left}
 .docs-header .qt{color:var(--ok);font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:8px}
@@ -195,7 +227,7 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 .docs-list{display:none;flex-direction:column;gap:8px;margin-top:12px}
 .docs-wrap.aberto .docs-list{display:flex;animation:abre .3s var(--e)}
 @keyframes abre{from{opacity:0;transform:translateY(-6px)}}
-.ajuda-adicao{display:none;font-size:13px;color:var(--mu);line-height:1.45;padding:10px 12px;border-radius:10px;background:rgba(91,140,255,.07);border:1px solid rgba(91,140,255,.25)}
+.ajuda-adicao{display:none;font-size:13px;color:var(--mu);line-height:1.45;padding:10px 12px;border-radius:10px;background:rgba(108,130,238,.06);border:1px solid rgba(108,130,238,.22)}
 .docs-list.adicao .ajuda-adicao{display:block}
 .doc-item{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;background:rgba(255,255,255,.035);padding:9px 12px;border-radius:11px;border:1px solid var(--ln);transition:background .2s,border-color .2s,opacity .2s}
 .docs-list.adicao .doc-item{grid-template-columns:1fr auto auto 118px}
@@ -205,7 +237,7 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 .doc-chk input{width:19px;height:19px;flex:none;cursor:pointer;accent-color:var(--pri)}
 .doc-num{font-size:14.5px;font-weight:800;font-variant-numeric:tabular-nums}
 .tag{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
-.tag-usada{color:#c4b5fd;background:rgba(139,92,246,.14);border:1px solid rgba(139,92,246,.4)}
+.tag-usada{color:#c3b9f5;background:rgba(138,124,232,.12);border:1px solid rgba(138,124,232,.35)}
 .tag-fora{color:var(--mu);background:var(--sf2);border:1px solid var(--ln)}
 .doc-data{font-size:13px;color:var(--mu);font-variant-numeric:tabular-nums}
 .doc-qt{font-size:13.5px;font-weight:700;color:var(--lt);font-variant-numeric:tabular-nums;text-align:right}
@@ -225,7 +257,7 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 .seg-ctl{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid var(--ln)}
 .seg-ctl button{padding:9px 6px;border:0;border-radius:9px;background:none;color:var(--mu);font-size:13.5px;font-weight:700;cursor:pointer;transition:.25s}
 .seg-ctl button:hover{color:var(--tx)}
-.seg-ctl button.on{color:#fff;background:linear-gradient(135deg,rgba(91,140,255,.55),rgba(139,92,246,.55));box-shadow:0 6px 18px -8px rgba(91,140,255,.9)}
+.seg-ctl button.on{color:#fff;background:rgba(108,130,238,.45)}
 .opc-linha{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;color:var(--mu)}
 .periodo{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--mu)}
 .periodo input{width:auto;flex:1;min-width:130px}
@@ -233,12 +265,19 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 .row2{display:flex;gap:14px}
 .row2>.g{flex:1;min-width:0}
 .lbl{display:block;margin-bottom:8px;font-size:14.5px;font-weight:700;color:var(--mu)}
-.lbl-ficha{margin-left:6px;font-size:12px;font-weight:700;color:var(--ok);padding:2px 8px;border-radius:99px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.35)}
+.lbl-ficha{margin-left:6px;font-size:12px;font-weight:700;color:var(--ok);padding:2px 8px;border-radius:99px;background:rgba(92,207,156,.1);border:1px solid rgba(92,207,156,.3)}
+.eco{display:block;min-height:18px;margin-top:6px;font-size:12.5px;font-weight:600;color:var(--di);font-variant-numeric:tabular-nums}
+.eco.er{color:var(--er)}
+.motivos{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:14px}
+.motivos>span{font-size:13.5px;font-weight:700;color:var(--mu);margin-right:4px}
+.chip-m{padding:6px 12px;border-radius:99px;border:1px solid var(--ln);background:none;color:var(--mu);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.chip-m:hover{color:var(--tx);border-color:var(--ln2)}
+.chip-m.on{color:var(--tx);background:rgba(108,130,238,.18);border-color:rgba(108,130,238,.55)}
 
 /* Prévia */
 .previa{margin-top:16px;border-radius:16px;border:1px solid var(--ln);background:var(--sf3);padding:14px;transition:border-color .3s}
 .previa.vazia{color:var(--di);font-size:14px;text-align:center;padding:16px}
-.previa.erro{border-color:rgba(251,113,133,.45);color:#fecdd3;font-size:14.5px;font-weight:600;display:flex;gap:10px;align-items:flex-start}
+.previa.erro{border-color:rgba(238,127,142,.45);color:#f6c3cb;font-size:14.5px;font-weight:600;display:flex;gap:10px;align-items:flex-start}
 .previa.erro svg{color:var(--er);margin-top:2px}
 .prev-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .prev-cel{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--ln)}
@@ -257,16 +296,16 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 .resumo .link{padding:6px 10px;font-size:13.5px}
 .chip{padding:7px 14px;border-radius:99px;font-size:14px;font-weight:600;color:var(--mu);background:rgba(6,9,18,.8);border:1px solid var(--ln)}
 .chip b{color:var(--tx);font-weight:800}
-.chip.op{color:var(--lt);border-color:rgba(91,140,255,.5)}
-.falta{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:14px;font-weight:600;font-size:14.5px;line-height:1.5;color:#fecdd3;background:rgba(251,113,133,.09);border:1px solid rgba(251,113,133,.4);margin-bottom:16px}
+.chip.op{color:var(--lt);border-color:rgba(108,130,238,.45)}
+.falta{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:14px;font-weight:600;font-size:14.5px;line-height:1.5;color:#f6c3cb;background:rgba(238,127,142,.09);border:1px solid rgba(238,127,142,.4);margin-bottom:16px}
 .falta svg{color:var(--er);margin-top:3px}
 .falta b{color:var(--er)}
 .prog{display:flex;gap:6px;margin-bottom:14px}
-.seg{flex:1;height:9px;padding:0;border:0;border-radius:99px;background:rgba(148,163,184,.15);cursor:pointer;transition:background .3s,box-shadow .3s}
-.seg:hover{background:rgba(148,163,184,.4)}
-.seg.atual{background:var(--pri);box-shadow:0 0 14px rgba(91,140,255,.6)}
-.seg.feito{background:linear-gradient(90deg,var(--ok),#22d3ee);box-shadow:0 0 10px rgba(52,211,153,.3)}
-.seg.pulado{background:rgba(250,204,21,.55)}
+.seg{flex:1;height:7px;padding:0;border:0;border-radius:99px;background:rgba(255,255,255,.08);cursor:pointer;transition:background .3s}
+.seg:hover{background:rgba(255,255,255,.22)}
+.seg.atual{background:var(--pri)}
+.seg.feito{background:var(--ok)}
+.seg.pulado{background:rgba(230,195,92,.6)}
 
 .wz{position:relative;overflow:hidden;padding:20px 22px;border-radius:24px;background:var(--sf3);border:1px solid var(--ln);transition:border-color .4s,box-shadow .4s}
 .wz.ent-dir{animation:entraDir .4s var(--e) both}.wz.ent-esq{animation:entraEsq .4s var(--e) both}
@@ -275,31 +314,31 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 @keyframes saiDir{to{opacity:0;transform:translateX(60px)}}
 @keyframes entraDir{from{opacity:0;transform:translateX(60px)}}
 @keyframes entraEsq{from{opacity:0;transform:translateX(-60px)}}
-.wz.concluido{border-color:rgba(52,211,153,.6);box-shadow:0 0 0 4px rgba(52,211,153,.14),inset 0 0 30px rgba(52,211,153,.08)}
+.wz.concluido{border-color:rgba(92,207,156,.55);box-shadow:0 0 0 4px rgba(92,207,156,.1)}
 .wz-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .wz-n{font-size:14px;font-weight:800;color:var(--lt)}
 .badge{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:99px;font-size:13px;font-weight:800;border:1px solid var(--ln);color:var(--tx);background:rgba(255,255,255,.07);white-space:nowrap}
-.badge.estorno{color:#a7f3d0;border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08)}
-.badge.adicao{color:#fecdd3;border-color:rgba(251,113,133,.4);background:rgba(251,113,133,.08)}
+.badge.estorno{color:#a9e6c9;border-color:rgba(92,207,156,.35);background:rgba(92,207,156,.07)}
+.badge.adicao{color:#f6c3cb;border-color:rgba(238,127,142,.35);background:rgba(238,127,142,.07)}
 .wz-instr{margin-top:6px;font-size:15px;color:var(--mu);line-height:1.5}
 .wz-instr b{color:var(--tx)}
 
 .tiles{display:grid;grid-template-columns:1fr 1.25fr;gap:12px;margin:14px 0 10px}
 .tile{--mx:50%;--my:0%;display:flex;flex-direction:column;gap:6px;padding:15px 18px;text-align:left;color:var(--tx);border-radius:20px;border:1.5px solid var(--ln);background:rgba(255,255,255,.03);cursor:pointer;transition:border-color .25s,background .25s,box-shadow .25s;position:relative;overflow:hidden}
-.tile::before{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--mx) var(--my),rgba(91,140,255,.24),transparent 62%);opacity:0;transition:opacity .3s;pointer-events:none}
-.tile:hover{border-color:rgba(91,140,255,.75);box-shadow:0 0 0 4px rgba(91,140,255,.1)}
+.tile::before{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--mx) var(--my),rgba(108,130,238,.14),transparent 62%);opacity:0;transition:opacity .3s;pointer-events:none}
+.tile:hover{border-color:rgba(108,130,238,.6);box-shadow:0 0 0 4px rgba(108,130,238,.08)}
 .tile:hover::before{opacity:1}
 .tile:active{transform:scale(.985)}
 .tile .k{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;color:var(--mu);position:relative}
-.tile .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:13.5px;font-weight:800;color:var(--tx);background:rgba(91,140,255,.28);transition:background .3s,box-shadow .3s}
+.tile .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:13.5px;font-weight:800;color:var(--tx);background:rgba(108,130,238,.25);transition:background .3s,box-shadow .3s}
 .tile .n svg{width:15px;height:15px;stroke-width:3}
 .tile .v{font-size:clamp(30px,4.2vw,44px);font-weight:800;letter-spacing:-1.2px;line-height:1.05;font-variant-numeric:tabular-nums;word-break:break-all;position:relative}
 .tile .v small{margin-left:3px;font-size:.5em;font-weight:700;color:var(--mu)}
 .tile .h{font-size:13px;font-weight:600;color:var(--di);position:relative}
-.tile.feito{border-color:rgba(52,211,153,.7);background:rgba(52,211,153,.07)}
-.tile.feito .n{color:#052e1c;background:var(--ok);box-shadow:0 0 18px rgba(52,211,153,.55);animation:pop .4s var(--eb)}
+.tile.feito{border-color:rgba(92,207,156,.6);background:rgba(92,207,156,.06)}
+.tile.feito .n{color:#0b2a1c;background:var(--ok);animation:pop .4s var(--eb)}
 .tile.feito .h{color:var(--ok)}
-.tile.pct .v{color:#fff;text-shadow:0 0 30px rgba(91,140,255,.45)}
+.tile.pct .v{color:#fff}
 @keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
 
 .detalhes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
@@ -307,10 +346,10 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 .det span{display:block;font-size:12px;color:var(--mu);font-weight:600}
 .det b{display:block;margin-top:2px;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
 .dec{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:10px 16px;border-radius:12px;font-size:14.5px;font-weight:700;margin-bottom:10px}
-.dec.on{background:linear-gradient(135deg,#facc15,#eab308);color:#422006;animation:decPulso 1.4s ease-in-out infinite alternate}
+.dec.on{background:#e6c35c;color:#3a2a05;animation:decPulso 1.6s ease-in-out infinite alternate}
 .dec.off{background:rgba(148,163,184,.07);color:var(--mu);border:1px dashed var(--ln)}
-@keyframes decPulso{from{box-shadow:0 0 0 0 rgba(250,204,21,.25)}to{box-shadow:0 0 0 6px rgba(250,204,21,.12),0 10px 28px rgba(250,204,21,.45)}}
-.lembrete{display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-radius:12px;margin-bottom:12px;font-size:13.5px;line-height:1.45;color:#fecdd3;background:rgba(251,113,133,.07);border:1px solid rgba(251,113,133,.3)}
+@keyframes decPulso{from{box-shadow:0 0 0 0 rgba(230,195,92,.2)}to{box-shadow:0 0 0 5px rgba(230,195,92,.12)}}
+.lembrete{display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-radius:12px;margin-bottom:12px;font-size:13.5px;line-height:1.45;color:#f6c3cb;background:rgba(238,127,142,.07);border:1px solid rgba(238,127,142,.3)}
 .lembrete svg{color:var(--er);margin-top:2px}
 .lembrete b{color:var(--tx)}
 
@@ -318,8 +357,8 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 .nav{padding:13px 16px;font-size:15px;color:var(--tx);background:var(--sf2);border:1px solid var(--ln)}
 .nav:hover:not(:disabled){background:rgba(255,255,255,.12);border-color:var(--ln2)}
 .nav:disabled{opacity:.35;cursor:default}
-.nav.pri{color:#fff;border:0;background:linear-gradient(135deg,var(--pri),var(--pu));box-shadow:0 12px 30px -10px rgba(91,140,255,.9)}
-.nav.pri:hover:not(:disabled){background:linear-gradient(135deg,var(--pri),var(--pu));box-shadow:0 0 0 4px rgba(91,140,255,.2),0 16px 36px -10px rgba(91,140,255,1);filter:brightness(1.08)}
+.nav.pri{color:#fff;border:0;background:var(--pri);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.nav.pri:hover:not(:disabled){background:var(--pri);box-shadow:0 0 0 4px rgba(108,130,238,.16);filter:brightness(1.1)}
 .nav.cutucar{animation:cutucar .45s var(--e)}
 @keyframes cutucar{20%{transform:translateX(5px)}45%{transform:translateX(-3px)}70%{transform:translateX(2px)}}
 .hint{flex:1;text-align:center;font-size:13.5px;font-weight:600;line-height:1.4;color:var(--di);transition:color .3s}
@@ -327,7 +366,7 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 .hint.alerta{color:var(--warn)}
 
 .ok-ov{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-size:19px;font-weight:800;color:var(--ok);background:rgba(6,9,18,.86);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s ease}
-.ok-ov svg{width:88px;height:88px;stroke-width:2.4;filter:drop-shadow(0 0 15px rgba(52,211,153,.5))}
+.ok-ov svg{width:88px;height:88px;stroke-width:2.4}
 .ok-ov circle{stroke-dasharray:70;stroke-dashoffset:70}.ok-ov path{stroke-dasharray:24;stroke-dashoffset:24}
 .wz.concluido .ok-ov{opacity:1}
 .wz.concluido .ok-ov circle{animation:draw .5s .05s var(--e) forwards}.wz.concluido .ok-ov path{animation:draw .35s .3s var(--e) forwards}
@@ -337,8 +376,8 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 .fim{text-align:center;padding:36px 24px}
 .fim-ico{width:88px;height:88px;margin:0 auto 20px;display:grid;place-items:center;border-radius:50%;border:2px solid;animation:pop .6s var(--eb)}
 .fim-ico svg{width:44px;height:44px}
-.fim.ok .fim-ico{color:var(--ok);background:rgba(52,211,153,.13);border-color:rgba(52,211,153,.6);box-shadow:0 0 40px rgba(52,211,153,.28)}
-.fim.er .fim-ico{color:var(--warn);background:rgba(250,204,21,.12);border-color:rgba(250,204,21,.55);box-shadow:0 0 40px rgba(250,204,21,.2)}
+.fim.ok .fim-ico{color:var(--ok);background:rgba(92,207,156,.1);border-color:rgba(92,207,156,.5)}
+.fim.er .fim-ico{color:var(--warn);background:rgba(230,195,92,.1);border-color:rgba(230,195,92,.5)}
 .fim h3{margin:0 0 8px;font-size:26px;letter-spacing:-.5px}
 .fim>p{font-size:15.5px;line-height:1.6;color:var(--mu);max-width:44ch;margin:0 auto}
 .fim>p b{color:var(--tx)}
@@ -346,8 +385,9 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 .conf-tx{font-size:15px;color:var(--mu);line-height:1.5}
 .conf-tx b{color:var(--tx);font-size:17px}
 .fim-acoes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
-.btn-okaj{padding:15px 26px;font-size:16.5px;background:linear-gradient(135deg,#10b981,#06b6d4)!important;box-shadow:0 12px 30px -10px rgba(16,185,129,.9)!important}
-.btn-okaj:hover:not(:disabled){box-shadow:0 0 0 4px rgba(52,211,153,.22),0 16px 36px -10px rgba(16,185,129,1)!important}
+.btn-okaj{padding:15px 26px;font-size:16.5px;color:#0b2a1c!important;background:var(--ok)!important}
+.btn-okaj:hover:not(:disabled){box-shadow:0 0 0 4px rgba(92,207,156,.18)!important}
+.conf-ficha{margin-top:14px;padding-top:14px;border-top:1px dashed var(--ln)}
 .dif-row{display:flex;gap:8px;margin-top:12px}
 .dif-row input{font-size:16px;padding:11px 14px}
 .conf-res{display:flex;align-items:center;justify-content:center;gap:10px;font-size:15.5px;font-weight:700}
@@ -356,42 +396,52 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 /* ===== Painéis laterais ===== */
 .ov{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
 .ov.ativo{opacity:1;visibility:visible}
-.painel{position:fixed;top:0;bottom:0;z-index:100;width:min(480px,100%);display:flex;flex-direction:column;background:rgba(10,14,26,.96);backdrop-filter:blur(30px);border:1px solid var(--ln);box-shadow:0 0 100px rgba(0,0,0,.9);visibility:hidden;transition:transform .5s var(--e),visibility 0s .5s}
+.painel{position:fixed;top:0;bottom:0;z-index:100;width:min(500px,100%);display:flex;flex-direction:column;background:#11141b;border:1px solid var(--ln);box-shadow:0 0 100px rgba(0,0,0,.9);visibility:hidden;transition:transform .5s var(--e),visibility 0s .5s}
 .painel.aberto{transform:none;visibility:visible;transition:transform .5s var(--e),visibility 0s}
 .p-esq{left:0;transform:translateX(-105%)}.p-dir{right:0;transform:translateX(105%)}
-.ph{display:flex;justify-content:space-between;align-items:center;padding:22px 26px;border-bottom:1px solid var(--ln);background:linear-gradient(180deg,rgba(91,140,255,.13),transparent)}
+.ph{display:flex;justify-content:space-between;align-items:center;padding:20px 26px;border-bottom:1px solid var(--ln)}
 .ph h2{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:800;letter-spacing:-.4px}
 .x{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;border:1px solid var(--ln);background:var(--sf2);color:var(--mu);cursor:pointer;transition:.25s}
-.x:hover{color:var(--er);border-color:rgba(251,113,133,.6);background:rgba(251,113,133,.1)}
+.x:hover{color:var(--er);border-color:rgba(238,127,142,.6);background:rgba(238,127,142,.1)}
 .x svg{width:18px;height:18px}
 .tools{padding:18px 26px 0}
 .tools input{padding:12px 16px;font-size:15px}
+.tools{display:flex;flex-direction:column;gap:10px}
+.tools .linha{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tools .linha select{width:auto;flex:1;min-width:120px}
+.tools .seg-ctl{grid-template-columns:repeat(4,1fr)}
+.tools .seg-ctl button{padding:7px 4px;font-size:13px}
+.hist-res{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--mu)}
+.hist-res .btn{padding:7px 12px;font-size:13px}
 .pc{flex:1;overflow-y:auto;padding:20px 26px}
-.it{margin-bottom:14px;padding:18px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid var(--ln);border-left:3px solid var(--pu);transition:background .25s,border-color .25s}
-.it:hover{background:rgba(255,255,255,.05)}
+.it{margin-bottom:14px;padding:18px;border-radius:16px;background:rgba(255,255,255,.025);border:1px solid var(--ln);border-left:3px solid rgba(138,124,232,.7);transition:background .25s,border-color .25s}
+.it:hover{background:rgba(255,255,255,.04)}
+.it.foco{border-color:rgba(108,130,238,.6);box-shadow:0 0 0 3px rgba(108,130,238,.15)}
+.it.pend{border-left-color:var(--warn)}
 .vazio{margin-top:40px;text-align:center;font-size:15.5px;font-weight:600;color:var(--di);line-height:1.5}
 
 .st{display:inline-block;font-size:12px;font-weight:800;padding:3px 9px;border-radius:7px;margin-left:6px;white-space:nowrap}
-.st-ok{background:rgba(52,211,153,.14);color:var(--ok);border:1px solid rgba(52,211,153,.4)}
-.st-warn{background:rgba(250,204,21,.13);color:var(--warn);border:1px solid rgba(250,204,21,.4)}
-.st-er{background:rgba(251,113,133,.13);color:var(--er);border:1px solid rgba(251,113,133,.4)}
-.st-info{background:rgba(91,140,255,.13);color:var(--lt);border:1px solid rgba(91,140,255,.4)}
+.st-ok{background:rgba(92,207,156,.14);color:var(--ok);border:1px solid rgba(92,207,156,.4)}
+.st-warn{background:rgba(230,195,92,.13);color:var(--warn);border:1px solid rgba(230,195,92,.4)}
+.st-er{background:rgba(238,127,142,.13);color:var(--er);border:1px solid rgba(238,127,142,.4)}
+.st-info{background:rgba(108,130,238,.13);color:var(--lt);border:1px solid rgba(108,130,238,.4)}
 .h-data{font-size:14px;font-weight:800;color:var(--lt);padding-bottom:8px;margin:18px 0 12px;border-bottom:1px solid var(--ln)}
 .h-data:first-child{margin-top:0}
 .hc{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed var(--ln)}
 .hh{font-size:13px;font-weight:700;color:var(--mu);padding:3px 9px;border-radius:7px;background:rgba(0,0,0,.4);white-space:nowrap}
 .ht{font-size:16.5px;font-weight:800}
-.nm{margin-top:3px;font-size:14.5px;font-weight:600;color:#cbd5e1}
+.hnm{margin-top:3px;font-size:14.5px;font-weight:600;color:#c9cfdb}
+.hmot{display:inline-block;margin:0 0 10px;font-size:12.5px;font-weight:700;color:var(--lt);padding:3px 10px;border-radius:99px;background:rgba(108,130,238,.1);border:1px solid rgba(108,130,238,.3)}
 .ho{margin:6px 0 12px;font-size:14px;font-weight:700;color:var(--mu)}
 .hl{display:flex;flex-direction:column;gap:8px}
 .hd{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 14px;border-radius:11px;background:rgba(0,0,0,.28);border:1px solid var(--ln);font-size:14px;font-weight:600;color:#cbd5e1}
 .hd b{color:var(--lt);font-weight:800;font-variant-numeric:tabular-nums}
-.nota{display:flex;gap:8px;align-items:flex-start;margin:0 0 12px;font-size:14px;color:#a7f3d0;line-height:1.45}
-.h-acoes{display:flex;gap:8px;margin-top:12px}
+.nota{display:flex;gap:8px;align-items:flex-start;margin:0 0 12px;font-size:14px;color:#a9e6c9;line-height:1.45}
+.h-acoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .btn-hist{display:inline-flex;align-items:center;gap:6px;background:var(--sf2);border:1px solid var(--ln);color:var(--mu);padding:8px 13px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
 .btn-hist svg{width:15px;height:15px}
 .btn-hist:hover{background:rgba(255,255,255,.1);color:var(--tx)}
-.btn-hist.del:hover{background:rgba(251,113,133,.14);color:var(--er);border-color:rgba(251,113,133,.4)}
+.btn-hist.del:hover{background:rgba(238,127,142,.14);color:var(--er);border-color:rgba(238,127,142,.4)}
 
 /* Salvos */
 .sv-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;width:100%;background:none;border:0;color:inherit;text-align:left;cursor:pointer}
@@ -403,7 +453,7 @@ input[type=date]{font-size:14px;padding:9px 10px;font-weight:600}
 .it.aberto .sv-body{display:block;animation:abre .3s var(--e)}
 .sv-tit{font-size:13.5px;font-weight:800;color:var(--lt);margin:0 0 10px}
 .reqs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
-.req{display:inline-flex;flex-direction:column;padding:7px 11px;border-radius:10px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.35);font-size:12px;color:var(--mu)}
+.req{display:inline-flex;flex-direction:column;padding:7px 11px;border-radius:10px;background:rgba(138,124,232,.08);border:1px solid rgba(138,124,232,.3);font-size:12px;color:var(--mu)}
 .req b{font-size:14px;color:var(--tx);font-variant-numeric:tabular-nums}
 .alt{display:flex;flex-direction:column;align-items:stretch;gap:4px}
 .alt>div{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -431,36 +481,36 @@ input[type=range]{width:140px;padding:0;border:0;background:none;accent-color:va
 
 /* Diálogo próprio (substitui as caixas do navegador) */
 .dlg-ov{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);animation:fadeIn .2s ease}
-.dlg{width:min(440px,100%);padding:24px;border-radius:22px;background:rgba(14,19,34,.98);border:1px solid var(--ln2);box-shadow:0 30px 80px rgba(0,0,0,.8);animation:dlgIn .3s var(--e)}
+.dlg{width:min(440px,100%);padding:24px;border-radius:20px;background:#151821;border:1px solid var(--ln2);box-shadow:0 30px 80px rgba(0,0,0,.8);animation:dlgIn .3s var(--e)}
 .dlg h3{font-size:19px;font-weight:800;letter-spacing:-.3px}
 .dlg p{margin-top:8px;font-size:14.5px;color:var(--mu);line-height:1.5}
 .dlg input{margin-top:14px;font-size:15px;font-weight:600}
 .dlg-ac{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
-.dlg-ac .perigo{background:linear-gradient(135deg,#e11d48,#be123c);box-shadow:0 10px 26px -10px rgba(225,29,72,.9)}
+.dlg-sug{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.dlg-ac .perigo{background:#d44a5e;box-shadow:none}
 @keyframes fadeIn{from{opacity:0}}
 @keyframes dlgIn{from{opacity:0;transform:translateY(10px) scale(.98)}}
 
 /* Aviso de nova versão */
-.nv{position:fixed;left:18px;bottom:18px;z-index:150;display:flex;align-items:center;gap:12px;padding:10px 10px 10px 16px;border-radius:14px;background:rgba(15,20,36,.97);border:1px solid rgba(91,140,255,.5);box-shadow:0 20px 50px rgba(0,0,0,.7);font-size:14px;font-weight:700;animation:dlgIn .4s var(--e)}
+.nv{position:fixed;left:18px;bottom:18px;z-index:150;display:flex;align-items:center;gap:12px;padding:10px 10px 10px 16px;border-radius:14px;background:#151821;border:1px solid rgba(108,130,238,.5);box-shadow:0 20px 50px rgba(0,0,0,.7);font-size:14px;font-weight:700;animation:dlgIn .4s var(--e)}
 .nv .btn{padding:8px 14px;font-size:13.5px}
 
-#toast{position:fixed;left:50%;bottom:36px;z-index:200;max-width:90vw;padding:14px 24px;border-radius:14px;text-align:center;font-size:15.5px;font-weight:700;background:rgba(15,20,36,.98);border:1px solid var(--ln);backdrop-filter:blur(20px);box-shadow:0 25px 60px -10px rgba(0,0,0,.9);opacity:0;transform:translate(-50%,30px);pointer-events:none;transition:opacity .35s var(--e),transform .35s var(--e)}
+#toast{position:fixed;left:50%;bottom:36px;z-index:200;max-width:90vw;padding:14px 24px;border-radius:14px;text-align:center;font-size:15.5px;font-weight:700;background:#151821;border:1px solid var(--ln);box-shadow:0 25px 60px -10px rgba(0,0,0,.9);opacity:0;transform:translate(-50%,30px);pointer-events:none;transition:opacity .35s var(--e),transform .35s var(--e)}
 #toast.on{opacity:1;transform:translate(-50%,0)}
-#toast.err{border-color:rgba(251,113,133,.6);color:#fecdd3}
-#toast.warn{border-color:rgba(250,204,21,.6);color:#fef08a}
-#toast.ok{border-color:rgba(52,211,153,.6);color:#a7f3d0}
+#toast.err{border-color:rgba(238,127,142,.55);color:#f6c3cb}
+#toast.warn{border-color:rgba(230,195,92,.55);color:#efd994}
+#toast.ok{border-color:rgba(92,207,156,.55);color:#a9e6c9}
 
-::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.3);border-radius:9px}::-webkit-scrollbar-thumb:hover{background:rgba(148,163,184,.5)}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:9px}::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.25)}
 
 /* ===== Modo Leve: sem efeitos pesados, mas tudo continua visível ===== */
-body.modo-leve::before,body.modo-leve::after,body.modo-leve .fundo{display:none}
+body.modo-leve .fundo{display:none}
 body.modo-leve *,body.modo-leve *::before,body.modo-leve *::after{animation:none!important;backdrop-filter:none!important;text-shadow:none!important}
-body.modo-leve .card,body.modo-leve .painel,body.modo-leve .wz,body.modo-leve .rbox{background:#0b1120;box-shadow:none}
-body.modo-leve .card::before,body.modo-leve .tile::before{display:none}
-body.modo-leve.fase-1 .fases li[data-f="1"] .bol,body.modo-leve.fase-2 .fases li[data-f="2"] .bol,body.modo-leve.fase-3 .fases li[data-f="3"] .bol{box-shadow:none}
+body.modo-leve .card,body.modo-leve .painel,body.modo-leve .wz,body.modo-leve .rbox{background:#12151c;box-shadow:none}
+body.modo-leve .tile::before{display:none}
 
-@media (max-width:1180px){.layout{grid-template-columns:minmax(0,1fr);max-width:720px}.centro{grid-column:1}.rail{display:none}}
-@media (max-width:560px){.acoes{flex-direction:column}.top-grp{gap:6px}.pill{padding:9px 13px;font-size:13px}.row2{flex-direction:column}.tiles,.prev-grid{grid-template-columns:1fr}.detalhes{grid-template-columns:1fr 1fr}.wz{padding:18px}.add-doc-row{grid-template-columns:1fr 1fr}.bt-tx{display:none}}
+@media (max-width:1180px){.layout{grid-template-columns:minmax(0,1fr);max-width:720px}.centro{grid-column:1}.rail-esq{display:none}.rail-dir{grid-column:1;grid-row:auto;justify-self:stretch;max-width:none;position:static;max-height:none;overflow:visible;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));align-items:start}}
+@media (max-width:560px){.acoes{flex-direction:column}.stepper .sep{min-width:8px}.top-grp{gap:6px}.pill{padding:9px 13px;font-size:13px}.row2{flex-direction:column}.tiles,.prev-grid{grid-template-columns:1fr}.detalhes{grid-template-columns:1fr 1fr}.wz{padding:18px}.add-doc-row{grid-template-columns:1fr 1fr}.bt-tx{display:none}}
 @media (prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition-duration:.01ms!important}.ok-ov circle,.ok-ov path{stroke-dashoffset:0!important}}
 </style>
 </head>
@@ -482,7 +532,6 @@ body.modo-leve.fase-1 .fases li[data-f="1"] .bol,body.modo-leve.fase-2 .fases li
   </div>
 </header>
 
-<div class="rodape"><span>Feito por Caio A.</span><span class="ver" id="lblVersao"></span></div>
 <div class="ov" id="overlayFundo" onclick="fecharPaineis()"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div class="nv" id="novaVersao" hidden><span>Nova versão disponível</span><button class="btn btn-pri" onclick="atualizarApp()">Atualizar</button></div>
@@ -492,6 +541,7 @@ body.modo-leve.fase-1 .fases li[data-f="1"] .bol,body.modo-leve.fase-2 .fases li
     <h3 id="dlgTit"></h3>
     <p id="dlgTx"></p>
     <input type="text" id="dlgIn" hidden>
+    <div class="dlg-sug" id="dlgSug" hidden></div>
     <div class="dlg-ac"><button class="btn btn-sec" id="dlgNao">Cancelar</button><button class="btn btn-pri" id="dlgSim">Confirmar</button></div>
   </div>
 </div>
@@ -504,6 +554,26 @@ body.modo-leve.fase-1 .fases li[data-f="1"] .bol,body.modo-leve.fase-2 .fases li
 
 <aside class="painel p-dir" id="painelHistorico" aria-label="Histórico">
   <div class="ph"><h2><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Histórico</h2><button class="x" onclick="fecharPaineis()" aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+  <div class="tools">
+    <input type="text" id="buscaHist" placeholder="Buscar produto, REQ, motivo ou observação" oninput="renderizarHistorico()">
+    <div class="seg-ctl" role="radiogroup" aria-label="Período" id="segPeriodoHist">
+      <button type="button" data-v="hoje" onclick="setFiltroHist('periodo','hoje')">Hoje</button>
+      <button type="button" data-v="7" onclick="setFiltroHist('periodo','7')">7 dias</button>
+      <button type="button" data-v="30" onclick="setFiltroHist('periodo','30')">30 dias</button>
+      <button type="button" data-v="tudo" onclick="setFiltroHist('periodo','tudo')">Tudo</button>
+    </div>
+    <div class="linha">
+      <select id="filtroStatusHist" onchange="setFiltroHist('status',this.value)" aria-label="Situação">
+        <option value="">Todas as situações</option>
+        <option value="pend">Pendências</option>
+        <option value="conf">Conferidos</option>
+        <option value="dif">Com diferença</option>
+        <option value="Concluído">Concluídos</option>
+        <option value="Interrompido">Interrompidos</option>
+      </select>
+    </div>
+    <div class="hist-res"><span id="histContagem"></span><span style="display:flex;gap:6px"><button class="btn mini" onclick="copiarResumo()">Copiar resumo</button><button class="btn mini" onclick="exportarCSV()">Exportar Excel</button></span></div>
+  </div>
   <div class="pc" id="conteudoHistorico"></div>
 </aside>
 
@@ -524,8 +594,8 @@ body.modo-leve.fase-1 .fases li[data-f="1"] .bol,body.modo-leve.fase-2 .fases li
         <input type="range" id="cfgVolume" min="5" max="100" step="5" onchange="salvarConfig(true);tocarSom('copy')">
       </div>
       <div class="cfg-row">
-        <div><span class="cfg-lbl">Margem no estorno (%)</span><span class="cfg-desc">Quanto pode ser retirado de cada documento ao estornar saídas. O ERP não aceita retirar 100%. Não vale para adição.</span></div>
-        <input type="number" class="cfg-num" id="cfgMargem" min="1" max="100" onchange="salvarConfig()">
+        <div><span class="cfg-lbl">Margem no estorno (%)</span><span class="cfg-desc">Quanto pode ser retirado de cada documento ao estornar saídas (de 1 a 99). O ERP não aceita retirar 100%. Não vale para adição.</span></div>
+        <input type="number" class="cfg-num" id="cfgMargem" min="1" max="99" onchange="salvarConfig()">
       </div>
       <div class="cfg-row">
         <div><span class="cfg-lbl">Backup dos dados</span><span class="cfg-desc">Guarda o histórico, os produtos salvos e as configurações num arquivo pequeno. Use para levar os dados para outro endereço ou computador.</span></div>
@@ -550,8 +620,10 @@ body.modo-leve.fase-1 .fases li[data-f="1"] .bol,body.modo-leve.fase-2 .fases li
     </header>
 
     <section class="card">
+      <div class="stepper" aria-hidden="true"><span data-f="1"><i></i>Ficha</span><span class="sep"></span><span data-f="2"><i></i>Saldos</span><span class="sep"></span><span data-f="3"><i></i>Execução</span></div>
       <!-- FASE 1 -->
       <div id="fase1" class="tela-fluxo ativa">
+        <div class="contexto" id="faixaCorrecao" hidden></div>
         <div class="magic">
           <div class="magic-top">
             <div class="magic-ico"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div>
@@ -593,10 +665,11 @@ body.modo-leve.fase-1 .fases li[data-f="1"] .bol,body.modo-leve.fase-2 .fases li
         </div>
 
         <div class="row2">
-          <div class="g"><label class="lbl" for="saldoAtual">Saldo atual no ERP <span class="lbl-ficha" id="lblSaldoFicha" hidden>lido da ficha, confira</span></label><input type="number" id="saldoAtual" step="any" oninput="$('lblSaldoFicha').hidden=true;atualizarPrevia()"></div>
-          <div class="g"><label class="lbl" for="saldoAlvo">Saldo desejado</label><input type="number" id="saldoAlvo" step="any" oninput="atualizarPrevia()"></div>
+          <div class="g"><label class="lbl" for="saldoAtual">Saldo atual no ERP <span class="lbl-ficha" id="lblSaldoFicha" hidden>lido da ficha, confira</span></label><input type="text" inputmode="decimal" autocomplete="off" id="saldoAtual" oninput="$('lblSaldoFicha').hidden=true;atualizarPrevia()"><span class="eco" id="ecoAtual"></span></div>
+          <div class="g"><label class="lbl" for="saldoAlvo">Saldo desejado</label><input type="text" inputmode="decimal" autocomplete="off" id="saldoAlvo" oninput="atualizarPrevia()"><span class="eco" id="ecoAlvo"></span></div>
         </div>
         <div class="previa vazia" id="previa"></div>
+        <div class="motivos" id="motivos" role="group" aria-label="Motivo do ajuste (opcional)"></div>
 
         <div class="acoes">
           <button class="btn btn-pri" onclick="processarFase2(true)">Calcular ajuste</button>
@@ -612,18 +685,25 @@ body.modo-leve.fase-1 .fases li[data-f="1"] .bol,body.modo-leve.fase-2 .fases li
         <div id="listaPassos"></div>
       </div>
     </section>
+    <div class="rodape"><span>Feito por Caio A.</span><span class="ver" id="lblVersao"></span></div>
   </main>
 
-  <aside class="rail rail-dir" aria-label="Fases e atalhos">
-    <div class="rbox">
-      <ol class="fases">
-        <li data-f="1"><span class="bol">1</span><div><b>Ficha</b><small>Cole as linhas de REQ</small></div></li>
-        <li data-f="2"><span class="bol">2</span><div><b>Saldos</b><small>Informe o atual e o desejado</small></div></li>
-        <li data-f="3"><span class="bol">3</span><div><b>Execução</b><small>Copie e lance no ERP</small></div></li>
-      </ol>
+  <aside class="rail rail-dir" aria-label="Painel do dia">
+    <div class="rbox"><div class="rtit">Hoje</div><div class="hoje" id="railHoje"></div></div>
+    <div class="rbox"><div class="rtit">Últimos 7 dias <span id="railSemanaTot" style="text-transform:none;letter-spacing:0;font-weight:700"></span></div><div class="sem" id="railSemana"></div></div>
+    <div class="rbox"><div class="rtit">Calculadora de %</div>
+      <div class="calc">
+        <div><label for="calcTam">Tamanho da REQ</label><input type="text" inputmode="decimal" autocomplete="off" id="calcTam" oninput="calcPct()"></div>
+        <div><label for="calcQtd">Quantidade</label><input type="text" inputmode="decimal" autocomplete="off" id="calcQtd" oninput="calcPct()"></div>
+        <div class="calc-res"><b id="calcRes">–</b><button class="rbtn pri" id="calcCopiar" onclick="copiarCalc()" disabled>Copiar</button></div>
+      </div>
     </div>
-    <div class="rbox"><div class="rtit"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg>Atalhos</div><div class="atalhos" id="railAtalhos"></div></div>
-    <div class="rbox"><div class="rtit"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Hoje</div><div class="hoje" id="railHoje"></div></div>
+    <div class="rbox"><div class="rtit">Relatórios</div>
+      <div class="racoes">
+        <button class="btn mini" onclick="copiarResumo('hoje')" title="Copia um resumo dos ajustes de hoje para colar no e-mail ou Teams">Resumo do dia</button>
+        <button class="btn mini" onclick="exportarCSV('30')" title="Baixa uma planilha com os ajustes dos últimos 30 dias">Excel 30 dias</button>
+      </div>
+    </div>
   </aside>
 </div>
 
@@ -633,22 +713,52 @@ body.modo-leve.fase-1 .fases li[data-f="1"] .bol,body.modo-leve.fase-2 .fases li
    Pedalada do Delei
    Ao publicar uma versão nova, aumente VERSAO aqui e no sw.js.
    ========================================================= */
-const VERSAO = '3.2.0';
+const VERSAO = '4.0.0';
 
 const $ = id => document.getElementById(id);
 const DB = 'pedalada_db_produtos', BK = DB + '_bkp', HIST_KEY = 'pedalada_hist_v3',
       SESS_KEY = 'pedalada_sess_v4', SESS_ANTIGA = 'pedalada_sess_v3', CFG_KEY = 'pedalada_cfg_v1';
+const HIST_MAX = 1000, DIA = 864e5;
+const MOTIVOS = ['Inventário', 'Erro de lançamento', 'Perda/avaria', 'Transferência', 'Outro'];
 
-/* Gravação protegida: se o navegador bloquear o armazenamento, o app continua funcionando */
+/* Gravação protegida: se o navegador bloquear o armazenamento, o app continua funcionando (e avisa uma vez) */
+let avisouGravacao = false;
 const ls = {
   get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
-  set(k,v){ try { localStorage.setItem(k,v); return true; } catch(e){ return false; } },
+  set(k,v){
+    try { localStorage.setItem(k,v); return true; }
+    catch(e){
+      if (!avisouGravacao) {
+        avisouGravacao = true;
+        const cheio = /quota/i.test(e && e.name || '');
+        setTimeout(() => toast(cheio ? 'O armazenamento do navegador está cheio. Exporte um backup em Configurações para não perder dados.' : 'O navegador não está deixando o app salvar dados. Exporte um backup em Configurações.', 'warn'), 0);
+      }
+      return false;
+    }
+  },
   del(k){ try { localStorage.removeItem(k); } catch(e){} }
 };
 const r4 = x => Math.round((x + Number.EPSILON) * 10000) / 10000;
 const br = n => Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 4 });
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const num = v => { if (v === '' || v == null) return NaN; return parseFloat(String(v).replace(',', '.')); };
+const txt = v => String(v ?? '');
+/* Lê números como o ERP mostra ("1.234,5678") e também "1234,56" ou "1234.56".
+   Sem vírgula, um ponto seguido de exatamente 3 dígitos é separador de milhar (padrão brasileiro). */
+function lerNumero(v){
+  if (typeof v === 'number') return isFinite(v) ? v : NaN;
+  let t = txt(v).trim().replace(/\s+/g, '').replace(/(pçs|pcs|kg|un)$/i, '');
+  if (!t || !/^-?[0-9.,]+$/.test(t)) return NaN;
+  const virgulas = (t.match(/,/g) || []).length;
+  if (virgulas > 1) return NaN;
+  if (virgulas === 1) t = t.replace(/\./g, '').replace(',', '.');
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(t)) t = t.replace(/\./g, '');
+  else if ((t.match(/\./g) || []).length > 1) return NaN;
+  const n = parseFloat(t);
+  return isFinite(n) ? n : NaN;
+}
+const num = lerNumero;
+/* Número para colocar dentro de um campo (sem separador de milhar, com vírgula) */
+const fmtCampo = n => (n == null || n === '' || isNaN(n)) ? '' : Number(n).toLocaleString('pt-BR', { useGrouping:false, maximumFractionDigits:4 });
 const hojeBr = () => new Date().toLocaleDateString('pt-BR');
 const horaAgora = () => { const d = new Date(); return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); };
 
@@ -668,13 +778,16 @@ const IC = {
   doc: sv('<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/>'),
   dec: sv('<rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 3 3 5-6"/>'),
   decOff: sv('<rect x="3" y="3" width="18" height="18" rx="3"/>'),
-  edit: sv('<path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/>')
+  edit: sv('<path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/>'),
+  tag: sv('<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><path d="M7.5 7.5h.01"/>'),
+  fix: sv('<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>')
 };
 
 let historicoGlobal = [], mem = {}, sol = null, tt = null, ultimaPrevia = null;
 let config = { modoLeve:false, margemSeguranca:95, sons:true, volume:60, estrategia:'menos', evitarUsadas:false };
 let docsDisponiveis = [], produtoAtual = { cod:'', nome:'' }, filtro = { de:'', ate:'' };
-let faseAtual = 'fase1';
+let faseAtual = 'fase1', motivoAtual = '', fichaInfo = null, correcao = null;
+let filtroHist = { periodo:'tudo', status:'' };
 const rt = { busy:false, timer:null, pular:null, pularT:null }; // estado temporário (não é salvo)
 
 /* ===== SONS ===== */
@@ -705,6 +818,7 @@ function tocarSom(tipo){
 function carregarConfig(){
   try { const c = ls.get(CFG_KEY); if (c) config = { ...config, ...JSON.parse(c) }; } catch(e) {}
   if (!['menos','antigos','recentes'].includes(config.estrategia)) config.estrategia = 'menos';
+  config.margemSeguranca = Math.min(99, Math.max(1, parseInt(config.margemSeguranca, 10) || 95));
   $('cfgLeve').checked = !!config.modoLeve;
   $('cfgSons').checked = !!config.sons;
   $('cfgVolume').value = config.volume;
@@ -717,7 +831,7 @@ function salvarConfig(silencioso){
   config.sons = $('cfgSons').checked;
   config.volume = parseInt($('cfgVolume').value, 10) || 60;
   let m = parseInt($('cfgMargem').value, 10);
-  if (isNaN(m) || m < 1) m = 1; if (m > 100) m = 100;
+  if (isNaN(m) || m < 1) m = 1; if (m > 99) m = 99;
   $('cfgMargem').value = m; config.margemSeguranca = m;
   ls.set(CFG_KEY, JSON.stringify(config));
   aplicarConfigVisual();
@@ -734,10 +848,18 @@ function lerDB(){
   for (const k of [DB, BK]) { const v = ls.get(k); if (v) { try { const o = JSON.parse(v); if (o && typeof o === 'object') return o; } catch(e){} } }
   return mem;
 }
-const idb = () => new Promise((ok, no) => { if (!window.indexedDB) return no(); const r = indexedDB.open('pedalada', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => ok(r.result); r.onerror = () => no(); });
-async function idbSet(v){ try { const d = await idb(); d.transaction('kv','readwrite').objectStore('kv').put(v, 'db'); } catch(e){} }
-async function idbGet(){ try { const d = await idb(); return await new Promise(r => { const q = d.transaction('kv').objectStore('kv').get('db'); q.onsuccess = () => r(q.result); q.onerror = () => r(); }); } catch(e){} }
-function gravarDB(db){ mem = db; const s = JSON.stringify(db); ls.set(DB, s); ls.set(BK, s); idbSet(db); }
+/* IndexedDB: abre uma vez e reaproveita a conexão. Guarda 'db' (produtos) e 'hist' (histórico) */
+let idbCon = null;
+const idb = () => idbCon || (idbCon = new Promise((ok, no) => {
+  if (!window.indexedDB) return no(new Error('sem IndexedDB'));
+  const r = indexedDB.open('pedalada', 1);
+  r.onupgradeneeded = () => r.result.createObjectStore('kv');
+  r.onsuccess = () => { const d = r.result; d.onversionchange = () => { d.close(); idbCon = null; }; ok(d); };
+  r.onerror = () => no(r.error);
+}).catch(e => { idbCon = null; throw e; }));
+async function idbPut(k, v){ try { const d = await idb(); d.transaction('kv','readwrite').objectStore('kv').put(v, k); } catch(e){} }
+async function idbGet(k){ try { const d = await idb(); return await new Promise(r => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => r(q.result); q.onerror = () => r(); }); } catch(e){} }
+function gravarDB(db){ mem = db; const s = JSON.stringify(db); ls.set(DB, s); ls.set(BK, s); idbPut('db', db); }
 function mesclar(base, novo){
   Object.keys(novo || {}).forEach(cod => {
     const n = novo[cod]; if (!n || typeof n !== 'object') return;
@@ -755,8 +877,16 @@ function mesclar(base, novo){
   });
 }
 async function restaurarMemoria(){
-  const db = lerDB(), salvo = await idbGet();
+  const db = lerDB(), salvo = await idbGet('db');
   if (salvo) { mesclar(db, salvo); gravarDB(db); } else if (Object.keys(db).length) gravarDB(db);
+  // Histórico: recupera do IndexedDB o que não estiver no localStorage (ex.: se ele encheu)
+  const hs = await idbGet('hist');
+  if (Array.isArray(hs)) {
+    const ids = new Set(historicoGlobal.map(h => h.id)); let novos = 0;
+    hs.forEach(h => { if (h && h.id && !ids.has(h.id)) { historicoGlobal.push(h); novos++; } });
+    if (novos) historicoGlobal.sort((a, b) => tsHist(b) - tsHist(a));
+  }
+  salvarHistorico();
 }
 function reqsDoProduto(cod){ if (!cod || cod === 'N/D') return {}; const p = lerDB()[cod]; return (p && p.reqs) || {}; }
 
@@ -765,26 +895,55 @@ function carregarHistorico(){
   const h = ls.get(HIST_KEY);
   if (h) { try { const a = JSON.parse(h); if (Array.isArray(a)) historicoGlobal = a; } catch(e){} }
 }
-function salvarHistorico(){ historicoGlobal = historicoGlobal.slice(0, 50); ls.set(HIST_KEY, JSON.stringify(historicoGlobal)); }
+function salvarHistorico(){
+  historicoGlobal = historicoGlobal.slice(0, HIST_MAX);
+  ls.set(HIST_KEY, JSON.stringify(historicoGlobal));
+  idbPut('hist', historicoGlobal);
+}
+/* Momento do registro (o id é 'calc_' + horário); registros antigos sem id usam a data */
+function tsHist(h){
+  const n = idNum(h && h.id); if (n > 1e12) return n;
+  const d = parseData(h && h.data); if (d == null) return 0;
+  return new Date(Math.floor(d / 10000), Math.floor(d / 100) % 100 - 1, d % 100).getTime();
+}
+/* Sessão: o ajuste em andamento (fase 3) ou o rascunho da fase 2, para não perder nada ao recarregar */
 function salvarSessao(){
-  if (!sol) { ls.del(SESS_KEY); return; }
-  ls.set(SESS_KEY, JSON.stringify({ v:4, sol, produtoAtual, docsDisponiveis, filtro }));
+  const base = { v:4, produtoAtual, docsDisponiveis, filtro, fichaInfo, correcao };
+  if (sol) { ls.set(SESS_KEY, JSON.stringify({ ...base, sol })); return; }
+  if (faseAtual === 'fase2') {
+    ls.set(SESS_KEY, JSON.stringify({ ...base, rascunho: { atual:$('saldoAtual').value, alvo:$('saldoAlvo').value, motivo:motivoAtual } }));
+    return;
+  }
+  ls.del(SESS_KEY);
 }
 function restaurarSessao(){
   ls.del(SESS_ANTIGA);
   const raw = ls.get(SESS_KEY); if (!raw) return false;
   try {
     const d = JSON.parse(raw);
-    if (!d.sol || !Array.isArray(d.sol.passos) || !d.sol.passos.length) throw new Error('sessão inválida');
-    sol = d.sol; produtoAtual = d.produtoAtual || { cod:'N/D', nome:'' };
+    const temSol = d.sol && Array.isArray(d.sol.passos) && d.sol.passos.length;
+    if (!temSol && !d.rascunho) throw new Error('sessão inválida');
+    produtoAtual = d.produtoAtual || { cod:'N/D', nome:'' };
     docsDisponiveis = Array.isArray(d.docsDisponiveis) ? d.docsDisponiveis : [];
     filtro = d.filtro || { de:'', ate:'' };
-    $('saldoAtual').value = sol.atual; $('saldoAlvo').value = sol.alvo;
+    fichaInfo = d.fichaInfo && Array.isArray(d.fichaInfo.pontos) ? d.fichaInfo : null;
+    correcao = d.correcao || null;
     $('perDe').value = filtro.de || ''; $('perAte').value = filtro.ate || '';
-    preencherInfoProduto(); renderListaDocs();
-    renderResumo(); mudarTela('fase3');
-    renderPasso(Math.min(sol.idx || 0, sol.passos.length));
-    toast('Ajuste em andamento recuperado.', 'ok');
+    if (temSol) {
+      sol = d.sol; motivoAtual = sol.motivo || '';
+      $('saldoAtual').value = fmtCampo(sol.atual); $('saldoAlvo').value = fmtCampo(sol.alvo);
+      preencherInfoProduto(); renderListaDocs(); renderMotivos();
+      renderResumo(); mudarTela('fase3');
+      renderPasso(Math.min(sol.idx || 0, sol.passos.length));
+      toast('Ajuste em andamento recuperado.', 'ok');
+    } else {
+      const r = d.rascunho;
+      motivoAtual = MOTIVOS.includes(r.motivo) ? r.motivo : '';
+      $('saldoAtual').value = txt(r.atual); $('saldoAlvo').value = txt(r.alvo);
+      preencherInfoProduto(); renderListaDocs(); renderMotivos();
+      mudarTela('fase2'); atualizarPrevia();
+      toast('O ajuste que você estava preparando foi recuperado.', 'ok');
+    }
     return true;
   } catch(e) { ls.del(SESS_KEY); sol = null; return false; }
 }
@@ -793,12 +952,15 @@ function restaurarSessao(){
 function toast(msg, tipo){ const t = $('toast'); t.textContent = msg; t.className = 'on ' + (tipo || 'err'); clearTimeout(tt); tt = setTimeout(() => t.className = '', 4500); }
 
 let dlgResolver = null;
-function dialogo({ titulo, texto = '', campo = false, valor = '', confirmar = 'Confirmar', perigo = false }){
+function dialogo({ titulo, texto = '', campo = false, valor = '', confirmar = 'Confirmar', perigo = false, sugestoes = null }){
   return new Promise(res => {
     if (dlgResolver) dlgResolver(null);
     dlgResolver = res;
     $('dlgTit').textContent = titulo; $('dlgTx').textContent = texto; $('dlgTx').hidden = !texto;
     const inp = $('dlgIn'); inp.hidden = !campo; inp.value = valor;
+    const sug = $('dlgSug'); sug.hidden = !(campo && sugestoes && sugestoes.length);
+    sug.innerHTML = sug.hidden ? '' : sugestoes.map(t => `<button type="button" class="chip-m">${esc(t)}</button>`).join('');
+    sug.onclick = e => { const b = e.target.closest('.chip-m'); if (b) { inp.value = b.textContent; inp.focus(); } };
     const sim = $('dlgSim'); sim.textContent = confirmar; sim.classList.toggle('perigo', perigo);
     $('dlg').hidden = false;
     setTimeout(() => (campo ? inp : sim).focus(), 30);
@@ -835,11 +997,16 @@ function mudarTela(id){
   atualizarRails();
 }
 
-/* Registra o ajuste em andamento como "Interrompido" se algo já foi copiado */
+/* Status final de um ajuste, conforme os passos copiados */
+const statusDe = s => s.passos.some(p => !completo(p)) ? 'Com pendências' : (s.rest > 0 ? 'Parcial' : 'Concluído');
+
+/* Registra o ajuste em andamento como "Interrompido" se algo já foi copiado.
+   Se ele já tinha terminado e você voltou e mudou algum passo, atualiza o status no histórico. */
 function abandonar(){
   const s = sol; if (!s) return false;
   cancelarTimer();
-  if (!s.finalizado && s.passos.some(p => p.cDoc || p.cPct)) { registrar('Interrompido'); return true; }
+  if (s.finalizado) { const st = statusDe(s); if (st !== s.status) { s.status = st; registrar(st); } return false; }
+  if (s.passos.some(p => p.cDoc || p.cPct)) { registrar('Interrompido'); return true; }
   return false;
 }
 function limparGeral(){
@@ -847,33 +1014,80 @@ function limparGeral(){
   abandonar();
   $('textoPdf').value = ''; $('saldoAtual').value = ''; $('saldoAlvo').value = '';
   docsDisponiveis = []; produtoAtual = { cod:'', nome:'' }; filtro = { de:'', ate:'' };
+  fichaInfo = null; correcao = null; motivoAtual = '';
   $('perDe').value = ''; $('perAte').value = '';
   sol = null; ultimaPrevia = null; ls.del(SESS_KEY);
   $('docsWrap').classList.remove('aberto');
+  renderFaixaCorrecao(); renderMotivos();
   mudarTela('fase1'); setTimeout(() => $('textoPdf').focus(), 200);
 }
 function corrigirSaldos(){
   const s = sol; if (!s) return;
   const interrompido = abandonar();
   sol = null; ls.del(SESS_KEY);
-  $('saldoAtual').value = s.atual; $('saldoAlvo').value = s.alvo;
-  renderListaDocs(); mudarTela('fase2'); atualizarPrevia();
+  motivoAtual = s.motivo || '';
+  $('saldoAtual').value = fmtCampo(s.atual); $('saldoAlvo').value = fmtCampo(s.alvo);
+  renderListaDocs(); renderMotivos(); mudarTela('fase2'); atualizarPrevia();
   setTimeout(() => { $('saldoAtual').focus(); $('saldoAtual').select(); }, 200);
   if (interrompido) toast('Se você já lançou algum passo no ERP, cole a ficha atualizada antes de recalcular.', 'warn');
+}
+
+/* ===== CORREÇÃO DE UM AJUSTE ANTERIOR (Pendências) ===== */
+function corrigirAjuste(id){
+  const h = historicoGlobal.find(x => x.id === id); if (!h) return;
+  fecharPaineis();
+  limparGeral();
+  const c = h.conferencia;
+  correcao = { id:h.id, produto:txt(h.produto), nome:txt(h.nome), alvo:h.alvo,
+    saldoERP: c && c.tipo !== 'ok' && c.saldoERP != null ? c.saldoERP : null, motivo: MOTIVOS.includes(h.motivo) ? h.motivo : '' };
+  renderFaixaCorrecao(); atualizarRails();
+}
+function cancelarCorrecao(){ correcao = null; renderFaixaCorrecao(); salvarSessao(); atualizarRails(); }
+function renderFaixaCorrecao(){
+  const f = $('faixaCorrecao'), c = correcao;
+  f.hidden = !c;
+  if (!c) { f.innerHTML = ''; return; }
+  const temCod = c.produto && c.produto !== 'N/D';
+  f.innerHTML = `<span>${IC.fix} Corrigindo ${temCod ? `o produto <b>${esc(c.produto)}</b>` : 'um ajuste sem código'}: saldo desejado <b>${esc(br(c.alvo))}</b>${c.saldoERP != null ? `, ERP mostrava <b>${esc(br(c.saldoERP))}</b>` : ''}.</span><button class="rbtn" onclick="cancelarCorrecao()">Cancelar</button>`;
+}
+/* Ao entrar na fase 2 durante uma correção, já preenche o que se sabe */
+function aplicarCorrecao(saldoLido){
+  const c = correcao; if (!c) return;
+  const temCod = c.produto && c.produto !== 'N/D';
+  if (temCod && produtoAtual.cod !== 'N/D' && produtoAtual.cod !== c.produto) {
+    toast(`Esta ficha é do produto ${produtoAtual.cod}, não do ${c.produto}. A correção foi cancelada.`, 'warn');
+    correcao = null; renderFaixaCorrecao(); return;
+  }
+  if (temCod && produtoAtual.cod === 'N/D') produtoAtual = { cod:c.produto, nome:c.nome };
+  if (saldoLido == null && c.saldoERP != null) $('saldoAtual').value = fmtCampo(c.saldoERP);
+  $('saldoAlvo').value = fmtCampo(c.alvo);
+  if (c.motivo && !motivoAtual) motivoAtual = c.motivo;
 }
 
 /* ===== FASE 1: LEITURA DA FICHA ===== */
 $('textoPdf').addEventListener('paste', () => setTimeout(processarFase1, 150));
 
 function processarFase1(){
-  const texto = $('textoPdf').value;
+  let texto = $('textoPdf').value;
   if (!texto.trim()) { toast('Cole as linhas da ficha antes de continuar.', 'warn'); $('textoPdf').focus(); return; }
+
+  // Mais de um produto colado? Usa só o primeiro (o cabeçalho pode se repetir em cada página do mesmo produto)
+  let outrosProdutos = 0;
+  const cabs = [...texto.matchAll(/PRODUTO\s*:\s*([0-9A-Za-z_-]+)/gi)];
+  if (cabs.length > 1) {
+    const primeiro = cabs[0][1], outro = cabs.find(c => c[1] !== primeiro);
+    if (outro) {
+      outrosProdutos = new Set(cabs.map(c => c[1])).size - 1;
+      texto = texto.slice(0, outro.index);
+    }
+  }
 
   const mp = texto.match(/PRODUTO\s*:?\s*([0-9A-Za-z_-]+)\s+([^\n\r]+)/i);
   if (mp) { produtoAtual = { cod: mp[1].trim(), nome: mp[2].split(/UNIDADE/i)[0].trim() }; }
   else { produtoAtual = { cod:'N/D', nome:'Produto não identificado' }; }
 
-  docsDisponiveis = []; const vistos = new Map(); let difRepetida = 0, ordem = 0, saldoFinal = null;
+  docsDisponiveis = []; fichaInfo = null;
+  const vistos = new Map(); let difRepetida = 0, ordem = 0, saldoFinal = null;
   const nBr = t => parseFloat(String(t).replace(/\./g, '').replace(',', '.'));
 
   // Formato completo da ficha: TIPO NÚMERO DATA QUANTIDADE CUSTO VALOR SALDO
@@ -895,6 +1109,9 @@ function processarFase1(){
       if (l.qtd > 0) docsDisponiveis.push({ numeroDoc:l.num, tamanhoOriginal:l.qtd, data:l.data, ordem:i, ativo:true,
         saldoMin: isFinite(minDaqui[i]) ? r4(minDaqui[i]) : null, saldoAuto:true });
     });
+    // Guarda a evolução do saldo para o gráfico da lateral
+    const pontos = linhas.filter(l => !isNaN(l.saldo)).map(l => ({ t:l.tipo, n:l.num, d:l.data, s:l.saldo }));
+    if (pontos.length) fichaInfo = { pontos, movimentos: linhas.length, de: linhas[0].data, ate: ult.data };
   } else {
     // Formato simples (sem a coluna de saldo): REQ NÚMERO DATA QUANTIDADE
     const re = /REQ\s+([0-9]+)\s+([0-9\/]+)\s+([0-9\.,]+)/gi;
@@ -910,21 +1127,25 @@ function processarFase1(){
     toast(vistos.size ? 'As REQs encontradas estão com quantidade zerada.' : 'Nenhuma REQ encontrada. Confira se copiou as linhas da tabela da ficha.', 'err');
     return;
   }
-  if (!mp) toast('O código do produto não foi encontrado na ficha. O ajuste não ficará salvo no produto.', 'warn');
+  if (outrosProdutos) toast(`A ficha colada tinha mais de um produto. Só o primeiro (${produtoAtual.cod}) foi usado.`, 'warn');
+  else if (!mp) toast('O código do produto não foi encontrado na ficha. O ajuste não ficará salvo no produto.', 'warn');
   else if (difRepetida) toast('Uma REQ apareceu repetida com quantidades diferentes. Só a primeira foi usada.', 'warn');
 
-  $('saldoAtual').value = saldoFinal != null ? saldoFinal : '';
+  $('saldoAtual').value = saldoFinal != null ? fmtCampo(saldoFinal) : '';
   $('saldoAlvo').value = '';
   $('lblSaldoFicha').hidden = saldoFinal == null;
-  preencherInfoProduto(); renderListaDocs();
+  aplicarCorrecao(saldoFinal);
+  preencherInfoProduto(); renderListaDocs(); renderMotivos();
   $('docsWrap').classList.remove('aberto');
   mudarTela('fase2'); atualizarPrevia();
   setTimeout(() => { $('saldoAtual').focus(); $('saldoAtual').select(); }, 200);
 }
 
 function pularParaFase2(){
-  produtoAtual = { cod:'N/D', nome:'Ajuste manual' }; docsDisponiveis = [];
-  preencherInfoProduto(); renderListaDocs();
+  produtoAtual = { cod:'N/D', nome:'Ajuste manual' }; docsDisponiveis = []; fichaInfo = null;
+  $('saldoAtual').value = ''; $('saldoAlvo').value = ''; $('lblSaldoFicha').hidden = true;
+  aplicarCorrecao(null);
+  preencherInfoProduto(); renderListaDocs(); renderMotivos();
   $('docsWrap').classList.add('aberto');
   mudarTela('fase2'); atualizarPrevia();
   setTimeout(() => $('manDoc') && $('manDoc').focus(), 200);
@@ -939,7 +1160,7 @@ function preencherInfoProduto(){
   const h = temCod ? historicoGlobal.find(x => x.produto === produtoAtual.cod && x.data === hojeBr()) : null;
   if (h) {
     const conf = h.conferencia ? (h.conferencia.tipo === 'ok' ? ', conferido' : ', com diferença no ERP') : '';
-    aviso.innerHTML = IC.warn + `<span>Este produto já teve um ajuste hoje às ${esc(h.hora)}: saldo ${esc(br(h.atual))} para ${esc(br(h.alvo))} (${esc(h.status.toLowerCase())}${conf}). Confira se não é repetido.</span>`;
+    aviso.innerHTML = IC.warn + `<span>Este produto já teve um ajuste hoje às ${esc(h.hora)}: saldo ${esc(br(h.atual))} para ${esc(br(h.alvo))} (${esc(txt(h.status).toLowerCase() || 'sem status')}${conf}). Confira se não é repetido.</span>`;
     aviso.hidden = false;
   } else aviso.hidden = true;
 }
@@ -969,17 +1190,17 @@ function renderListaDocs(){
       const u = usadas[d.numeroDoc], fora = foraDoPeriodo(d);
       return `<div class="doc-item${d.ativo ? '' : ' inativo'}${fora ? ' fora' : ''}">
         <label class="doc-chk"><input type="checkbox" ${d.ativo ? 'checked' : ''} onchange="toggleDoc(${i}, this.checked)"><span class="doc-num">${esc(d.numeroDoc)}</span>
-          ${u && u.length ? `<span class="tag tag-usada" title="Já usada em ajuste deste produto">usada em ${esc(u[0].data.slice(0,5))}</span>` : ''}
+          ${u && u.length ? `<span class="tag tag-usada" title="Já usada em ajuste deste produto">usada${u[0] && u[0].data ? ' em ' + esc(txt(u[0].data).slice(0,5)) : ''}</span>` : ''}
           ${fora ? '<span class="tag tag-fora">fora do período</span>' : ''}</label>
         <span class="doc-data">${esc(d.data || 'sem data')}</span>
         <span class="doc-qt">${br(d.tamanhoOriginal)} pçs</span>
-        <input type="number" class="doc-saldo" step="any" placeholder="Saldo mín." title="Menor saldo da ficha a partir deste documento. A adição neste documento não passa deste valor." value="${d.saldoMin ?? ''}" oninput="setSaldoMin(${i}, this.value)">
+        <input type="text" inputmode="decimal" autocomplete="off" class="doc-saldo" placeholder="Saldo mín." title="Menor saldo da ficha a partir deste documento. A adição neste documento não passa deste valor." value="${esc(fmtCampo(d.saldoMin))}" oninput="setSaldoMin(${i}, this.value)">
       </div>`;
     }).join('') +
     `<div class="add-doc-row">
       <input type="text" id="manDoc" placeholder="Nº do documento">
       <input type="date" id="manData" title="Data do documento (opcional)">
-      <input type="number" id="manSize" placeholder="Quantidade" step="any">
+      <input type="text" inputmode="decimal" autocomplete="off" id="manSize" placeholder="Quantidade">
       <button class="btn mini" onclick="addDocManual()">Adicionar</button>
     </div>`;
   $('listaDocsFase2').classList.toggle('adicao', !!(ultimaPrevia && ultimaPrevia.op === 'adicao'));
@@ -1008,7 +1229,11 @@ function atualizarOpcoesUI(){
 }
 function setEstrategia(v){ config.estrategia = v; ls.set(CFG_KEY, JSON.stringify(config)); atualizarOpcoesUI(); atualizarPrevia(); }
 function setEvitarUsadas(on){ config.evitarUsadas = on; ls.set(CFG_KEY, JSON.stringify(config)); atualizarOpcoesUI(); atualizarPrevia(); }
-function setPeriodo(){ filtro = { de:$('perDe').value, ate:$('perAte').value }; atualizarOpcoesUI(); renderListaDocs(); atualizarPrevia(); }
+function setPeriodo(){
+  let de = $('perDe').value, ate = $('perAte').value;
+  if (de && ate && de > ate) { [de, ate] = [ate, de]; $('perDe').value = de; $('perAte').value = ate; }
+  filtro = { de, ate }; atualizarOpcoesUI(); renderListaDocs(); atualizarPrevia();
+}
 function limparPeriodo(){ $('perDe').value = ''; $('perAte').value = ''; setPeriodo(); }
 
 function calcularMaxEstorno(size){
@@ -1042,7 +1267,7 @@ function planejar(atual, alvo){
     if (config.estrategia === 'antigos') { const x = (dt(a.d) ?? Infinity) - (dt(b.d) ?? Infinity); if (x) return x; return (a.d.ordem ?? a.i) - (b.d.ordem ?? b.i); }
     if (config.estrategia === 'recentes') { const x = (dt(b.d) ?? -Infinity) - (dt(a.d) ?? -Infinity); if (x) return x; return (b.d.ordem ?? b.i) - (a.d.ordem ?? a.i); }
     if (op === 'adicao') {
-      // Na adição, prefere os documentos em que você informou o "Saldo na data" (são os seguros)
+      // Na adição, prefere os documentos que têm "Saldo mín." (lido da ficha ou informado: são os seguros)
       const ka = a.d.saldoMin != null ? 1 : 0, kb = b.d.saldoMin != null ? 1 : 0;
       if (ka !== kb) return kb - ka;
       if (ka && kb && b.d.saldoMin !== a.d.saldoMin) return b.d.saldoMin - a.d.saldoMin;
@@ -1096,8 +1321,24 @@ function atualizarPrevia(){
       <div class="prev-cel ${decs.length ? 'warn' : ''}" style="grid-column:1/-1"><span>Decimais no ERP</span><b>${decs.length ? 'Marcar no passo ' + decs.join(', ') : 'Não precisa marcar'}</b></div>
     </div>` + (travouSaldo ? `<div class="prev-nota">${IC.warn}<span>O saldo da ficha não permite adicionar tudo: em alguma data depois destes documentos ele ficaria negativo. Cole uma ficha com mais REQs ou ajuste um valor menor.</span></div>` : '') + (semSaldo ? `<div class="prev-nota">${IC.info}<span>A ficha colada não trouxe a coluna de saldo. Confira se o saldo continua positivo depois da data do documento, ou informe o “Saldo mín.” em Editar documentos.</span></div>` : '');
   }
+  ecoNumero('saldoAtual', 'ecoAtual'); ecoNumero('saldoAlvo', 'ecoAlvo');
+  if (faseAtual === 'fase2') salvarSessao();
   atualizarRails();
 }
+
+/* Mostra embaixo do campo como o número foi entendido (evita confusão entre ponto e vírgula) */
+function ecoNumero(idCampo, idEco){
+  const v = $(idCampo).value.trim(), n = lerNumero(v), e = $(idEco);
+  e.classList.toggle('er', !!v && isNaN(n));
+  e.textContent = !v ? '' : (isNaN(n) ? 'Número não reconhecido' : '= ' + br(n) + ' pçs');
+}
+
+/* Motivo do ajuste (opcional) */
+function renderMotivos(){
+  $('motivos').innerHTML = '<span>Motivo</span>' + MOTIVOS.map(m =>
+    `<button type="button" class="chip-m${m === motivoAtual ? ' on' : ''}" aria-pressed="${m === motivoAtual}" onclick="setMotivo(this.textContent)">${esc(m)}</button>`).join('');
+}
+function setMotivo(m){ motivoAtual = motivoAtual === m ? '' : m; renderMotivos(); salvarSessao(); }
 
 /* ===== CALCULAR ===== */
 function processarFase2(copiarPrimeiro){
@@ -1107,12 +1348,13 @@ function processarFase2(copiarPrimeiro){
   const pl = planejar(atual, alvo);
   const msgs = { igual:['O saldo atual já é igual ao desejado.','warn'], negativo:['O saldo desejado não pode ser negativo.','err'], semdocs:['Ative ou adicione pelo menos um documento.','err'] };
   if (pl.erro) { const [t, k] = msgs[pl.erro] || ['Confira os dados.','err']; toast(t, k); return; }
-  if (!pl.passos.length) { toast('Nenhum documento consegue cobrir este ajuste. Confira o “Saldo na data” dos documentos.', 'err'); return; }
+  if (!pl.passos.length) { toast('Nenhum documento consegue cobrir este ajuste. Confira o “Saldo mín.” dos documentos.', 'err'); return; }
 
   abandonar();
   sol = {
     calcId: 'calc_' + Date.now(), op: pl.op, dif: pl.dif, mov: pl.mov, rest: pl.rest, atual, alvo,
     produto: { ...produtoAtual }, idx: 0, finalizado: false, status: '',
+    motivo: motivoAtual, corrigeId: correcao ? correcao.id : null,
     passos: pl.passos.map(p => ({ ...p, cDoc:false, cPct:false, pulado:false, avancou:false }))
   };
   salvarSessao();
@@ -1171,7 +1413,7 @@ function renderPasso(idx, opts = {}){
   let lembrete = '';
   if (s.op === 'adicao') {
     lembrete = p.saldoMin != null
-      ? `<div class="lembrete" style="color:#a7f3d0;background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.3)">${IC.info}<span>Menor saldo da ficha a partir deste documento: <b>${br(p.saldoMin)} pçs</b>. Depois do lançamento fica em <b>${br(r4(p.saldoMin - p.q))} pçs</b>, sem ficar negativo.</span></div>`
+      ? `<div class="lembrete" style="color:#a9e6c9;background:rgba(92,207,156,.07);border-color:rgba(92,207,156,.3)">${IC.info}<span>Menor saldo da ficha a partir deste documento: <b>${br(p.saldoMin)} pçs</b>. Depois do lançamento fica em <b>${br(r4(p.saldoMin - p.q))} pçs</b>, sem ficar negativo.</span></div>`
       : `<div class="lembrete">${IC.warn}<span>Confira na ficha: a partir de <b>${esc(p.data || 'a data do documento')}</b>, o saldo precisa ter pelo menos <b>${br(p.q)} pçs</b> para não ficar negativo.</span></div>`;
   }
   box.innerHTML = `<div class="wz${cls}" id="wizCard">
@@ -1198,7 +1440,7 @@ function renderPasso(idx, opts = {}){
 function renderFim(cls){
   const s = sol, n = s.passos.length;
   const pend = s.passos.filter(p => !completo(p));
-  const novoStatus = pend.length ? 'Com pendências' : (s.rest > 0 ? 'Parcial' : 'Concluído');
+  const novoStatus = statusDe(s);
   if (!s.finalizado || s.status !== novoStatus) { s.finalizado = true; s.status = novoStatus; registrar(novoStatus); }
   const bom = !pend.length && !(s.rest > 0);
   const titulo = pend.length ? 'Ajuste com passos pendentes' : (s.rest > 0 ? 'Ajuste parcial' : 'Ajuste concluído');
@@ -1216,7 +1458,7 @@ function renderFim(cls){
         <button class="btn nav pri btn-okaj" onclick="conferir('ok')">${IC.check}Ajuste OK!</button>
         <button class="btn nav" onclick="mostrarDiferenca()">Deu diferença</button>
       </div>
-      <div class="dif-row" id="difRow" hidden><input type="number" id="saldoErp" step="any" placeholder="Saldo que aparece no ERP"><button class="btn nav pri" onclick="conferir('dif')">Registrar</button></div>
+      <div class="dif-row" id="difRow" hidden><input type="text" inputmode="decimal" autocomplete="off" id="saldoErp" placeholder="Saldo que aparece no ERP"><button class="btn nav pri" onclick="conferir('dif')">Registrar</button></div>
       <div style="margin-top:10px"><button class="link" onclick="limparGeral()">Começar outro ajuste sem conferir</button></div>`;
   } else {
     conf = (c.tipo === 'ok'
@@ -1231,9 +1473,12 @@ function renderFim(cls){
 function mostrarDiferenca(){ const r = $('difRow'); r.hidden = false; $('saldoErp').focus(); }
 function conferir(tipo){
   const s = sol; if (!s) return;
-  const e = historicoGlobal.find(h => h.id === s.calcId); if (!e) return;
+  // Se o registro foi apagado do histórico enquanto esta tela estava aberta, ele é criado de novo
+  const e = historicoGlobal.find(h => h.id === s.calcId) || registrar(s.status || statusDe(s)); if (!e) return;
   if (tipo === 'ok') {
     e.conferencia = { tipo:'ok', hora: horaAgora() };
+    // Se este ajuste corrigia outro, o anterior sai das pendências
+    if (s.corrigeId) { const o = historicoGlobal.find(h => h.id === s.corrigeId); if (o) o.resolvido = true; }
     salvarHistorico(); registrarProduto(s, e);
     tocarSom('conf'); toast('Ajuste conferido.', 'ok');
     const b = document.querySelector('.btn-okaj'); if (b) { b.disabled = true; b.innerHTML = IC.check + 'Conferido'; }
@@ -1257,9 +1502,11 @@ function registrar(status){
   const base = {
     id: s.calcId, produto: s.produto.cod, nome: s.produto.nome, atual: s.atual, alvo: s.alvo,
     op: s.op, operador: rotuloOp(s.op), totalMovido: feito, planejado: s.mov, rest: s.rest, status,
+    corrigeId: s.corrigeId || null,
     passos: s.passos.map(p => ({ numeroDoc: p.numeroDoc, pctStr: p.pctStr, q: p.q, copiado: completo(p) }))
   };
   let e = historicoGlobal.find(h => h.id === s.calcId);
+  base.motivo = s.motivo || (e && e.motivo) || '';
   if (e) Object.assign(e, base);
   else { e = { ...base, data: hojeBr(), hora: horaAgora(), nota: '', conferencia: null }; historicoGlobal.unshift(e); }
   salvarHistorico(); registrarProduto(s, e);
@@ -1274,7 +1521,7 @@ function registrarProduto(s, e){
   const alt = {
     id: e.id, dataHora: e.data + ' às ' + e.hora,
     movimento: (s.op === 'estorno' ? 'Estorno' : 'Adição') + ' de ' + br(e.totalMovido) + ' pçs',
-    dePara: br(s.atual) + ' → ' + br(s.alvo), status: e.status, conferencia: e.conferencia || null
+    dePara: br(s.atual) + ' → ' + br(s.alvo), status: e.status, conferencia: e.conferencia || null, motivo: e.motivo || ''
   };
   const i = p.alteracoes.findIndex(a => a.id === e.id);
   if (i >= 0) p.alteracoes[i] = alt; else p.alteracoes.unshift(alt);
@@ -1366,6 +1613,8 @@ document.addEventListener('keydown', e => {
   if (painelAberto()) return;
 
   const alvo = e.target;
+  // Campos das laterais (ex.: calculadora) funcionam normalmente, sem disparar atalhos do fluxo
+  if (emCampo(alvo) && alvo.closest('.rail')) return;
   // Ctrl+Z: dentro de um campo, desfaz o texto normalmente; fora, desmarca o passo
   if (e.ctrlKey && !e.shiftKey && e.key.toLowerCase() === 'z') {
     if (emCampo(alvo)) return;
@@ -1384,7 +1633,8 @@ document.addEventListener('keydown', e => {
     }
     if (faseAtual === 'fase3' && sol) {
       if (alvo && alvo.id === 'saldoErp') { e.preventDefault(); conferir('dif'); return; }
-      if (alvo && alvo.tagName === 'BUTTON') return; // deixa o botão focado agir
+      // Deixa o botão focado agir, exceto os botões grandes de copiar: neles o Enter segue a ordem documento, % e próximo
+      if (alvo && alvo.tagName === 'BUTTON' && !alvo.classList.contains('tile')) return;
       e.preventDefault();
       if (rt.busy) return;
       if (sol.idx >= sol.passos.length) { toast('Confira o saldo no ERP e clique em “Ajuste OK!”.', 'warn'); return; }
@@ -1410,48 +1660,128 @@ async function excluirHist(id){
 }
 async function addNotaHist(id){
   const item = historicoGlobal.find(h => h.id === id); if (!item) return;
-  const nota = await dialogo({ titulo: item.nota ? 'Editar observação' : 'Adicionar observação', texto:'Por exemplo: motivo do ajuste ou número do chamado.', campo:true, valor:item.nota || '', confirmar:'Salvar' });
+  const nota = await dialogo({ titulo: item.nota ? 'Editar observação' : 'Adicionar observação', texto:'Por exemplo: número do chamado ou quem pediu o ajuste.', campo:true, valor:item.nota || '', confirmar:'Salvar' });
   if (nota === null) return;
   item.nota = String(nota).trim(); salvarHistorico(); renderizarHistorico(); toast('Observação salva.', 'ok');
+}
+async function editarMotivoHist(id){
+  const item = historicoGlobal.find(h => h.id === id); if (!item) return;
+  const m = await dialogo({ titulo:'Motivo do ajuste', texto:'Escolha um motivo ou escreva outro. Deixe em branco para tirar.', campo:true, valor:item.motivo || '', confirmar:'Salvar', sugestoes:MOTIVOS });
+  if (m === null) return;
+  item.motivo = String(m).trim();
+  if (sol && sol.calcId === id) sol.motivo = item.motivo;
+  const db = lerDB(), p = db[item.produto], a = p && (p.alteracoes || []).find(x => x.id === id);
+  if (a) { a.motivo = item.motivo; gravarDB(db); }
+  salvarHistorico(); renderizarHistorico(); toast('Motivo salvo.', 'ok');
 }
 const classeStatus = st => st === 'Concluído' ? 'st-ok' : (st === 'Interrompido' ? 'st-er' : 'st-warn');
 function seloConf(c){
   if (!c) return '';
   return c.tipo === 'ok' ? '<span class="st st-info">Conferido</span>' : `<span class="st st-warn">Diferença ${esc(br(c.diferenca))}</span>`;
 }
+const temCodigo = cod => !!cod && cod !== 'N/D';
+
+/* Pendência: deu diferença, não foi conferido, foi interrompido ou ficou com passos sem copiar.
+   Sai da lista se foi dispensado/corrigido, ou se um ajuste mais novo do mesmo produto foi conferido OK. */
+function ehPendente(h, limiteDias){
+  if (!h || h.resolvido) return false;
+  if (sol && sol.calcId === h.id) return false;
+  const t = tsHist(h);
+  if (limiteDias && t < Date.now() - limiteDias * DIA) return false;
+  const c = h.conferencia;
+  if (c && c.tipo === 'ok') return false;
+  if (temCodigo(h.produto) && historicoGlobal.some(x => x !== h && x.produto === h.produto && tsHist(x) > t && x.conferencia && x.conferencia.tipo === 'ok')) return false;
+  return true;
+}
+function motivoPendencia(h){
+  const c = h.conferencia;
+  if (c && c.tipo !== 'ok') return { tx:`Diferença de ${br(c.diferenca)} pçs no ERP`, cls:'er' };
+  if (h.status === 'Interrompido') return { tx:'Interrompido no meio', cls:'er' };
+  if (h.status === 'Com pendências') return { tx:'Passos não copiados', cls:'warn' };
+  if (h.status === 'Parcial') return { tx:`Faltaram ${br(h.rest || 0)} pçs`, cls:'warn' };
+  return { tx:'Sem conferência no ERP', cls:'warn' };
+}
+async function dispensarPendencia(id){
+  const h = historicoGlobal.find(x => x.id === id); if (!h) return;
+  const semConf = !h.conferencia && h.status === 'Concluído';
+  if (semConf) h.conferencia = { tipo:'ok', hora: horaAgora() };
+  h.resolvido = true;
+  salvarHistorico(); atualizarRails();
+  if (painelAberto()) renderizarHistorico();
+  toast(semConf ? 'Marcado como conferido.' : 'Pendência dispensada.', 'ok');
+}
+
+/* Filtros do Histórico (também usados nos relatórios) */
+function setFiltroHist(k, v){ filtroHist[k] = v; renderizarHistorico(); }
+function histFiltrado(periodo, comBusca = true){
+  const per = periodo || filtroHist.periodo, st = periodo ? '' : filtroHist.status;
+  const q = comBusca && !periodo ? txt($('buscaHist').value).trim().toLowerCase() : '';
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const desde = per === 'hoje' ? hoje.getTime() : (per === '7' ? hoje.getTime() - 6 * DIA : (per === '30' ? hoje.getTime() - 29 * DIA : -Infinity));
+  return historicoGlobal.filter(h => {
+    if (!h) return false;
+    if (per === 'hoje' ? h.data !== hojeBr() : tsHist(h) < desde) return false;
+    if (st === 'pend' && !ehPendente(h)) return false;
+    if (st === 'conf' && !(h.conferencia && h.conferencia.tipo === 'ok')) return false;
+    if (st === 'dif' && !(h.conferencia && h.conferencia.tipo !== 'ok')) return false;
+    if ((st === 'Concluído' || st === 'Interrompido') && h.status !== st) return false;
+    if (q) {
+      const alvoBusca = [h.produto, h.nome, h.motivo, h.nota, h.status, ...(h.passos || []).map(p => p.numeroDoc)].map(txt).join(' ').toLowerCase();
+      if (!alvoBusca.includes(q)) return false;
+    }
+    return true;
+  });
+}
 function renderizarHistorico(){
-  const box = $('conteudoHistorico');
-  if (!historicoGlobal.length) { box.innerHTML = '<div class="vazio">Nenhum ajuste registrado ainda.<br>Os ajustes aparecem aqui quando são concluídos.</div>'; return; }
+  document.querySelectorAll('#segPeriodoHist button').forEach(b => { const on = b.dataset.v === filtroHist.periodo; b.classList.toggle('on', on); b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', on); });
+  $('filtroStatusHist').value = filtroHist.status;
+  const box = $('conteudoHistorico'), lista = histFiltrado();
+  const pcs = r4(lista.reduce((a, h) => a + (Number(h.totalMovido) || 0), 0));
+  $('histContagem').textContent = lista.length ? `${lista.length} ${lista.length === 1 ? 'registro' : 'registros'} · ${br(pcs)} pçs` : '';
+  if (!historicoGlobal.length) { box.innerHTML = '<div class="vazio">Nenhum ajuste registrado ainda.</div>'; return; }
+  if (!lista.length) { box.innerHTML = '<div class="vazio">Nada encontrado com esses filtros.</div>'; return; }
   let ultimaData = '';
-  box.innerHTML = historicoGlobal.map(c => {
+  box.innerHTML = lista.map(c => {
     let cab = ''; if (c.data !== ultimaData) { cab = `<div class="h-data">${esc(c.data)}</div>`; ultimaData = c.data; }
-    const temCod = c.produto && c.produto !== 'N/D';
-    const operador = c.op ? rotuloOp(c.op) : String(c.operador || '').split('(')[0].trim();
-    return cab + `<div class="it">
+    const temCod = temCodigo(c.produto), pend = ehPendente(c);
+    const operador = c.op ? rotuloOp(c.op) : txt(c.operador).split('(')[0].trim();
+    return cab + `<div class="it${pend ? ' pend' : ''}" data-hid="${esc(c.id)}">
       <div class="hc">
-        <div><span class="ht" style="color:var(--lt)">${temCod ? 'Produto ' + esc(c.produto) : 'Sem código'}</span>${c.nome && temCod ? `<div class="nm">${esc(c.nome)}</div>` : ''}</div>
-        <div style="text-align:right"><span class="hh">${esc(c.hora)}</span><div style="margin-top:6px"><span class="st ${classeStatus(c.status)}">${esc(c.status)}</span>${seloConf(c.conferencia)}</div></div>
+        <div><span class="ht" style="color:var(--lt)">${temCod ? 'Produto ' + esc(c.produto) : 'Sem código'}</span>${c.nome && temCod ? `<div class="hnm">${esc(c.nome)}</div>` : ''}</div>
+        <div style="text-align:right"><span class="hh">${esc(c.hora)}</span><div style="margin-top:6px"><span class="st ${classeStatus(c.status)}">${esc(c.status || 'Sem status')}</span>${seloConf(c.conferencia)}</div></div>
       </div>
       <div class="ht">Saldo ${esc(br(c.atual))} para ${esc(br(c.alvo))}</div>
-      <div class="ho">${esc(operador)}: ${esc(br(c.totalMovido))} pçs</div>
+      <div class="ho">${esc(operador)}: ${esc(br(c.totalMovido || 0))} pçs</div>
+      ${c.motivo ? `<span class="hmot">${esc(c.motivo)}</span>` : ''}
       ${c.nota ? `<div class="nota">${IC.note}<span>${esc(c.nota)}</span></div>` : ''}
       <div class="hl">${(c.passos || []).map(p => `<div class="hd"><span>Doc ${esc(p.numeroDoc)}: <b>${esc(p.pctStr)}%</b></span>${p.copiado ? '<span class="st st-ok">Copiado</span>' : '<span class="st st-warn">Não copiado</span>'}</div>`).join('')}</div>
       <div class="h-acoes">
-        <button class="btn-hist" onclick="addNotaHist('${esc(c.id)}')">${IC.note}${c.nota ? 'Editar observação' : 'Adicionar observação'}</button>
-        <button class="btn-hist del" onclick="excluirHist('${esc(c.id)}')">${IC.trash}Apagar</button>
+        ${pend ? `<button class="btn-hist" data-acao="corrigir" data-id="${esc(c.id)}">${IC.fix}Corrigir</button>` : ''}
+        <button class="btn-hist" data-acao="motivo" data-id="${esc(c.id)}">${IC.tag}${c.motivo ? 'Motivo' : 'Adicionar motivo'}</button>
+        <button class="btn-hist" data-acao="nota" data-id="${esc(c.id)}">${IC.note}${c.nota ? 'Observação' : 'Adicionar observação'}</button>
+        <button class="btn-hist del" data-acao="apagar" data-id="${esc(c.id)}">${IC.trash}Apagar</button>
       </div>
     </div>`;
   }).join('');
+}
+/* Abre o Histórico mostrando um registro (ou as pendências) */
+function abrirHistorico(id, status){
+  filtroHist = { periodo:'tudo', status: status || '' }; $('buscaHist').value = '';
+  abrirPainel('dir');
+  if (id) {
+    const el = [...document.querySelectorAll('#conteudoHistorico [data-hid]')].find(x => x.dataset.hid === id);
+    if (el) { el.classList.add('foco'); el.scrollIntoView({ block:'center' }); setTimeout(() => el.classList.remove('foco'), 2500); }
+  }
 }
 
 /* ===== PRODUTOS SALVOS ===== */
 let salvosCods = [];
 function renderizarProdutosSalvos(){
   const box = $('conteudoProdutosSalvos'), db = lerDB(), q = ($('buscaProd').value || '').trim().toLowerCase();
-  const ultimoId = p => { const a = (p.alteracoes || [])[0]; return a && a.id ? +String(a.id).replace(/\D/g, '') : 0; };
-  salvosCods = Object.keys(db).filter(c => !q || c.toLowerCase().includes(q) || String(db[c].nome).toLowerCase().includes(q) || Object.keys(db[c].reqs || {}).some(r => r.includes(q)))
+  const ultimoId = p => { const a = (p.alteracoes || [])[0]; return a && a.id ? idNum(a.id) : 0; };
+  salvosCods = Object.keys(db).filter(c => !q || c.toLowerCase().includes(q) || txt(db[c].nome).toLowerCase().includes(q) || Object.keys(db[c].reqs || {}).some(r => r.includes(q)))
     .sort((a, b) => ultimoId(db[b]) - ultimoId(db[a]));
-  if (!salvosCods.length) { box.innerHTML = `<div class="vazio">${q ? 'Nenhum produto encontrado para essa busca.' : 'Nenhum produto salvo ainda.<br>Os produtos aparecem aqui quando um ajuste é concluído.'}</div>`; return; }
+  if (!salvosCods.length) { box.innerHTML = `<div class="vazio">${q ? 'Nenhum produto encontrado para essa busca.' : 'Nenhum produto salvo ainda.'}</div>`; return; }
   box.innerHTML = salvosCods.map((cod, i) => {
     const p = db[cod], alts = p.alteracoes || [], reqs = p.reqs || {}, ult = alts[0];
     const nReqs = Object.keys(reqs).length;
@@ -1459,14 +1789,14 @@ function renderizarProdutosSalvos(){
       ? `Último ajuste em ${esc(ult.dataHora)}: ${esc(ult.movimento)}${ult.conferencia ? (ult.conferencia.tipo === 'ok' ? ', conferido' : ', com diferença') : ''}.`
       : 'Nenhum ajuste registrado.';
     const reqHtml = nReqs
-      ? `<div class="sv-tit">REQs já usadas</div><div class="reqs">${Object.keys(reqs).map(r => { const u = reqs[r][0] || {}; return `<span class="req" title="${esc(reqs[r].length)} uso(s)"><b>${esc(r)}</b>${esc(u.data || '')}, ${u.op === 'estorno' ? 'estorno' : 'adição'} de ${esc(br(u.qtd || 0))}</span>`; }).join('')}</div>`
+      ? `<div class="sv-tit">REQs já usadas</div><div class="reqs">${Object.keys(reqs).map(r => { const u = (reqs[r] || [])[0] || {}; return `<span class="req" title="${esc((reqs[r] || []).length)} uso(s)"><b>${esc(r)}</b>${esc(u.data || '')}, ${u.op === 'estorno' ? 'estorno' : 'adição'} de ${esc(br(u.qtd || 0))}</span>`; }).join('')}</div>`
       : '';
     const altHtml = alts.length
-      ? alts.map(a => `<div class="hd alt"><div><span style="color:var(--tx);font-weight:800">${esc(a.movimento)}</span><em>${esc(a.dataHora)}</em></div><div><small>Saldo ${esc(a.dePara)}</small><span class="selos">${a.status ? `<span class="st ${classeStatus(a.status)}">${esc(a.status)}</span>` : ''}${seloConf(a.conferencia)}</span></div></div>`).join('')
+      ? alts.map(a => `<div class="hd alt"><div><span style="color:var(--tx);font-weight:800">${esc(a.movimento)}</span><em>${esc(a.dataHora)}</em></div><div><small>Saldo ${esc(a.dePara)}${a.motivo ? ' · ' + esc(a.motivo) : ''}</small><span class="selos">${a.status ? `<span class="st ${classeStatus(a.status)}">${esc(a.status)}</span>` : ''}${seloConf(a.conferencia)}</span></div></div>`).join('')
       : '<div class="hd" style="color:var(--di)">Nenhuma alteração registrada.</div>';
     return `<div class="it" id="sv${i}">
       <button class="sv-head" onclick="document.getElementById('sv${i}').classList.toggle('aberto')">
-        <div><span class="ht" style="color:var(--lt)">Produto ${esc(cod)}</span><div class="nm">${esc(p.nome)}</div></div>
+        <div><span class="ht" style="color:var(--lt)">Produto ${esc(cod)}</span><div class="hnm">${esc(p.nome)}</div></div>
         <span class="ar"><span class="st st-info">${alts.length} ${alts.length === 1 ? 'ajuste' : 'ajustes'}</span>${IC.down}</span>
       </button>
       <div class="sv-sub">${resumo}</div>
@@ -1484,33 +1814,35 @@ async function excluirProduto(i){
   renderizarProdutosSalvos(); toast('Produto apagado.', 'ok');
 }
 
-/* ===== BACKUP ===== */
+/* ===== ARQUIVOS: BACKUP E EXCEL ===== */
 const idNum = id => +String(id || '').replace(/\D/g, '') || 0;
+const dataArquivo = () => { const d = new Date(), dd = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${dd(d.getMonth() + 1)}-${dd(d.getDate())}`; };
+function baixarArquivo(nome, conteudo, tipo){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([conteudo], { type:tipo }));
+  a.download = nome;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+}
 function exportarBackup(){
   const produtos = lerDB();
   const dados = { app:'pedalada-do-delei', versao:VERSAO, criadoEm:new Date().toISOString(), produtos, historico:historicoGlobal, config };
-  const blob = new Blob([JSON.stringify(dados)], { type:'application/json' });
-  const d = new Date(), dd = n => String(n).padStart(2, '0');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `pedalada-backup-${d.getFullYear()}-${dd(d.getMonth() + 1)}-${dd(d.getDate())}.json`;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  baixarArquivo(`pedalada-backup-${dataArquivo()}.json`, JSON.stringify(dados), 'application/json');
   toast(`Backup exportado: ${Object.keys(produtos).length} produtos e ${historicoGlobal.length} registros do histórico.`, 'ok');
 }
 async function importarBackup(inp){
   const f = inp.files && inp.files[0]; inp.value = ''; if (!f) return;
   let d;
   try { d = JSON.parse(await f.text()); } catch(e) { toast('Este arquivo não é um backup do Pedalada.', 'err'); return; }
-  if (!d || d.app !== 'pedalada-do-delei' || typeof d.produtos !== 'object') { toast('Este arquivo não é um backup do Pedalada.', 'err'); return; }
-  const nP = Object.keys(d.produtos || {}).length, nH = Array.isArray(d.historico) ? d.historico.length : 0;
+  if (!d || d.app !== 'pedalada-do-delei' || !d.produtos || typeof d.produtos !== 'object') { toast('Este arquivo não é um backup do Pedalada.', 'err'); return; }
+  const nP = Object.keys(d.produtos).length, nH = Array.isArray(d.historico) ? d.historico.length : 0;
   const quando = d.criadoEm ? new Date(d.criadoEm).toLocaleString('pt-BR') : 'data desconhecida';
-  const ok = await dialogo({ titulo:'Importar este backup?', texto:`O arquivo é de ${quando} e tem ${nP} produtos e ${nH} registros do histórico. Eles serão somados aos dados atuais. Nada será apagado.`, confirmar:'Importar' });
+  const ok = await dialogo({ titulo:'Importar este backup?', texto:`O arquivo é de ${quando} e tem ${nP} produtos e ${nH} registros do histórico. Eles serão somados aos dados atuais. Nada será apagado (o histórico guarda os ${HIST_MAX} registros mais recentes).`, confirmar:'Importar' });
   if (!ok) return;
   const db = lerDB(); mesclar(db, d.produtos); gravarDB(db);
   const ids = new Set(historicoGlobal.map(h => h.id));
-  (d.historico || []).forEach(h => { if (h && h.id && !ids.has(h.id)) historicoGlobal.push(h); });
-  historicoGlobal.sort((a, b) => idNum(b.id) - idNum(a.id));
+  (Array.isArray(d.historico) ? d.historico : []).forEach(h => { if (h && typeof h === 'object' && h.id && !ids.has(h.id)) historicoGlobal.push(h); });
+  historicoGlobal.sort((a, b) => tsHist(b) - tsHist(a));
   salvarHistorico();
   if (d.config && typeof d.config === 'object') { ls.set(CFG_KEY, JSON.stringify({ ...config, ...d.config })); carregarConfig(); }
   if (faseAtual === 'fase2') { preencherInfoProduto(); renderListaDocs(); }
@@ -1518,50 +1850,184 @@ async function importarBackup(inp){
   toast(`Backup importado: ${nP} produtos e ${nH} registros.`, 'ok');
 }
 
+/* Excel: arquivo CSV com ponto e vírgula e vírgula decimal (abre direto no Excel em português) */
+const nomePeriodo = p => ({ hoje:'hoje', '7':'últimos 7 dias', '30':'últimos 30 dias', tudo:'todo o período' }[p] || '');
+function exportarCSV(periodo){
+  const lista = histFiltrado(periodo).slice().sort((a, b) => tsHist(a) - tsHist(b));
+  if (!lista.length) { toast('Não há registros para exportar neste período.', 'warn'); return; }
+  const n = v => (v == null || v === '' || isNaN(v)) ? '' : fmtCampo(v);
+  const cel = v => { let t = txt(v).replace(/\r?\n/g, ' '); if (/^[=+\-@]/.test(t)) t = "'" + t; return /[;"]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+  const cab = ['Data','Hora','Produto','Descrição','Operação','Saldo anterior','Saldo desejado','Qtd movida','Motivo','Situação','Conferência','Saldo no ERP','Diferença','Documentos (nº e %)','Observação'];
+  const linhas = lista.map(h => {
+    const c = h.conferencia;
+    return [h.data, h.hora, temCodigo(h.produto) ? h.produto : '', h.nome, h.op ? rotuloOp(h.op) : txt(h.operador),
+      n(h.atual), n(h.alvo), n(h.totalMovido), h.motivo, h.status, c ? (c.tipo === 'ok' ? 'Conferido' : 'Com diferença') : 'Não conferido',
+      c && c.tipo !== 'ok' ? n(c.saldoERP) : '', c && c.tipo !== 'ok' ? n(c.diferenca) : '',
+      (h.passos || []).map(p => `${p.numeroDoc} (${p.pctStr}%)${p.copiado ? '' : ' não copiado'}`).join(' | '), h.nota].map(cel).join(';');
+  });
+  baixarArquivo(`pedalada-historico-${dataArquivo()}.csv`, '﻿' + [cab.join(';'), ...linhas].join('\r\n'), 'text/csv;charset=utf-8');
+  toast(`Planilha exportada com ${lista.length} ${lista.length === 1 ? 'registro' : 'registros'}.`, 'ok');
+}
+
+/* Resumo em texto, pronto para colar em e-mail ou Teams */
+function copiarResumo(periodo){
+  const per = periodo || filtroHist.periodo;
+  const lista = histFiltrado(periodo).slice().sort((a, b) => tsHist(a) - tsHist(b));
+  if (!lista.length) { toast(per === 'hoje' ? 'Nenhum ajuste registrado hoje.' : 'Não há registros para resumir.', 'warn'); return; }
+  const conf = lista.filter(h => h.conferencia && h.conferencia.tipo === 'ok').length;
+  const dif = lista.filter(h => h.conferencia && h.conferencia.tipo !== 'ok').length;
+  const pcs = r4(lista.reduce((a, h) => a + (Number(h.totalMovido) || 0), 0));
+  const titulo = per === 'hoje' ? `Ajustes de estoque – ${hojeBr()}` : `Ajustes de estoque – ${nomePeriodo(per)} (até ${hojeBr()})`;
+  const linhas = lista.map(h => {
+    const c = h.conferencia, sit = c ? (c.tipo === 'ok' ? 'conferido' : `diferença de ${br(c.diferenca)} no ERP`) : txt(h.status).toLowerCase();
+    const prod = temCodigo(h.produto) ? `${h.produto}${h.nome ? ' ' + h.nome : ''}` : 'Sem código';
+    const docs = (h.passos || []).filter(p => p.copiado).map(p => `REQ ${p.numeroDoc}: ${p.pctStr}%`).join('; ');
+    return `• ${per === 'hoje' ? h.hora : h.data + ' ' + h.hora} – ${prod}\n   Saldo ${br(h.atual)} → ${br(h.alvo)} (${h.op === 'estorno' ? 'estorno' : 'adição'} de ${br(h.totalMovido || 0)} pçs)${h.motivo ? ' – ' + h.motivo : ''} – ${sit}${docs ? '\n   ' + docs : ''}${h.nota ? '\n   Obs.: ' + h.nota : ''}`;
+  });
+  const texto = `${titulo}\n${lista.length} ${lista.length === 1 ? 'ajuste' : 'ajustes'} · ${conf} ${conf === 1 ? 'conferido' : 'conferidos'} · ${dif} com diferença · ${br(pcs)} pçs movimentadas\n\n${linhas.join('\n')}`;
+  copiar(texto).then(() => toast('Resumo copiado. Cole no e-mail ou no Teams.', 'ok')).catch(() => toast('Não foi possível copiar o resumo.', 'err'));
+}
+
+/* ===== CALCULADORA DE % ===== */
+let calcValor = '';
+function calcPct(){
+  const tam = lerNumero($('calcTam').value), q = lerNumero($('calcQtd').value);
+  const ok = tam > 0 && q >= 0;
+  calcValor = ok ? r4(q / tam * 100).toFixed(4).replace('.', ',') : '';
+  $('calcRes').innerHTML = ok ? `${calcValor}<small>%</small>` : '–';
+  $('calcCopiar').disabled = !ok;
+}
+function copiarCalc(){ if (calcValor) copiar(calcValor).then(() => { tocarSom('copy'); toast(`${calcValor}% copiado.`, 'ok'); }).catch(() => toast('Não foi possível copiar.', 'err')); }
+
+/* ===== BOTÕES COM data-acao (histórico e laterais) ===== */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-acao]'); if (!b) return;
+  const id = b.dataset.id;
+  switch (b.dataset.acao) {
+    case 'corrigir': corrigirAjuste(id); break;
+    case 'dispensar': dispensarPendencia(id); break;
+    case 'nota': addNotaHist(id); break;
+    case 'motivo': editarMotivoHist(id); break;
+    case 'apagar': excluirHist(id); break;
+    case 'verhist': abrirHistorico(id); break;
+    case 'verpend': abrirHistorico(null, 'pend'); break;
+  }
+});
+
 /* ===== LATERAIS ===== */
 function atualizarRails(){
-  const esq = $('railEsq'); if (!esq || getComputedStyle(esq).display === 'none') { return; }
+  renderRailDir();
+  const esq = $('railEsq'); if (!esq || getComputedStyle(esq).display === 'none') return;
   const f = faseAtual;
-  if (f === 'fase1') {
-    const ult = historicoGlobal.slice(0, 4);
-    esq.innerHTML = `<div class="rbox"><div class="rtit">${IC.list}Como funciona</div><ol class="como">
-        <li><span>No ERP, copie as linhas da <b>ficha de movimento</b> e cole no quadro ao lado.</span></li>
-        <li><span>Informe o <b>saldo atual</b> e o <b>saldo desejado</b>. A prévia mostra o plano.</span></li>
-        <li><span>Para cada passo, copie o <b>documento</b> e o <b>percentual</b> e lance no ERP.</span></li>
-        <li><span>No fim, confira o saldo no ERP e clique em <b>Ajuste OK!</b></span></li>
-      </ol></div>
-      <div class="rbox"><div class="rtit">${sv('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')}Últimos ajustes</div>${ult.length ? `<div class="ult">${ult.map(h => {
-        const cor = h.conferencia ? (h.conferencia.tipo === 'ok' ? 'ok' : 'warn') : (h.status === 'Interrompido' ? 'er' : (h.status === 'Concluído' ? '' : 'warn'));
-        return `<div class="ult-it"><span class="ponto ${cor}"></span><span><b>${h.produto && h.produto !== 'N/D' ? esc(h.produto) : 'Sem código'}</b>${esc(br(h.atual))} para ${esc(br(h.alvo))}</span><span>${esc(h.data === hojeBr() ? h.hora : h.data.slice(0,5))}</span></div>`; }).join('')}</div>` : '<p class="rvazio">Nenhum ajuste ainda.</p>'}</div>`;
-  } else if (f === 'fase2') {
-    const usa = {}; (ultimaPrevia && ultimaPrevia.passos || []).forEach(p => usa[p.docIdx] = p.q);
-    const max = Math.max(1, ...docsDisponiveis.map(d => d.tamanhoOriginal));
-    const lista = docsDisponiveis.slice(0, 14);
-    const temCod = produtoAtual.cod && produtoAtual.cod !== 'N/D';
-    esq.innerHTML = `<div class="rbox prod-r"><b>${temCod ? 'Produto ' + esc(produtoAtual.cod) : 'Ajuste manual'}</b><span>${esc(temCod ? produtoAtual.nome : 'Sem leitura de ficha')}</span></div>
-      <div class="rbox"><div class="rtit">${IC.bars}Documentos</div>${lista.length ? `<div class="barras">${lista.map((d, i) => {
-        const off = !d.ativo || foraDoPeriodo(d), q = usa[i];
-        return `<div class="barra${q ? ' usa' : ''}${off ? ' off' : ''}"><span class="nm">${esc(d.numeroDoc)}</span><span>${q ? `<span class="usa-q">usa ${br(q)}</span> de ` : ''}${br(d.tamanhoOriginal)}</span><span class="tr"><i style="width:${Math.max(4, d.tamanhoOriginal / max * 100)}%"></i></span></div>`;
-      }).join('')}${docsDisponiveis.length > 14 ? `<p class="rvazio">e mais ${docsDisponiveis.length - 14}</p>` : ''}</div>` : '<p class="rvazio">Nenhum documento ainda. Adicione em “Editar documentos”.</p>'}</div>`;
-  } else if (f === 'fase3' && sol) {
-    const s = sol;
-    esq.innerHTML = `<div class="rbox"><div class="rtit">${IC.list}Passos</div><div class="rpassos">${s.passos.map((p, i) => {
+  if (f === 'fase1') esq.innerHTML = railPendencias() + railUltimos();
+  else if (f === 'fase2') esq.innerHTML = railProduto();
+  else if (f === 'fase3' && sol) esq.innerHTML = railExecucao();
+  else esq.innerHTML = '';
+}
+
+function railPendencias(){
+  const pend = historicoGlobal.filter(h => ehPendente(h, 30));
+  const itens = pend.slice(0, 4).map(h => {
+    const m = motivoPendencia(h), semConf = !h.conferencia && h.status === 'Concluído';
+    return `<div class="pend-it">
+      <div class="l1"><b>${temCodigo(h.produto) ? esc(h.produto) : 'Sem código'}</b><span>${esc(h.data === hojeBr() ? h.hora : txt(h.data).slice(0, 5))}</span></div>
+      <div class="l2"><em class="${m.cls}">${esc(m.tx)}</em> · saldo ${esc(br(h.atual))} → ${esc(br(h.alvo))}</div>
+      <div class="pend-ac"><button class="rbtn pri" data-acao="corrigir" data-id="${esc(h.id)}">${IC.fix}Corrigir</button><button class="rbtn" data-acao="dispensar" data-id="${esc(h.id)}">${semConf ? 'Está conferido' : 'Dispensar'}</button></div>
+    </div>`;
+  }).join('');
+  return `<div class="rbox"><div class="rtit">Pendências <span class="ct${pend.length ? '' : ' zero'}">${pend.length}</span></div>
+    ${pend.length ? `<div class="pend">${itens}</div>${pend.length > 4 ? `<button class="rbtn" style="margin-top:10px" data-acao="verpend">Ver todas (${pend.length})</button>` : ''}` : '<p class="rvazio">Tudo conferido nos últimos 30 dias.</p>'}</div>`;
+}
+function railUltimos(){
+  const ult = historicoGlobal.slice(0, 6);
+  return `<div class="rbox"><div class="rtit">Últimos ajustes</div>${ult.length ? `<div class="ult">${ult.map(h => {
+    const cor = h.conferencia ? (h.conferencia.tipo === 'ok' ? 'ok' : 'warn') : (h.status === 'Interrompido' ? 'er' : (h.status === 'Concluído' ? '' : 'warn'));
+    return `<button class="ult-it" data-acao="verhist" data-id="${esc(h.id)}"><span class="ponto ${cor}"></span><span><b>${temCodigo(h.produto) ? esc(h.produto) : 'Sem código'}</b><small>${esc(br(h.atual))} → ${esc(br(h.alvo))}${h.motivo ? ' · ' + esc(h.motivo) : ''}</small></span><small>${esc(h.data === hojeBr() ? h.hora : txt(h.data).slice(0, 5))}</small></button>`;
+  }).join('')}</div>` : '<p class="rvazio">Nenhum ajuste ainda.</p>'}</div>`;
+}
+
+function railProduto(){
+  const temCod = temCodigo(produtoAtual.cod);
+  const usaQ = {}, usaNum = new Set();
+  (ultimaPrevia && ultimaPrevia.passos || []).forEach(p => { usaQ[p.docIdx] = p.q; usaNum.add(p.numeroDoc); });
+  let html = `<div class="rbox prod-r"><b>${temCod ? 'Produto ' + esc(produtoAtual.cod) : esc(produtoAtual.nome || 'Ajuste manual')}</b><span>${esc(temCod ? produtoAtual.nome : 'Sem leitura de ficha')}</span></div>`;
+
+  const fi = fichaInfo;
+  if (fi && fi.pontos.length) {
+    const vals = fi.pontos.map(p => p.s), mn = Math.min(...vals), mx = Math.max(...vals), fim = vals[vals.length - 1];
+    html += `<div class="rbox"><div class="rtit">Saldo na ficha</div>${fi.pontos.length > 1 ? graficoSaldo(fi.pontos, usaNum) : ''}
+      <div class="kv" style="margin-top:${fi.pontos.length > 1 ? 12 : 0}px">
+        <span>Período</span><b>${esc(txt(fi.de).slice(0, 5))} a ${esc(txt(fi.ate).slice(0, 5))}</b>
+        <span>Movimentos</span><b>${fi.movimentos}</b>
+        <span>Maior saldo</span><b>${br(mx)}</b>
+        <span>Menor saldo</span><b class="${mn < 0 ? 'er' : ''}">${br(mn)}</b>
+        <span>Saldo final</span><b>${br(fim)}</b>
+      </div></div>`;
+  }
+
+  const ativos = docsDisponiveis.filter(d => d.ativo && !foraDoPeriodo(d)).length;
+  const maxT = Math.max(1, ...docsDisponiveis.map(d => d.tamanhoOriginal));
+  // Mostra primeiro os documentos que o plano usa
+  const ordem = docsDisponiveis.map((d, i) => ({ d, i })).sort((a, b) => (usaQ[b.i] ? 1 : 0) - (usaQ[a.i] ? 1 : 0)).slice(0, 10);
+  html += `<div class="rbox"><div class="rtit">Documentos <span style="text-transform:none;letter-spacing:0">${ativos} de ${docsDisponiveis.length}</span></div>${ordem.length ? `<div class="barras">${ordem.map(({ d, i }) => {
+    const off = !d.ativo || foraDoPeriodo(d), q = usaQ[i];
+    return `<div class="barra${q ? ' usa' : ''}${off ? ' off' : ''}"><span class="bn">${esc(d.numeroDoc)}</span><span>${q ? `<span class="usa-q">usa ${br(q)}</span> de ` : ''}${br(d.tamanhoOriginal)}</span><span class="tr"><i style="width:${Math.max(4, d.tamanhoOriginal / maxT * 100)}%"></i></span></div>`;
+  }).join('')}${docsDisponiveis.length > 10 ? `<p class="rvazio">e mais ${docsDisponiveis.length - 10}</p>` : ''}</div>` : '<p class="rvazio">Nenhum documento ainda.</p>'}</div>`;
+
+  if (temCod) {
+    const p = lerDB()[produtoAtual.cod], alts = (p && p.alteracoes || []).slice(0, 3);
+    if (alts.length) html += `<div class="rbox"><div class="rtit">Ajustes anteriores</div><div class="hprod">${alts.map(a =>
+      `<div><span>${esc(txt(a.dataHora).split(' às ')[0])}</span><b>${esc(a.dePara)}</b></div>`).join('')}</div></div>`;
+  }
+  return html;
+}
+
+/* Gráfico de linha do saldo da ficha (SVG feito à mão, sem biblioteca) */
+function graficoSaldo(pontos, usaNum){
+  const W = 268, H = 92, P = 6, n = pontos.length;
+  const vals = pontos.map(p => p.s), mn = Math.min(...vals, 0), mx = Math.max(...vals), amp = (mx - mn) || 1;
+  const x = i => P + i * (W - 2 * P) / (n - 1), y = v => P + (mx - v) / amp * (H - 2 * P);
+  const linha = pontos.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(p.s).toFixed(1)}`).join('');
+  const area = `${linha}L${x(n - 1).toFixed(1)} ${(H - P)}L${x(0).toFixed(1)} ${(H - P)}Z`;
+  const iMin = vals.indexOf(Math.min(...vals));
+  const zero = mn < 0 || Math.min(...vals) <= 0 ? `<path d="M${P} ${y(0).toFixed(1)}H${W - P}" stroke="rgba(238,127,142,.5)" stroke-dasharray="3 3" stroke-width="1"/>` : '';
+  const usados = pontos.map((p, i) => p.t === 'REQ' && usaNum.has(p.n) ? `<circle cx="${x(i).toFixed(1)}" cy="${y(p.s).toFixed(1)}" r="3.2" fill="#aab8f5" stroke="#13161e" stroke-width="1.5"><title>REQ ${esc(p.n)} (${esc(p.d)}): saldo ${esc(br(p.s))}</title></circle>` : '').join('');
+  return `<div class="graf"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolução do saldo na ficha">
+    <path d="${area}" fill="rgba(108,130,238,.12)" stroke="none"/>${zero}
+    <path d="${linha}" fill="none" stroke="#6c82ee" stroke-width="1.8"/>
+    ${usados}
+    <circle cx="${x(iMin).toFixed(1)}" cy="${y(vals[iMin]).toFixed(1)}" r="3.6" fill="#e6c35c" stroke="#13161e" stroke-width="1.5"><title>Menor saldo: ${esc(br(vals[iMin]))} (${esc(pontos[iMin].d)})</title></circle>
+  </svg><div class="graf-leg"><span>${esc(txt(pontos[0].d).slice(0, 5))}</span><span>${esc(txt(pontos[n - 1].d).slice(0, 5))}</span></div>
+  <div class="graf-ch"><span><i style="background:#e6c35c"></i>Menor saldo</span>${usaNum.size ? '<span><i style="background:#aab8f5"></i>REQs do plano</span>' : ''}</div></div>`;
+}
+
+function railExecucao(){
+  const s = sol, n = s.passos.length, feitos = s.passos.filter(completo);
+  const pcs = r4(feitos.reduce((a, p) => a + p.q, 0)), fr = n ? feitos.length / n : 0, C = 2 * Math.PI * 26;
+  return `<div class="rbox"><div class="rtit">Progresso</div><div class="anel">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" stroke="rgba(255,255,255,.08)"/><circle cx="32" cy="32" r="26" stroke="${fr === 1 ? '#5ccf9c' : '#6c82ee'}" stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${(C * (1 - fr)).toFixed(2)}" transform="rotate(-90 32 32)" style="transition:stroke-dashoffset .5s var(--e)"/></svg>
+      <div><b>${feitos.length} de ${n} passos</b><span>${br(pcs)} de ${br(s.mov)} pçs</span>${s.motivo ? `<span>${esc(s.motivo)}</span>` : ''}</div>
+    </div></div>
+    <div class="rbox"><div class="rtit">Passos</div><div class="rpassos">${s.passos.map((p, i) => {
       const c = completo(p) ? ' feito' : (p.pulado ? ' pulado' : '');
       return `<button class="rp${c}${i === s.idx ? ' atual' : ''}" onclick="irPasso(${i})"><span class="n">${i + 1}</span><span><b>${esc(p.numeroDoc)}</b><small>${esc(p.pctStr)}%</small></span><span class="mk"><span class="${p.cDoc ? 'on' : ''}" title="Documento copiado">D</span><span class="${p.cPct ? 'on' : ''}" title="Percentual copiado">%</span></span></button>`;
     }).join('')}</div></div>`;
-  }
+}
 
-  const at = {
-    fase1: [['Colar a ficha', 'Ctrl+V'], ['Ler o texto digitado', 'Ctrl+Enter']],
-    fase2: [['Ir para o saldo desejado', 'Enter'], ['Calcular e copiar o 1º documento', 'Enter'], ['Fechar painéis', 'Esc']],
-    fase3: [['Copiar documento, depois %', 'Enter'], ['Trocar para o ERP', 'Alt+Tab'], ['Passo anterior ou próximo', '← →'], ['Desmarcar passo', 'Ctrl+Z']]
-  }[f] || [];
-  $('railAtalhos').innerHTML = at.map(([t, k]) => `<div class="atalho"><span>${t}</span><kbd>${k}</kbd></div>`).join('');
-
+/* Lateral direita: o painel do dia */
+function renderRailDir(){
   const hj = historicoGlobal.filter(h => h.data === hojeBr());
   const conf = hj.filter(h => h.conferencia && h.conferencia.tipo === 'ok').length;
+  const dif = hj.filter(h => h.conferencia && h.conferencia.tipo !== 'ok').length;
   const pcs = r4(hj.reduce((a, h) => a + (Number(h.totalMovido) || 0), 0));
-  $('railHoje').innerHTML = `<div><b>${hj.length}</b><span>ajustes</span></div><div><b>${conf}</b><span>conferidos</span></div><div><b>${br(pcs)}</b><span>peças</span></div>`;
+  $('railHoje').innerHTML = `<div><b>${hj.length}</b><span>ajustes</span></div><div><b>${conf}</b><span>conferidos</span></div><div title="${esc(br(pcs))} peças movimentadas"><b>${br(pcs)}</b><span>peças</span></div><div class="${dif ? 'er' : ''}"><b>${dif}</b><span>diferenças</span></div>`;
+
+  const letras = ['D','S','T','Q','Q','S','S'], dias = [];
+  for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); dias.push(d); }
+  const cont = dias.map(d => { const k = d.toLocaleDateString('pt-BR'); return historicoGlobal.filter(h => h.data === k).length; });
+  const mx = Math.max(1, ...cont), tot = cont.reduce((a, b) => a + b, 0);
+  $('railSemana').innerHTML = dias.map((d, i) => `<div class="${i === 6 ? 'hj' : ''}" title="${esc(d.toLocaleDateString('pt-BR').slice(0, 5))}: ${cont[i]} ${cont[i] === 1 ? 'ajuste' : 'ajustes'}"><i style="height:${Math.max(3, cont[i] / mx * 52)}px"></i><span>${letras[d.getDay()]}</span></div>`).join('');
+  $('railSemanaTot').textContent = tot ? `${tot} ${tot === 1 ? 'ajuste' : 'ajustes'}` : '';
 }
 window.addEventListener('resize', () => { clearTimeout(window.__rz); window.__rz = setTimeout(atualizarRails, 150); });
 
@@ -1597,6 +2063,7 @@ if ('serviceWorker' in navigator) {
 /* ===== INÍCIO ===== */
 carregarConfig();
 carregarHistorico();
+renderMotivos(); atualizarRails();
 restaurarMemoria().finally(() => {
   if (!restaurarSessao()) { mudarTela('fase1'); setTimeout(() => $('textoPdf').focus(), 200); }
 });
