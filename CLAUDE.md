@@ -30,6 +30,8 @@ documentos de requisição (REQ). Fluxo em 3 fases:
   num campo por código, use `fmtCampo` (nunca o número cru com ponto, que seria lido como milhar).
 - As laterais mostram só informação útil (pendências, gráfico da ficha, painel do dia, calculadora,
   relatórios). Não colocar textos de tutorial ou listas de atalhos nelas.
+- Cada produto salvo pode ter `lembrete` ({texto, quando}); `null` quer dizer que foi apagado (não restaurar do IndexedDB).
+- Escolher REQ é opcional (`fixo` no documento). Sem nenhuma escolhida, vale a estratégia normal (menos documentos).
 - Mantenha tudo em um único `index.html`, sem dependências externas além da fonte do Google.
 - Antes de terminar, revise se não há erro de JavaScript e se o fluxo das 3 fases continua funcionando.
 
