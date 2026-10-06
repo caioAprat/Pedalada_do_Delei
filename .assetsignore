@@ -1,0 +1,8 @@
+# Arquivos que NÃO vão para o site publicado
+.git
+.github
+.claude
+.assetsignore
+wrangler.jsonc
+CLAUDE.md
+node_modules
