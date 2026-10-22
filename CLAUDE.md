@@ -41,6 +41,9 @@ documentos de requisição (REQ). Fluxo em 3 fases:
   `make-interfaces-feel-better`, `gpt-taste` e `frontend-skill`.
 - Siga essas skills sem quebrar as regras acima: tudo continua num único `index.html`, sem React,
   Tailwind, shadcn ou outras dependências (as skills de React/Vercel/Supabase não se aplicam a este app).
+- Direção visual atual (v5.1.0): "ficha de almoxarifado". Fontes Archivo (textos) e IBM Plex Mono (números,
+  rótulos e documentos); grafite quente no tema escuro, papel no claro; laterais sem cartões, separadas por fios.
+  Mantenha essa linha em mudanças futuras.
 
 ## Regras de cálculo (confirmadas pela usuária)
 - Estorno de saídas (aumentar o saldo): não pode tirar 100% de um documento. Usa a margem
