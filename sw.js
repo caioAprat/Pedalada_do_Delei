@@ -1,7 +1,7 @@
 // Pedalada do Delei - Service Worker
 // IMPORTANTE: sempre que publicar uma versão nova do app, aumente o número abaixo
 // (e o VERSAO dentro do index.html). É isso que faz aparecer o aviso "Nova versão disponível".
-const VERSAO = '5.0.0';
+const VERSAO = '5.1.0';
 const CACHE = 'pedalada-app-' + VERSAO;
 const CACHE_FONTES = 'pedalada-fontes';
 const ARQUIVOS = ['./', './index.html', './manifest.json', './icon.svg'];
