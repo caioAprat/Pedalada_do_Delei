@@ -35,6 +35,13 @@ documentos de requisição (REQ). Fluxo em 3 fases:
 - Mantenha tudo em um único `index.html`, sem dependências externas além da fonte do Google.
 - Antes de terminar, revise se não há erro de JavaScript e se o fluxo das 3 fases continua funcionando.
 
+## Skills de design (pedido da usuária)
+- As skills ficam em `.claude/skills/` (pacote julianromli/ai-skills). Em qualquer mudança de visual
+  ou interface, carregue ANTES: `frontend-design`, `ui-ux-pro-max`, `web-design-guidelines`,
+  `make-interfaces-feel-better`, `gpt-taste` e `frontend-skill`.
+- Siga essas skills sem quebrar as regras acima: tudo continua num único `index.html`, sem React,
+  Tailwind, shadcn ou outras dependências (as skills de React/Vercel/Supabase não se aplicam a este app).
+
 ## Regras de cálculo (confirmadas pela usuária)
 - Estorno de saídas (aumentar o saldo): não pode tirar 100% de um documento. Usa a margem
   configurável (padrão 95%) por documento.
