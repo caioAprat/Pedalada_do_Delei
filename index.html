@@ -491,7 +491,10 @@ body.claro .lembrete.ok{color:#17744a}
 .dif-row{display:flex;gap:8px;margin-top:12px}
 .dif-row input{font-size:16px;padding:11px 14px}
 .conf-res{display:flex;align-items:center;justify-content:center;gap:10px;font-size:15.5px;font-weight:700}
-.conf-res.ok{color:var(--ok)}.conf-res.dif{color:var(--warn)}
+.conf-res.ok{color:var(--ok)}.conf-res.dif{color:var(--warn)}.conf-res.rec{color:var(--er)}
+.conf-tx+.conf-tx{margin-top:10px}
+.fim.rec .fim-ico{color:var(--er);background:rgba(255,111,97,.1);box-shadow:inset 0 0 0 2px rgba(255,111,97,.5)}
+.nota.rec{color:var(--er)}
 
 /* ===== Painéis laterais ===== */
 .ov{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.55);backdrop-filter:blur(5px);opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
@@ -605,6 +608,7 @@ input[type=range]{width:140px;padding:0;border:0;background:none;accent-color:va
 .dlg h3{font-size:20px;font-weight:800;font-stretch:110%;letter-spacing:-.01em}
 .dlg p{margin-top:8px;font-size:14.5px;color:var(--mu);line-height:1.5}
 .dlg input{margin-top:14px;font-family:var(--f-ui);font-size:15px;font-weight:600}
+.dlg textarea{margin-top:14px;height:150px;font-size:12.5px}
 .dlg-ac{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
 .dlg-sug{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .dlg-ac .perigo{background:#d9453a;box-shadow:none}
@@ -754,6 +758,7 @@ body.modo-leve .tile::before{display:none}
     <h3 id="dlgTit"></h3>
     <p id="dlgTx"></p>
     <input type="text" id="dlgIn" hidden>
+    <textarea id="dlgArea" rows="6" hidden></textarea>
     <div class="dlg-sug" id="dlgSug" hidden></div>
     <div class="dlg-ac"><button class="btn btn-sec" id="dlgNao">Cancelar</button><button class="btn btn-pri" id="dlgSim">Confirmar</button></div>
   </div>
@@ -781,6 +786,7 @@ body.modo-leve .tile::before{display:none}
         <option value="pend">Pendências</option>
         <option value="conf">Conferidos</option>
         <option value="dif">Com diferença</option>
+        <option value="rec">Recusados pelo ERP</option>
         <option value="Concluído">Concluídos</option>
         <option value="Interrompido">Interrompidos</option>
       </select>
@@ -936,7 +942,7 @@ body.modo-leve .tile::before{display:none}
    Pedalada do Delei
    Ao publicar uma versão nova, aumente VERSAO aqui e no sw.js.
    ========================================================= */
-const VERSAO = '5.1.0';
+const VERSAO = '5.2.0';
 
 const $ = id => document.getElementById(id);
 const DB = 'pedalada_db_produtos', BK = DB + '_bkp', HIST_KEY = 'pedalada_hist_v3',
@@ -1193,18 +1199,19 @@ function restaurarSessao(){
 function toast(msg, tipo){ const t = $('toast'); t.textContent = msg; t.className = 'on ' + (tipo || 'err'); clearTimeout(tt); tt = setTimeout(() => t.className = '', 4500); }
 
 let dlgResolver = null;
-function dialogo({ titulo, texto = '', campo = false, valor = '', confirmar = 'Confirmar', perigo = false, sugestoes = null }){
+function dialogo({ titulo, texto = '', campo = false, area = false, valor = '', confirmar = 'Confirmar', perigo = false, sugestoes = null }){
   return new Promise(res => {
     if (dlgResolver) dlgResolver(null);
     dlgResolver = res;
     $('dlgTit').textContent = titulo; $('dlgTx').textContent = texto; $('dlgTx').hidden = !texto;
     const inp = $('dlgIn'); inp.hidden = !campo; inp.value = valor;
+    const ta = $('dlgArea'); ta.hidden = !area; ta.value = area ? valor : '';
     const sug = $('dlgSug'); sug.hidden = !(campo && sugestoes && sugestoes.length);
     sug.innerHTML = sug.hidden ? '' : sugestoes.map(t => `<button type="button" class="chip-m">${esc(t)}</button>`).join('');
     sug.onclick = e => { const b = e.target.closest('.chip-m'); if (b) { inp.value = b.textContent; inp.focus(); } };
     const sim = $('dlgSim'); sim.textContent = confirmar; sim.classList.toggle('perigo', perigo);
     $('dlg').hidden = false;
-    setTimeout(() => (campo ? inp : sim).focus(), 30);
+    setTimeout(() => (area ? ta : campo ? inp : sim).focus(), 30);
   });
 }
 function fecharDialogo(resultado){
@@ -1213,7 +1220,7 @@ function fecharDialogo(resultado){
   const r = dlgResolver; dlgResolver = null;
   if (r) r(resultado);
 }
-$('dlgSim').onclick = () => fecharDialogo($('dlgIn').hidden ? true : $('dlgIn').value);
+$('dlgSim').onclick = () => fecharDialogo(!$('dlgArea').hidden ? $('dlgArea').value : ($('dlgIn').hidden ? true : $('dlgIn').value));
 $('dlgNao').onclick = () => fecharDialogo(null);
 $('dlg').addEventListener('click', e => { if (e.target === $('dlg')) fecharDialogo(null); });
 const dialogoAberto = () => !$('dlg').hidden;
@@ -1250,7 +1257,7 @@ function mudarTela(id){
 }
 
 /* Status final de um ajuste, conforme os passos copiados */
-const statusDe = s => s.passos.some(p => !completo(p)) ? 'Com pendências' : (s.rest > 0 ? 'Parcial' : 'Concluído');
+const statusDe = s => s.recusado ? 'Recusado pelo ERP' : (s.passos.some(p => !completo(p)) ? 'Com pendências' : (s.rest > 0 ? 'Parcial' : 'Concluído'));
 
 /* Registra o ajuste em andamento como "Interrompido" se algo já foi copiado.
    Se ele já tinha terminado e você voltou e mudou algum passo, atualiza o status no histórico. */
@@ -1292,7 +1299,7 @@ function corrigirAjuste(id){
   limparGeral();
   const c = h.conferencia;
   correcao = { id:h.id, produto:txt(h.produto), nome:txt(h.nome), alvo:h.alvo,
-    saldoERP: c && c.tipo !== 'ok' && c.saldoERP != null ? c.saldoERP : null, motivo: MOTIVOS.includes(h.motivo) ? h.motivo : '' };
+    saldoERP: c && c.tipo === 'diferenca' && c.saldoERP != null ? c.saldoERP : null, motivo: MOTIVOS.includes(h.motivo) ? h.motivo : '', recusado: !!(c && c.tipo === 'recusado') };
   renderFaixaCorrecao(); atualizarRails();
 }
 function cancelarCorrecao(){ correcao = null; renderFaixaCorrecao(); salvarSessao(); atualizarRails(); }
@@ -1301,7 +1308,7 @@ function renderFaixaCorrecao(){
   f.hidden = !c;
   if (!c) { f.innerHTML = ''; return; }
   const temCod = c.produto && c.produto !== 'N/D';
-  f.innerHTML = `<span>${IC.fix} Corrigindo ${temCod ? `o produto <b>${esc(c.produto)}</b>` : 'um ajuste sem código'}: saldo desejado <b>${esc(br(c.alvo))}</b>${c.saldoERP != null ? `, ERP mostrava <b>${esc(br(c.saldoERP))}</b>` : ''}.</span><button class="rbtn" onclick="cancelarCorrecao()">Cancelar</button>`;
+  f.innerHTML = `<span>${IC.fix} ${c.recusado ? 'Tentando de novo' : 'Corrigindo'} ${temCod ? `o produto <b>${esc(c.produto)}</b>` : 'um ajuste sem código'}${c.recusado ? ' (o ERP recusou antes)' : ''}: saldo desejado <b>${esc(br(c.alvo))}</b>${c.saldoERP != null ? `, ERP mostrava <b>${esc(br(c.saldoERP))}</b>` : ''}.</span><button class="rbtn" onclick="cancelarCorrecao()">Cancelar</button>`;
 }
 /* Ao entrar na fase 2 durante uma correção, já preenche o que se sabe */
 function aplicarCorrecao(saldoLido){
@@ -1410,10 +1417,11 @@ function preencherInfoProduto(){
   $('lblCodProd').textContent = temCod ? 'Produto ' + produtoAtual.cod : 'Produto não informado';
   $('lblNomeProd').textContent = temCod ? produtoAtual.nome : (produtoAtual.nome || 'Sem leitura de ficha');
   const aviso = $('lblAvisoHist');
-  const h = temCod ? historicoGlobal.find(x => x.produto === produtoAtual.cod && x.data === hojeBr()) : null;
+  // Não avisa de "ajuste repetido" quando ela está justamente tentando de novo o mesmo produto
+  const h = temCod && !(correcao && correcao.produto === produtoAtual.cod) ? historicoGlobal.find(x => x.produto === produtoAtual.cod && x.data === hojeBr()) : null;
   if (h) {
-    const conf = h.conferencia ? (h.conferencia.tipo === 'ok' ? ', conferido' : ', com diferença no ERP') : '';
-    aviso.innerHTML = IC.warn + `<span>Este produto já teve um ajuste hoje às ${esc(h.hora)}: saldo ${esc(br(h.atual))} para ${esc(br(h.alvo))} (${esc(txt(h.status).toLowerCase() || 'sem status')}${conf}). Confira se não é repetido.</span>`;
+    const conf = h.conferencia ? (h.conferencia.tipo === 'ok' ? ', conferido' : (h.conferencia.tipo === 'diferenca' ? ', com diferença no ERP' : '')) : '';
+    aviso.innerHTML = IC.warn + `<span>Este produto já teve um ajuste hoje às ${esc(h.hora)}: saldo ${esc(br(h.atual))} para ${esc(br(h.alvo))} (${esc(h.status === 'Recusado pelo ERP' ? 'recusado pelo ERP' : (txt(h.status).toLowerCase() || 'sem status'))}${conf}). Confira se não é repetido.</span>`;
     aviso.hidden = false;
   } else aviso.hidden = true;
   mostrarLembrete(false);
@@ -1515,6 +1523,46 @@ function montarPasso(numeroDoc, tam, q, extra = {}){
   return { numeroDoc, tamanhoOriginal: tam, q, pctNum, pctStr: pctNum.toFixed(4).replace('.', ','), erpQtd: r4(tam * pctNum / 100), dec: !Number.isInteger(q), ...extra };
 }
 const nFixos = () => docsDisponiveis.filter(d => d.fixo).length;
+/* ===== O ERP RECUSOU O AJUSTE ===== */
+const npcs = n => `${br(n)} ${Number(n) === 1 ? 'peça' : 'peças'}`;
+/* Lê a lista de erros do ERP ("Estoque insuficiente para ajustar requisição ... estoque ficará negativo ...") */
+function lerErrosErp(texto){
+  const t = txt(texto).replace(/\s+/g, ' ');
+  const re = /REQ\s+(\d+)\s+item\s+\d+\s+data da baixa\s+(\d{1,2}\/\d{1,2}\/\d{2,4}).*?estoque ficar[áa] negativo\s+(.*?)(?=\bERRO\b|\bReq\.|$)/gi;
+  const itens = []; let m;
+  while ((m = re.exec(t)) !== null) {
+    const parte = m[3], aPartir = (parte.match(/a partir de\s+(\d{1,2}\/\d{1,2}\/\d{2,4})/i) || [])[1] || null;
+    itens.push({ doc:m[1], dataBaixa:m[2], naBaixa:/na data da baixa/i.test(parte), aPartir });
+  }
+  const datas = [];
+  itens.forEach(i => { if (i.naBaixa) datas.push(i.dataBaixa); if (i.aPartir) datas.push(i.aPartir); });
+  datas.sort((a, b) => (parseData(a) ?? 0) - (parseData(b) ?? 0));
+  return { itens, primeira: datas[0] || null };
+}
+/* Compara com a ficha: quantas peças a menos o ERP está enxergando na primeira data negativa */
+function faltaVsFicha(s, dataNeg){
+  const fi = fichaInfo, alvoN = parseData(dataNeg);
+  if (s.op !== 'adicao' || !fi || !Array.isArray(fi.pontos) || !fi.pontos.length || alvoN == null) return null;
+  let saldo = 0; fi.pontos.forEach(p => { const n = parseData(p.d); if (n != null && n <= alvoN) saldo = p.s; });
+  const tirado = s.passos.reduce((a, p) => { const n = parseData(p.data); return a + (n != null && n <= alvoN ? p.q : 0); }, 0);
+  const proj = r4(saldo - tirado);
+  if (proj < 0) return null;
+  const inteiro = fi.pontos.every(p => Number.isInteger(p.s)) && s.passos.every(p => Number.isInteger(p.q));
+  return { proj, falta: r4(proj + (inteiro ? 1 : .0001)) };
+}
+/* Valor menor que o recusado: de 1 em 1 peça (quantidade inteira) ou pela metade */
+const menorQue = q => Number.isInteger(q) ? q - 1 : (q / 2 < .0001 ? 0 : r4(q / 2));
+/* O que o ERP já recusou neste produto (e ainda não foi resolvido) limita a próxima tentativa */
+function limitesRecusados(cod, op){
+  const m = {};
+  if (!temCodigo(cod)) return m;
+  historicoGlobal.forEach(h => {
+    const c = h && h.conferencia;
+    if (!c || c.tipo !== 'recusado' || h.resolvido || h.produto !== cod || h.op !== op) return;
+    (h.passos || []).forEach(p => { if (p.copiado && p.q > 0) m[p.numeroDoc] = Math.min(m[p.numeroDoc] ?? Infinity, menorQue(p.q)); });
+  });
+  return m;
+}
 function calcularMaxEstorno(size){
   const ms = config.margemSeguranca / 100;
   if (ms >= 1) return size;
@@ -1559,17 +1607,20 @@ function planejar(atual, alvo){
     return b.d.tamanhoOriginal - a.d.tamanhoOriginal;
   });
 
+  const recusados = limitesRecusados(produtoAtual.cod, op), limitados = [];
   let rest = dif, alocado = 0; const passos = [];
   for (const { d, i } of lista) {
     if (rest <= 0) break;
     let cap = limite(d);
     if (op === 'adicao') cap = Math.min(cap - alocado, atual - alocado); // nunca deixa o saldo negativo
-    const q = r4(Math.min(rest, cap));
+    let q = r4(Math.min(rest, cap));
+    const lim = recusados[d.numeroDoc];
+    if (lim != null && q > lim) { limitados.push({ doc:d.numeroDoc, max:lim }); q = lim; }   // o ERP já recusou mais que isso
     if (!(q > 0)) continue;
     passos.push(montarPasso(d.numeroDoc, d.tamanhoOriginal, q, { docIdx:i, data:d.data || '', saldoMin:d.saldoMin ?? null }));
     rest = r4(rest - q); alocado = r4(alocado + q);
   }
-  return { op, dif, passos, rest, mov: r4(dif - rest), escolhidos: fixos.length };
+  return { op, dif, passos, rest, mov: r4(dif - rest), escolhidos: fixos.length, limitados };
 }
 
 const rotuloOp = op => op === 'estorno' ? 'Estornar saídas' : 'Adicionar saídas';
@@ -1596,7 +1647,7 @@ function atualizarPrevia(){
       <div class="prev-cel ${n ? '' : 'er'}"><span>Documentos usados${pl.escolhidos ? ' (escolhidos por você)' : ''}</span><b>${n ? n + ': ' + pl.passos.map(p => esc(p.numeroDoc)).join(', ') : 'Nenhum'}</b></div>
       <div class="prev-cel ${pl.rest > 0 ? 'er' : 'ok'}"><span>Cobertura</span><b>${pl.rest > 0 ? 'Faltam ' + br(pl.rest) + ' pçs' : 'Cobre tudo'}</b></div>
       <div class="prev-cel ${decs.length ? 'warn' : ''}" style="grid-column:1/-1"><span>Decimais no ERP</span><b>${decs.length ? 'Marcar no passo ' + decs.join(', ') : 'Não precisa marcar'}</b></div>
-    </div>` + (travouSaldo ? `<div class="prev-nota">${IC.warn}<span>O saldo da ficha não permite adicionar tudo: em alguma data depois destes documentos ele ficaria negativo. Cole uma ficha com mais REQs ou ajuste um valor menor.</span></div>` : '') + (semSaldo ? `<div class="prev-nota">${IC.info}<span>A ficha colada não trouxe a coluna de saldo. Confira se o saldo continua positivo depois da data do documento, ou informe o “Saldo mín.” em Editar documentos.</span></div>` : '');
+    </div>` + (pl.limitados && pl.limitados.length ? `<div class="prev-nota">${IC.warn}<span>O ERP já recusou quantidades maiores ${pl.limitados.length === 1 ? 'nesta REQ' : 'nestas REQs'}: ${pl.limitados.map(l => `${esc(l.doc)} (máx. ${br(l.max)})`).join(', ')}. O plano respeita isso.</span></div>` : '') + (travouSaldo ? `<div class="prev-nota">${IC.warn}<span>O saldo da ficha não permite adicionar tudo: em alguma data depois destes documentos ele ficaria negativo. Cole uma ficha com mais REQs ou ajuste um valor menor.</span></div>` : '') + (semSaldo ? `<div class="prev-nota">${IC.info}<span>A ficha colada não trouxe a coluna de saldo. Confira se o saldo continua positivo depois da data do documento, ou informe o “Saldo mín.” em Editar documentos.</span></div>` : '');
   }
   ecoNumero('saldoAtual', 'ecoAtual'); ecoNumero('saldoAlvo', 'ecoAlvo');
   if (faseAtual === 'fase2') salvarSessao();
@@ -1625,7 +1676,7 @@ function processarFase2(copiarPrimeiro){
   const pl = planejar(atual, alvo);
   const msgs = { igual:['O saldo atual já é igual ao desejado.','warn'], negativo:['O saldo desejado não pode ser negativo.','err'], semdocs:['Ative ou adicione pelo menos um documento.','err'] };
   if (pl.erro) { const [t, k] = msgs[pl.erro] || ['Confira os dados.','err']; toast(t, k); return; }
-  if (!pl.passos.length) { toast('Nenhum documento consegue cobrir este ajuste. Confira o “Saldo mín.” dos documentos.', 'err'); return; }
+  if (!pl.passos.length) { toast(pl.limitados && pl.limitados.length ? 'Pelo que o ERP já recusou, nenhuma REQ aceita este ajuste. Dispense a pendência ou use o ajuste de saldo sem documento.' : 'Nenhum documento consegue cobrir este ajuste. Confira o “Saldo mín.” dos documentos.', 'err'); return; }
 
   abandonar();
   sol = {
@@ -1732,37 +1783,67 @@ function renderFim(cls){
   const pend = s.passos.filter(p => !completo(p));
   const novoStatus = statusDe(s);
   if (!s.finalizado || s.status !== novoStatus) { s.finalizado = true; s.status = novoStatus; registrar(novoStatus); }
-  const bom = !pend.length && !(s.rest > 0);
-  const titulo = pend.length ? 'Ajuste com passos pendentes' : (s.rest > 0 ? 'Ajuste parcial' : 'Ajuste concluído');
-  let texto = pend.length
+  const e = historicoGlobal.find(h => h.id === s.calcId);
+  const c = e && e.conferencia, rec = !!(c && c.tipo === 'recusado');
+  const bom = !rec && !pend.length && !(s.rest > 0);
+  const titulo = rec ? 'O ERP recusou o ajuste' : (pend.length ? 'Ajuste com passos pendentes' : (s.rest > 0 ? 'Ajuste parcial' : 'Ajuste concluído'));
+  let texto = rec ? textoRecusa(c) : pend.length
     ? (pend.length === 1
         ? `O passo do documento <b>${esc(pend[0].numeroDoc)}</b> não foi copiado. Volte nele se ainda precisar lançar.`
         : `Os passos dos documentos <b>${pend.map(p => esc(p.numeroDoc)).join(', ')}</b> não foram copiados. Volte neles se ainda precisar lançar.`)
     : (s.rest > 0 ? `Faltaram <b>${br(s.rest)} pçs</b> sem documento para cobrir.` : `${n} ${n === 1 ? 'documento processado' : 'documentos processados'}.`);
-  const e = historicoGlobal.find(h => h.id === s.calcId);
-  const c = e && e.conferencia;
   let conf;
   if (!c) {
     conf = `<p class="conf-tx">Confira no ERP. O saldo deve estar em <b>${br(s.alvo)}</b>.</p>
       <div class="fim-acoes">
         <button class="btn nav pri btn-okaj" onclick="conferir('ok')">${IC.check}Ajuste OK!</button>
         <button class="btn nav" onclick="mostrarDiferenca()">Deu diferença</button>
+        <button class="btn nav" onclick="conferir('recusado')">O ERP recusou</button>
       </div>
       <div class="dif-row" id="difRow" hidden><input type="text" inputmode="decimal" autocomplete="off" id="saldoErp" placeholder="Saldo que aparece no ERP"><button class="btn nav pri" onclick="conferir('dif')">Registrar</button></div>
       <div style="margin-top:10px"><button class="link" onclick="limparGeral()">Começar outro ajuste sem conferir</button></div>`;
+  } else if (rec) {
+    conf = `<div class="conf-res rec">${IC.warn}Nada foi contado como lançado.</div>
+      <p class="conf-tx" style="margin-top:10px">Dá para tentar de novo: o app pede uma quantidade menor nessa REQ. Se o ERP continuar recusando, use o ajuste de saldo sem documento.</p>
+      <div class="fim-acoes"><button class="btn nav pri" data-acao="corrigir" data-id="${esc(e.id)}">${IC.fix}Tentar de novo</button><button class="btn nav" onclick="limparGeral()">Novo ajuste</button></div>`;
   } else {
     conf = (c.tipo === 'ok'
       ? `<div class="conf-res ok">${IC.ok}Ajuste conferido no ERP.</div>`
       : `<div class="conf-res dif">${IC.warn}O ERP mostra ${br(c.saldoERP)} pçs. Diferença de ${br(c.diferenca)} pçs.</div>`) +
       `<div class="fim-acoes"><button class="btn nav pri" onclick="limparGeral()">Novo ajuste</button></div>`;
   }
-  $('listaPassos').innerHTML = `<div class="wz fim ${bom ? 'ok' : 'er'}${cls || ''}" id="wizCard">
+  $('listaPassos').innerHTML = `<div class="wz fim ${rec ? 'rec' : (bom ? 'ok' : 'er')}${cls || ''}" id="wizCard">
     <div class="fim-ico">${bom ? IC.ok : IC.warn}</div><h3>${titulo}</h3><p>${texto}</p>
     <div class="conf" id="confBox">${conf}</div></div>`;
   renderPip();
 }
+/* Texto da tela final quando o ERP recusa: o que o erro mostra, em palavras simples */
+function textoRecusa(c){
+  let t = 'Em geral o ERP não grava nada quando recusa. Emita a ficha de novo para confirmar.';
+  if (c.negativaEm) {
+    t = `O ERP vê o estoque <b>negativo a partir de ${esc(c.negativaEm)}</b>. `
+      + (c.faltam != null ? `Pela ficha, nessa data sobraria <b>${npcs(c.projFicha)}</b>: o ERP está contando <b>pelo menos ${npcs(c.faltam)} a menos</b> do que a ficha mostra. Veja no ERP se alguma entrada (OP) não está valendo ou se a REQ tem quantidade maior que a da ficha.` : '')
+      + ' ' + t;
+  }
+  return t;
+}
+async function conferirRecusado(){
+  const s = sol; if (!s) return;
+  const e = historicoGlobal.find(h => h.id === s.calcId) || registrar(s.status || statusDe(s)); if (!e) return;
+  const t = await dialogo({ titulo:'O ERP recusou o ajuste', texto:'Se puder, copie a lista de erros que o ERP mostrou e cole aqui. O app descobre a partir de que data o ERP vê o estoque negativo e usa isso na próxima tentativa. Pode deixar em branco.', area:true, confirmar:'Registrar' });
+  if (t === null || sol !== s) return;
+  const lido = lerErrosErp(t), fv = faltaVsFicha(s, lido.primeira);
+  s.recusado = true; s.status = 'Recusado pelo ERP';
+  e.conferencia = { tipo:'recusado', hora: horaAgora(), texto: txt(t).trim().slice(0, 4000), negativaEm: lido.primeira, nErros: lido.itens.length,
+    projFicha: fv ? fv.proj : null, faltam: fv ? fv.falta : null };
+  e.status = 'Recusado pelo ERP'; e.totalMovido = 0;
+  salvarHistorico(); registrarProduto(s, e); salvarSessao();
+  tocarSom('warn'); toast('Recusa registrada. Nada foi contado como lançado.', 'warn');
+  renderFim(''); atualizarRails();
+}
 function mostrarDiferenca(){ const r = $('difRow'); r.hidden = false; $('saldoErp').focus(); }
 function conferir(tipo){
+  if (tipo === 'recusado') { conferirRecusado(); return; }
   const s = sol; if (!s) return;
   // Se o registro foi apagado do histórico enquanto esta tela estava aberta, ele é criado de novo
   const e = historicoGlobal.find(h => h.id === s.calcId) || registrar(s.status || statusDe(s)); if (!e) return;
@@ -1771,6 +1852,8 @@ function conferir(tipo){
     renderPip();
     // Se este ajuste corrigia outro, o anterior sai das pendências
     if (s.corrigeId) { const o = historicoGlobal.find(h => h.id === s.corrigeId); if (o) o.resolvido = true; }
+    // Deu certo: as recusas anteriores deste produto deixam de limitar os próximos planos
+    historicoGlobal.forEach(h => { if (h !== e && temCodigo(h.produto) && h.produto === s.produto.cod && h.conferencia && h.conferencia.tipo === 'recusado') h.resolvido = true; });
     salvarHistorico(); registrarProduto(s, e);
     tocarSom('conf'); toast('Ajuste conferido.', 'ok'); confete();
     const b = document.querySelector('.btn-okaj'); if (b) { b.disabled = true; b.innerHTML = IC.check + 'Conferido'; }
@@ -1802,6 +1885,7 @@ function registrar(status){
   if (s.desfazId && status !== 'Interrompido') { const o = historicoGlobal.find(h => h.id === s.desfazId); if (o) { o.desfeitoPor = s.calcId; o.resolvido = true; } }
   let e = historicoGlobal.find(h => h.id === s.calcId);
   base.motivo = s.motivo || (e && e.motivo) || '';
+  if (e && e.conferencia && e.conferencia.tipo === 'recusado') { base.totalMovido = 0; base.status = 'Recusado pelo ERP'; }
   if (e) Object.assign(e, base);
   else { e = { ...base, data: hojeBr(), hora: horaAgora(), nota: '', conferencia: null }; historicoGlobal.unshift(e); }
   salvarHistorico(); registrarProduto(s, e);
@@ -1815,14 +1899,18 @@ function registrarProduto(s, e){
   p.alteracoes = p.alteracoes || []; p.reqs = p.reqs || {};
   const alt = {
     id: e.id, dataHora: e.data + ' às ' + e.hora,
-    movimento: (s.op === 'estorno' ? 'Estorno' : 'Adição') + ' de ' + br(e.totalMovido) + ' pçs',
+    movimento: e.conferencia && e.conferencia.tipo === 'recusado'
+      ? (s.op === 'estorno' ? 'Estorno' : 'Adição') + ' recusada pelo ERP (' + br(s.mov) + ' pçs)'
+      : (s.op === 'estorno' ? 'Estorno' : 'Adição') + ' de ' + br(e.totalMovido) + ' pçs',
     dePara: br(s.atual) + ' → ' + br(s.alvo), status: e.status, conferencia: e.conferencia || null, motivo: e.motivo || ''
   };
   const i = p.alteracoes.findIndex(a => a.id === e.id);
   if (i >= 0) p.alteracoes[i] = alt; else p.alteracoes.unshift(alt);
   p.alteracoes = p.alteracoes.slice(0, 100);
+  const recusado = !!(e.conferencia && e.conferencia.tipo === 'recusado');
   s.passos.filter(completo).forEach(ps => {
     const arr = p.reqs[ps.numeroDoc] || (p.reqs[ps.numeroDoc] = []);
+    if (recusado) { p.reqs[ps.numeroDoc] = arr.filter(x => x.id !== e.id); return; }   // o ERP não aceitou: a REQ não foi usada
     if (!arr.some(x => x.id === e.id)) arr.unshift({ id: e.id, data: e.data, op: s.op, qtd: ps.q, pct: ps.pctStr });
     p.reqs[ps.numeroDoc] = arr.slice(0, 10);
   });
@@ -1983,7 +2071,7 @@ function renderPip(){
   if (s.idx >= n) {
     const e = historicoGlobal.find(h => h.id === s.calcId), c = e && e.conferencia;
     box.innerHTML = `<div class="top"><span>Ajuste finalizado</span><button class="x" data-pip="fechar" title="Fechar janela">×</button></div>
-      <div class="fim">${c ? (c.tipo === 'ok' ? '<b class="ok">Conferido ✓</b>' : `<b class="warn">Diferença de ${esc(br(c.diferenca))} pçs registrada</b>`) : `<p>Confira no ERP. O saldo deve estar em</p><b class="alvo">${esc(br(s.alvo))}</b>`}</div>
+      <div class="fim">${c ? (c.tipo === 'ok' ? '<b class="ok">Conferido ✓</b>' : (c.tipo === 'recusado' ? '<b class="warn">O ERP recusou. Veja no app.</b>' : `<b class="warn">Diferença de ${esc(br(c.diferenca))} pçs registrada</b>`)) : `<p>Confira no ERP. O saldo deve estar em</p><b class="alvo">${esc(br(s.alvo))}</b>`}</div>
       ${c ? '' : '<div class="nav"><button class="ok" data-pip="ok">Ajuste OK!</button></div><p class="obs">Deu diferença? Registre na tela do app.</p>'}`;
     return;
   }
@@ -2028,6 +2116,7 @@ async function desfazerAjuste(id){
   const feitos = (h.passos || []).filter(p => p.copiado && p.q > 0 && lerNumero(p.pctStr) > 0);
   if (!feitos.length || !h.op) { toast('Este registro não tem passos lançados para desfazer.', 'warn'); return; }
   if (h.desfeitoPor) { toast('Este ajuste já foi desfeito.', 'warn'); return; }
+  if (h.conferencia && h.conferencia.tipo === 'recusado') { toast('O ERP recusou este ajuste, então não há nada para desfazer.', 'warn'); return; }
   const op = h.op === 'estorno' ? 'adicao' : 'estorno';
   // Monta os passos contrários. No estorno vale a margem de segurança (o ERP não aceita tirar 100%).
   let falta = 0;
@@ -2445,10 +2534,12 @@ async function editarMotivoHist(id){
   if (a) { a.motivo = item.motivo; gravarDB(db); }
   salvarHistorico(); renderizarHistorico(); toast('Motivo salvo.', 'ok');
 }
-const classeStatus = st => st === 'Concluído' ? 'st-ok' : (st === 'Interrompido' ? 'st-er' : 'st-warn');
+const classeStatus = st => st === 'Concluído' ? 'st-ok' : (st === 'Interrompido' || st === 'Recusado pelo ERP' ? 'st-er' : 'st-warn');
 function seloConf(c){
   if (!c) return '';
-  return c.tipo === 'ok' ? '<span class="st st-info">Conferido</span>' : `<span class="st st-warn">Diferença ${esc(br(c.diferenca))}</span>`;
+  if (c.tipo === 'ok') return '<span class="st st-info">Conferido</span>';
+  if (c.tipo === 'recusado') return '';   // o status "Recusado pelo ERP" já aparece ao lado
+  return `<span class="st st-warn">Diferença ${esc(br(c.diferenca))}</span>`;
 }
 const temCodigo = cod => !!cod && cod !== 'N/D';
 
@@ -2466,6 +2557,7 @@ function ehPendente(h, limiteDias){
 }
 function motivoPendencia(h){
   const c = h.conferencia;
+  if (c && c.tipo === 'recusado') return { tx:'ERP recusou o ajuste' + (c.negativaEm ? ` (negativo a partir de ${c.negativaEm})` : ''), cls:'er' };
   if (c && c.tipo !== 'ok') return { tx:`Diferença de ${br(c.diferenca)} pçs no ERP`, cls:'er' };
   if (h.status === 'Interrompido') return { tx:'Interrompido no meio', cls:'er' };
   if (h.status === 'Com pendências') return { tx:'Passos não copiados', cls:'warn' };
@@ -2494,7 +2586,8 @@ function histFiltrado(periodo, comBusca = true){
     if (per === 'hoje' ? h.data !== hojeBr() : tsHist(h) < desde) return false;
     if (st === 'pend' && !ehPendente(h)) return false;
     if (st === 'conf' && !(h.conferencia && h.conferencia.tipo === 'ok')) return false;
-    if (st === 'dif' && !(h.conferencia && h.conferencia.tipo !== 'ok')) return false;
+    if (st === 'dif' && !(h.conferencia && h.conferencia.tipo === 'diferenca')) return false;
+    if (st === 'rec' && !(h.conferencia && h.conferencia.tipo === 'recusado')) return false;
     if ((st === 'Concluído' || st === 'Interrompido') && h.status !== st) return false;
     if (q) {
       const alvoBusca = [h.produto, h.nome, h.motivo, h.nota, h.status, ...(h.passos || []).map(p => p.numeroDoc)].map(txt).join(' ').toLowerCase();
@@ -2524,13 +2617,14 @@ function renderizarHistorico(){
       <div class="ht">Saldo ${esc(br(c.atual))} para ${esc(br(c.alvo))}</div>
       <div class="ho">${esc(operador)}: ${esc(br(c.totalMovido || 0))} pçs</div>
       ${c.motivo ? `<span class="hmot">${esc(c.motivo)}</span>` : ''}
+      ${c.conferencia && c.conferencia.tipo === 'recusado' ? `<div class="nota rec">${IC.warn}<span>O ERP recusou${c.conferencia.negativaEm ? `: estoque negativo a partir de ${esc(c.conferencia.negativaEm)}` : ''}${c.conferencia.faltam != null ? ` (pelo menos ${esc(npcs(c.conferencia.faltam))} a menos que a ficha)` : ''}.</span></div>` : ''}
       ${c.nota ? `<div class="nota">${IC.note}<span>${esc(c.nota)}</span></div>` : ''}
       <div class="hl">${(c.passos || []).map(p => `<div class="hd"><span>Doc ${esc(p.numeroDoc)}: <b>${esc(p.pctStr)}%</b></span>${p.copiado ? '<span class="st st-ok">Copiado</span>' : '<span class="st st-warn">Não copiado</span>'}</div>`).join('')}</div>
       <div class="h-acoes">
-        ${pend ? `<button class="btn-hist" data-acao="corrigir" data-id="${esc(c.id)}">${IC.fix}Corrigir</button>` : ''}
+        ${pend ? `<button class="btn-hist" data-acao="corrigir" data-id="${esc(c.id)}">${IC.fix}${c.conferencia && c.conferencia.tipo === 'recusado' ? 'Tentar de novo' : 'Corrigir'}</button>` : ''}
         <button class="btn-hist" data-acao="motivo" data-id="${esc(c.id)}">${IC.tag}${c.motivo ? 'Motivo' : 'Adicionar motivo'}</button>
         <button class="btn-hist" data-acao="nota" data-id="${esc(c.id)}">${IC.note}${c.nota ? 'Observação' : 'Adicionar observação'}</button>
-        ${c.op && !c.desfeitoPor && !c.desfazId && (c.passos || []).some(p => p.copiado) ? `<button class="btn-hist" data-acao="desfazer" data-id="${esc(c.id)}" title="Monta os passos contrários para voltar o saldo">${IC.undo}Desfazer no ERP</button>` : ''}
+        ${c.op && !c.desfeitoPor && !c.desfazId && !(c.conferencia && c.conferencia.tipo === 'recusado') && (c.passos || []).some(p => p.copiado) ? `<button class="btn-hist" data-acao="desfazer" data-id="${esc(c.id)}" title="Monta os passos contrários para voltar o saldo">${IC.undo}Desfazer no ERP</button>` : ''}
         <button class="btn-hist del" data-acao="apagar" data-id="${esc(c.id)}">${IC.trash}Apagar</button>
       </div>
     </div>`;
@@ -2558,7 +2652,7 @@ function renderizarProdutosSalvos(){
     const p = db[cod], alts = p.alteracoes || [], reqs = p.reqs || {}, ult = alts[0];
     const nReqs = Object.keys(reqs).length;
     const resumo = ult
-      ? `Último ajuste em ${esc(ult.dataHora)}: ${esc(ult.movimento)}${ult.conferencia ? (ult.conferencia.tipo === 'ok' ? ', conferido' : ', com diferença') : ''}.`
+      ? `Último ajuste em ${esc(ult.dataHora)}: ${esc(ult.movimento)}${ult.conferencia ? (ult.conferencia.tipo === 'ok' ? ', conferido' : (ult.conferencia.tipo === 'recusado' ? ', recusado pelo ERP' : ', com diferença')) : ''}.`
       : 'Nenhum ajuste registrado.';
     const reqHtml = nReqs
       ? `<div class="sv-tit">REQs já usadas</div><div class="reqs">${Object.keys(reqs).map(r => { const u = (reqs[r] || [])[0] || {}; return `<span class="req" title="${esc((reqs[r] || []).length)} uso(s)"><b>${esc(r)}</b>${esc(u.data || '')}, ${u.op === 'estorno' ? 'estorno' : 'adição'} de ${esc(br(u.qtd || 0))}</span>`; }).join('')}</div>`
@@ -2633,8 +2727,8 @@ function exportarCSV(periodo){
   const linhas = lista.map(h => {
     const c = h.conferencia;
     return [h.data, h.hora, temCodigo(h.produto) ? h.produto : '', h.nome, h.op ? rotuloOp(h.op) : txt(h.operador),
-      n(h.atual), n(h.alvo), n(h.totalMovido), h.motivo, h.status, c ? (c.tipo === 'ok' ? 'Conferido' : 'Com diferença') : 'Não conferido',
-      c && c.tipo !== 'ok' ? n(c.saldoERP) : '', c && c.tipo !== 'ok' ? n(c.diferenca) : '',
+      n(h.atual), n(h.alvo), n(h.totalMovido), h.motivo, h.status, c ? (c.tipo === 'ok' ? 'Conferido' : (c.tipo === 'recusado' ? 'ERP recusou' : 'Com diferença')) : 'Não conferido',
+      c && c.tipo === 'diferenca' ? n(c.saldoERP) : '', c && c.tipo === 'diferenca' ? n(c.diferenca) : '',
       (h.passos || []).map(p => `${p.numeroDoc} (${p.pctStr}%)${p.copiado ? '' : ' não copiado'}`).join(' | '), h.nota].map(cel).join(';');
   });
   baixarArquivo(`pedalada-historico-${dataArquivo()}.csv`, '﻿' + [cab.join(';'), ...linhas].join('\r\n'), 'text/csv;charset=utf-8');
@@ -2647,11 +2741,11 @@ function copiarResumo(periodo){
   const lista = histFiltrado(periodo).slice().sort((a, b) => tsHist(a) - tsHist(b));
   if (!lista.length) { toast(per === 'hoje' ? 'Nenhum ajuste registrado hoje.' : 'Não há registros para resumir.', 'warn'); return; }
   const conf = lista.filter(h => h.conferencia && h.conferencia.tipo === 'ok').length;
-  const dif = lista.filter(h => h.conferencia && h.conferencia.tipo !== 'ok').length;
+  const dif = lista.filter(h => h.conferencia && h.conferencia.tipo === 'diferenca').length;
   const pcs = r4(lista.reduce((a, h) => a + (Number(h.totalMovido) || 0), 0));
   const titulo = per === 'hoje' ? `Ajustes de estoque – ${hojeBr()}` : `Ajustes de estoque – ${nomePeriodo(per)} (até ${hojeBr()})`;
   const linhas = lista.map(h => {
-    const c = h.conferencia, sit = c ? (c.tipo === 'ok' ? 'conferido' : `diferença de ${br(c.diferenca)} no ERP`) : txt(h.status).toLowerCase();
+    const c = h.conferencia, sit = c ? (c.tipo === 'ok' ? 'conferido' : (c.tipo === 'recusado' ? 'o ERP recusou o ajuste' : `diferença de ${br(c.diferenca)} no ERP`)) : txt(h.status).toLowerCase();
     const prod = temCodigo(h.produto) ? `${h.produto}${h.nome ? ' ' + h.nome : ''}` : 'Sem código';
     const docs = (h.passos || []).filter(p => p.copiado).map(p => `REQ ${p.numeroDoc}: ${p.pctStr}%`).join('; ');
     return `• ${per === 'hoje' ? h.hora : h.data + ' ' + h.hora} – ${prod}\n   Saldo ${br(h.atual)} → ${br(h.alvo)} (${h.op === 'estorno' ? 'estorno' : 'adição'} de ${br(h.totalMovido || 0)} pçs)${h.motivo ? ' – ' + h.motivo : ''} – ${sit}${docs ? '\n   ' + docs : ''}${h.nota ? '\n   Obs.: ' + h.nota : ''}`;
@@ -2706,7 +2800,7 @@ function railPendencias(){
     return `<div class="pend-it">
       <div class="l1"><b>${temCodigo(h.produto) ? esc(h.produto) : 'Sem código'}</b><span>${esc(h.data === hojeBr() ? h.hora : txt(h.data).slice(0, 5))}</span></div>
       <div class="l2"><em class="${m.cls}">${esc(m.tx)}</em> · saldo ${esc(br(h.atual))} → ${esc(br(h.alvo))}</div>
-      <div class="pend-ac"><button class="rbtn pri" data-acao="corrigir" data-id="${esc(h.id)}">${IC.fix}Corrigir</button><button class="rbtn" data-acao="dispensar" data-id="${esc(h.id)}">${semConf ? 'Está conferido' : 'Dispensar'}</button></div>
+      <div class="pend-ac"><button class="rbtn pri" data-acao="corrigir" data-id="${esc(h.id)}">${IC.fix}${h.conferencia && h.conferencia.tipo === 'recusado' ? 'Tentar de novo' : 'Corrigir'}</button><button class="rbtn" data-acao="dispensar" data-id="${esc(h.id)}">${semConf ? 'Está conferido' : 'Dispensar'}</button></div>
     </div>`;
   }).join('');
   return `<div class="rbox"><div class="rtit">Pendências <span class="ct${pend.length ? '' : ' zero'}">${pend.length}</span></div>
@@ -2715,7 +2809,7 @@ function railPendencias(){
 function railUltimos(){
   const ult = historicoGlobal.slice(0, 6);
   return `<div class="rbox"><div class="rtit">Últimos ajustes</div>${ult.length ? `<div class="ult">${ult.map(h => {
-    const cor = h.conferencia ? (h.conferencia.tipo === 'ok' ? 'ok' : 'warn') : (h.status === 'Interrompido' ? 'er' : (h.status === 'Concluído' ? '' : 'warn'));
+    const cor = h.conferencia ? (h.conferencia.tipo === 'ok' ? 'ok' : (h.conferencia.tipo === 'recusado' ? 'er' : 'warn')) : (h.status === 'Interrompido' ? 'er' : (h.status === 'Concluído' ? '' : 'warn'));
     return `<button class="ult-it" data-acao="verhist" data-id="${esc(h.id)}"><span class="ponto ${cor}"></span><span><b>${temCodigo(h.produto) ? esc(h.produto) : 'Sem código'}</b><small>${esc(br(h.atual))} → ${esc(br(h.alvo))}${h.motivo ? ' · ' + esc(h.motivo) : ''}</small></span><small>${esc(h.data === hojeBr() ? h.hora : txt(h.data).slice(0, 5))}</small></button>`;
   }).join('')}</div>` : '<p class="rvazio">Nenhum ajuste ainda.</p>'}</div>`;
 }
@@ -2848,7 +2942,7 @@ function rolar(el, chave, valor){
 function renderRailDir(){
   const hj = historicoGlobal.filter(h => h.data === hojeBr());
   const conf = hj.filter(h => h.conferencia && h.conferencia.tipo === 'ok').length;
-  const dif = hj.filter(h => h.conferencia && h.conferencia.tipo !== 'ok').length;
+  const dif = hj.filter(h => h.conferencia && h.conferencia.tipo === 'diferenca').length;
   const pcs = r4(hj.reduce((a, h) => a + (Number(h.totalMovido) || 0), 0));
   const hoje = $('railHoje');
   if (!hoje.children.length) hoje.innerHTML = `<div><b id="nHjA">0</b><span>ajustes</span></div><div><b id="nHjC">0</b><span>conferidos</span></div><div id="cxHjP"><b id="nHjP">0</b><span>peças</span></div><div id="cxHjD"><b id="nHjD">0</b><span>diferenças</span></div>`;
@@ -2868,8 +2962,8 @@ function renderRailDir(){
   // Este mês + dias seguidos sem diferença no ERP
   const agora = new Date(), mesAno = `/${String(agora.getMonth() + 1).padStart(2, '0')}/${agora.getFullYear()}`;
   const mes = historicoGlobal.filter(h => txt(h.data).endsWith(mesAno));
-  const mesDif = mes.filter(h => h.conferencia && h.conferencia.tipo !== 'ok').length;
-  const ultDif = historicoGlobal.filter(h => h.conferencia && h.conferencia.tipo !== 'ok').reduce((a, h) => Math.max(a, tsHist(h)), 0);
+  const mesDif = mes.filter(h => h.conferencia && h.conferencia.tipo === 'diferenca').length;
+  const ultDif = historicoGlobal.filter(h => h.conferencia && h.conferencia.tipo === 'diferenca').reduce((a, h) => Math.max(a, tsHist(h)), 0);
   const zero = new Date(); zero.setHours(0, 0, 0, 0);
   const primeiro = historicoGlobal.reduce((a, h) => Math.min(a, tsHist(h) || Infinity), Infinity);
   const base = ultDif || (isFinite(primeiro) ? primeiro : zero.getTime());

@@ -32,6 +32,10 @@ documentos de requisição (REQ). Fluxo em 3 fases:
   relatórios). Não colocar textos de tutorial ou listas de atalhos nelas.
 - Cada produto salvo pode ter `lembrete` ({texto, quando}); `null` quer dizer que foi apagado (não restaurar do IndexedDB).
 - Escolher REQ é opcional (`fixo` no documento). Sem nenhuma escolhida, vale a estratégia normal (menos documentos).
+- Se o ERP recusar um ajuste ("Estoque insuficiente para ajustar requisição"), o registro vira
+  `conferencia.tipo === 'recusado'` (status "Recusado pelo ERP"). Não conta como peça movimentada, como
+  diferença de saldo nem como REQ usada. Enquanto não for resolvido, `limitesRecusados` limita a próxima
+  tentativa nas mesmas REQs (de 1 em 1 peça, ou pela metade se a quantidade não for inteira).
 - Mantenha tudo em um único `index.html`, sem dependências externas além da fonte do Google.
 - Antes de terminar, revise se não há erro de JavaScript e se o fluxo das 3 fases continua funcionando.
 
