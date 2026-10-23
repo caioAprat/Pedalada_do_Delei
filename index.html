@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#080706">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Pedalada do Delei</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -972,7 +973,7 @@ body.claro.modo-leve .top{background:var(--bg)}
    Pedalada do Delei
    Ao publicar uma versão nova, aumente VERSAO aqui e no sw.js.
    ========================================================= */
-const VERSAO = '6.0.0';
+const VERSAO = '6.0.1';
 /* Efeitos visuais (fx/movimento.js e fx/vivo.js): são só enfeite, então qualquer falha aqui é ignorada */
 const fx = (nome, ...a) => { try { if (window.FXM) window.FXM(nome, ...a); if (window.FXV) window.FXV(nome, ...a); } catch(e) {} };
 
