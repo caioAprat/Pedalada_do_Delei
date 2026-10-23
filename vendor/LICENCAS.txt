@@ -1,5 +1,5 @@
-Bibliotecas usadas só no susto escondido do botão do Bruno (carregadas apenas quando o botão é usado):
+Bibliotecas usadas nos efeitos do app (fx/) e no susto escondido do botão do Bruno:
 
 three.min.js  - three.js r186 (versão enxuta, só as partes usadas). Licença MIT. https://threejs.org
-gsap.min.js, SplitText, ScrambleTextPlugin, CustomWiggle, CustomEase, EasePack - GSAP 3.15.0,
+gsap.min.js, ScrollTrigger, SplitText, ScrambleTextPlugin, CustomEase, CustomWiggle, EasePack - GSAP 3.15.0,
               licença gratuita "sem custo" da GreenSock (https://gsap.com/standard-license).
