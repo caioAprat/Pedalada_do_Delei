@@ -1,0 +1,20 @@
+SONS REAIS PARA O SUSTO DO BRUNO (opcional)
+============================================
+Sem nenhum arquivo aqui, o app usa sons criados por código. Se você colocar arquivos
+nesta pasta com EXATAMENTE os nomes abaixo, o app passa a usá-los sozinho no lugar do
+som criado por código daquele momento (não precisa mexer em mais nada).
+
+Nomes (sempre .mp3, tudo minúsculo, sem acento):
+  ambiente.mp3   zumbido/clima sombrio de fundo. Toca em repetição do início até o corte (~9 s).
+  sussurro.mp3   sussurro de voz (toca 3 vezes: 0,5 s / 1,8 s / 3 s). Curto, 1 a 2 segundos.
+  rangido.mp3    porta rangendo (toca 2 vezes). Curto, 1 a 2 segundos.
+  batida.mp3     pancada/impacto do susto (toca em 7,2 s). Pode ser um "stinger" de terror.
+  grito.mp3      grito (toca junto com a batida). 2 a 3 segundos.
+
+Dicas:
+  - Pesquise por: "horror ambience", "creepy whisper", "door creak", "horror stinger", "female scream".
+  - Sites com sons grátis: Pixabay (pixabay.com/sound-effects), Mixkit (mixkit.co/free-sound-effects),
+    Freesound (freesound.org). Confira a licença de cada som (use só os de uso livre/comercial).
+  - Arquivos pequenos são melhores (o app é aberto no computador de pouca memória).
+  - Anote os créditos no arquivo CREDITOS.txt desta pasta, se a licença pedir.
+  - Para voltar ao som criado por código, é só apagar o arquivo.

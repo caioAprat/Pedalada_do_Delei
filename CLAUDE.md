@@ -37,6 +37,16 @@ documentos de requisição (REQ). Fluxo em 3 fases:
   diferença de saldo nem como REQ usada. Enquanto não for resolvido, `limitesRecusados` limita a próxima
   tentativa nas mesmas REQs (de 1 em 1 peça, ou pela metade se a quantidade não for inteira).
 - Mantenha tudo em um único `index.html`, sem dependências externas além da fonte do Google.
+  **Única exceção (aprovada pela usuária, v5.3.0):** o susto escondido do botão do Bruno usa `vendor/three.min.js`
+  (three.js enxuto), `vendor/gsap.min.js` (GSAP) e `susto/cena.js` (cena 3D, textos e sons). Esses arquivos só
+  são baixados quando ela passa o mouse/clica no botão (`prepararSusto()`); o resto do app não depende deles.
+  Se o 3D não puder rodar (sem WebGL), `brunoSusto()` cai na versão 2D simples (`sustoSimples`). Não coloque
+  `vendor/` nem `susto/` no `.assetsignore` e não adicione outras bibliotecas.
+- Susto do Bruno: segurança primeiro — no máximo um clarão forte, sem piscar rápido, respeita
+  `prefers-reduced-motion` (modo calmo), `config.sons`/`config.volume` e Modo Leve; Esc sempre fecha; libere os
+  recursos do WebGL ao fechar. Sons reais opcionais: arquivos `susto/sons/<nome>.mp3` (ver `LEIA-ME.txt`) tomam
+  o lugar dos sons sintetizados; créditos em `susto/sons/CREDITOS.txt`. Para regenerar `vendor/three.min.js`,
+  empacote só as classes usadas com esbuild (tree-shaking) a partir do pacote npm `three`.
 - Antes de terminar, revise se não há erro de JavaScript e se o fluxo das 3 fases continua funcionando.
 
 ## Skills de design (pedido da usuária)

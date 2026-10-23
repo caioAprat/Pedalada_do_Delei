@@ -1,0 +1,4 @@
+Bibliotecas usadas só no susto escondido do botão do Bruno (carregadas apenas quando o botão é usado):
+
+three.min.js  - three.js r186 (versão enxuta, só as partes usadas). Licença MIT. https://threejs.org
+gsap.min.js   - GSAP 3.15.0, licença gratuita "sem custo" da GreenSock (https://gsap.com/standard-license).
