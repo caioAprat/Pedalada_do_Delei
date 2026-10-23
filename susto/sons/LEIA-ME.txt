@@ -5,10 +5,10 @@ nesta pasta com EXATAMENTE os nomes abaixo, o app passa a usá-los sozinho no lu
 som criado por código daquele momento (não precisa mexer em mais nada).
 
 Nomes (sempre .mp3, tudo minúsculo, sem acento):
-  ambiente.mp3   zumbido/clima sombrio de fundo. Toca em repetição do início até o corte (~9 s).
-  sussurro.mp3   sussurro de voz (toca 3 vezes: 0,5 s / 1,8 s / 3 s). Curto, 1 a 2 segundos.
-  rangido.mp3    porta rangendo (toca 2 vezes). Curto, 1 a 2 segundos.
-  batida.mp3     pancada/impacto do susto (toca em 7,2 s). Pode ser um "stinger" de terror.
+  ambiente.mp3   zumbido/clima sombrio de fundo. Toca em repetição na primeira parte, até o apagão.
+  sussurro.mp3   sussurro de voz (toca várias vezes, o primeiro só no ouvido esquerdo). Curto, 1 a 2 segundos.
+  rangido.mp3    porta rangendo (toca algumas vezes, também quando ela dá um passo no escuro). Curto, 1 a 2 s.
+  batida.mp3     pancada/impacto do susto (toca quando a lanterna encontra ela). Pode ser um "stinger" de terror.
   grito.mp3      grito (toca junto com a batida). 2 a 3 segundos.
 
 Dicas:
