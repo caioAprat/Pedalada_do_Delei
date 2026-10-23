@@ -37,7 +37,7 @@ documentos de requisição (REQ). Fluxo em 3 fases:
   diferença de saldo nem como REQ usada. Enquanto não for resolvido, `limitesRecusados` limita a próxima
   tentativa nas mesmas REQs (de 1 em 1 peça, ou pela metade se a quantidade não for inteira).
 - Mantenha tudo em um único `index.html`, sem dependências externas além da fonte do Google.
-  **Única exceção (aprovada pela usuária, v5.3.0/5.4.0):** o susto escondido do botão do Bruno usa `vendor/three.min.js`
+  **Exceções (aprovadas pela usuária):** (1) a partir da v6.0.0 o visual usa GSAP e three.js em `vendor/` e `fx/` (ver "Movimento e fundo vivo" abaixo); (2) o susto escondido do botão do Bruno (v5.3.0/5.4.0) usa `vendor/three.min.js`
   (three.js enxuto: corredor 3D e efeitos de imagem), `vendor/gsap.min.js` + plugins do GSAP (`SplitText`,
   `ScrambleTextPlugin`, `CustomWiggle`, `CustomEase`, `EasePack`), `susto/cena.js` (fases, textos, sons) e
   `susto/menina.js` (a menina pintada em 2D por código, em 5 poses). Esses arquivos só são baixados quando ela passa
@@ -62,9 +62,18 @@ documentos de requisição (REQ). Fluxo em 3 fases:
   `make-interfaces-feel-better`, `gpt-taste` e `frontend-skill`.
 - Siga essas skills sem quebrar as regras acima: tudo continua num único `index.html`, sem React,
   Tailwind, shadcn ou outras dependências (as skills de React/Vercel/Supabase não se aplicam a este app).
-- Direção visual atual (v5.1.0): "ficha de almoxarifado". Fontes Archivo (textos) e IBM Plex Mono (números,
-  rótulos e documentos); grafite quente no tema escuro, papel no claro; laterais sem cartões, separadas por fios.
-  Mantenha essa linha em mudanças futuras.
+- Direção visual atual (v6.0.0, pedido da usuária após ler o Jarvão): "oficina à noite". Preto quente (#080706),
+  UMA cor de destaque (âmbar #ff9a4d; verde/azul/rosa são opções nas Configurações), fontes Saira (textos), JetBrains Mono
+  (números e rótulos) e Michroma (só o nome do app), as mesmas do Jarvão. SEM cartões: seções separadas por fios finos,
+  números enormes, botão principal é um retângulo âmbar e o resto é texto com fio embaixo, cantos quase retos, sem
+  gradiente em texto, sem ícones em quadradinhos, sem pílulas. Mantenha essa linha; evite os "queridinhos" de IA
+  (roxo/índigo, caixas arredondadas com sombra, badges em pílula, brilho neon).
+- Movimento e fundo vivo (v6): `fx/movimento.js` (GSAP + ScrollTrigger/SplitText/ScrambleText/CustomEase; letras que
+  sobem, dígitos que giram, contadores, faíscas ao copiar, rolagem) e `fx/vivo.js` (three.js: roda de bicicleta em linhas
+  e faíscas, que avança a cada passo e gira inteira quando o ajuste termina). O app chama `fx('evento', ...)`; qualquer
+  falha é ignorada. Nada disso roda com Modo Leve ou "reduzir movimento"; o `vivo.js` só carrega depois que o app abriu
+  (`iniciarVivo()`), usa poucas partículas e pausa em outra aba/janela ou durante o susto. O app tem que funcionar igual
+  sem esses arquivos.
 
 ## Regras de cálculo (confirmadas pela usuária)
 - Estorno de saídas (aumentar o saldo): não pode tirar 100% de um documento. Usa a margem
