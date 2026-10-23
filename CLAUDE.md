@@ -15,7 +15,9 @@ documentos de requisição (REQ). Fluxo em 3 fases:
 ## Arquivos
 - `index.html` — o app inteiro (HTML, CSS e JavaScript no mesmo arquivo). Não há build, npm nem framework.
 - `sw.js` — service worker (funcionar offline e avisar "Nova versão disponível").
-- `manifest.json` e `icon.svg` — instalação como aplicativo.
+- `manifest.json`, `icon.svg`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png` — instalação como aplicativo. O ícone
+  (v6.0.1) é a roda de bicicleta âmbar em linhas, com fundo TRANSPARENTE (pedido da usuária). Os PNGs saem do `icon.svg`
+  (renderizados com fundo transparente); se mudar o SVG, gere os PNGs de novo.
 - Publicação: Cloudflare Workers (projeto `pedalada-do-delei`) ligado a este repositório; cada mudança na
   branch principal publica sozinha. `wrangler.jsonc` diz para publicar a pasta como site estático e
   `.assetsignore` tira do site o que não é do app. Não apague esses dois arquivos.
