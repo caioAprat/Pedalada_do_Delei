@@ -663,6 +663,24 @@ input[type=range]{width:140px;padding:0;border:0;background:none;accent-color:va
 @keyframes glitch1{20%{transform:translate(-4px,1px);clip-path:inset(10% 0 60% 0)}40%{transform:translate(4px,-1px);clip-path:inset(50% 0 20% 0)}60%{transform:none;clip-path:inset(0 0 100% 0)}}
 @keyframes glitch2{30%{transform:translate(4px,2px);clip-path:inset(60% 0 5% 0)}70%{transform:translate(-3px,-2px);clip-path:inset(20% 0 55% 0)}}
 .susto-fim small{font-size:14px;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.6)}
+/* --- Susto 3D (três.js + GSAP): corredor escuro, vermelho de sangue seco --- */
+.susto.tres-d{--sg:#c1121f;--sg-vivo:#ff2a3a;--sg-fundo:#4a050b;background:#000;backdrop-filter:none;animation:sustoEntra3d .35s ease both;cursor:default}
+@keyframes sustoEntra3d{from{opacity:0}}
+.susto.tres-d .susto-vinheta,.susto.tres-d .susto-scan{display:none}
+.susto-3d{position:absolute;inset:0;width:100%;height:100%;display:block;background:#000}
+.susto.tres-d>.susto-msg{position:absolute;left:0;right:0;bottom:12%;height:1.6em;display:block;animation:none;pointer-events:none;z-index:3}
+.fala{position:absolute;left:0;right:0;bottom:0;padding:0 18px;text-align:center;font-family:var(--f-num);font-weight:500;font-size:clamp(17px,3.4vw,32px);letter-spacing:.24em;color:#ece0dc;white-space:pre-wrap;text-wrap:balance;text-shadow:0 0 14px rgba(193,18,31,.75),0 0 46px rgba(120,0,12,.8),0 2px 20px #000}
+.fala span{display:inline-block;will-change:transform,opacity,filter}
+.fala.grito{font-family:var(--f-ui);font-weight:800;font-size:clamp(30px,7.4vw,76px);letter-spacing:.1em;color:var(--sg-vivo);text-shadow:0 0 22px rgba(255,42,58,.85),0 0 80px rgba(150,0,14,.9),0 3px 24px #000}
+.susto.tres-d .susto-fim{position:absolute;inset:0;z-index:4;justify-content:center;opacity:0;visibility:hidden}
+.susto.tres-d.fim .susto-fim{opacity:1;visibility:visible;animation:none}
+.susto.tres-d.fim{cursor:pointer}
+.susto.tres-d .susto-fim b{font-weight:800;font-size:clamp(34px,8vw,96px);letter-spacing:-.01em;color:#f6ebe6;text-shadow:0 0 18px rgba(255,42,58,.9),0 0 64px rgba(170,0,16,.95),0 4px 30px #000;animation:brilhaSangue 2.4s ease-in-out infinite}
+.susto.tres-d .susto-fim b span{display:inline-block;white-space:pre;will-change:transform,opacity,filter}
+.susto.tres-d .susto-fim b::before{color:#ff1a2e}
+.susto.tres-d .susto-fim b::after{color:#9a0016;mix-blend-mode:screen}
+.susto.tres-d .susto-fim small{font-family:var(--f-num);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(236,224,220,.55);opacity:0}
+@keyframes brilhaSangue{50%{text-shadow:0 0 26px rgba(255,42,58,1),0 0 96px rgba(190,0,20,1),0 4px 30px #000}}
 /* ===== Tema claro: papel de ficha ===== */
 body.claro{color-scheme:light;--barra:rgba(243,240,232,.85);--g-sobe:#1f9d6b;--g-desce:#d1435b;--bg:#f3f0e8;--sf:#fffdf8;--sf2:rgba(60,45,15,.035);--sf3:#f8f5ee;--ln:rgba(60,45,15,.11);--ln2:rgba(60,45,15,.2);--grade:rgba(60,45,15,.05);--tx:#1c1a16;--mu:#5f5a50;--di:#8d877b;--ok:#17865a;--warn:#a86d00;--er:#c8372d;--sh:0 0 0 1px var(--ln),0 1px 2px rgba(60,45,15,.06),0 16px 40px -26px rgba(60,45,15,.35);--sh-alto:0 0 0 1px var(--ln2),0 2px 4px rgba(60,45,15,.06),0 30px 70px -30px rgba(60,45,15,.4)}
 body.claro .fundo{background:radial-gradient(900px 420px at 18% -8%,rgba(var(--pri-rgb),.1),transparent 70%),linear-gradient(var(--grade) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--grade) 1px,transparent 1px) 0 0/28px 28px}
@@ -913,7 +931,7 @@ body.modo-leve .tile::before{display:none}
         <div id="listaPassos"></div>
       </div>
     </section>
-    <div class="rodape"><span>Feito por Caio A.</span><span class="ver" id="lblVersao"></span><button type="button" class="ovo" onclick="brunoSusto()">Clique aqui se você é o Bruno</button></div>
+    <div class="rodape"><span>Feito por Caio A.</span><span class="ver" id="lblVersao"></span><button type="button" class="ovo" onclick="brunoSusto()" onmouseenter="prepararSusto()" onfocus="prepararSusto()" ontouchstart="prepararSusto()">Clique aqui se você é o Bruno</button></div>
   </main>
 
   <aside class="rail rail-dir" aria-label="Painel do dia">
@@ -942,7 +960,7 @@ body.modo-leve .tile::before{display:none}
    Pedalada do Delei
    Ao publicar uma versão nova, aumente VERSAO aqui e no sw.js.
    ========================================================= */
-const VERSAO = '5.2.0';
+const VERSAO = '5.3.0';
 
 const $ = id => document.getElementById(id);
 const DB = 'pedalada_db_produtos', BK = DB + '_bkp', HIST_KEY = 'pedalada_hist_v3',
@@ -2421,28 +2439,55 @@ function animarSusto(cv){
   sustoRaf = requestAnimationFrame(quadro);
 }
 
-function brunoSusto(){
-  if ($('susto')) return;
-  fecharPaineis(); fecharDialogo(null);
+/* Versão simples (2D): só é usada se o 3D não puder rodar neste computador */
+function sustoSimples(el){
   const BANG = 1.8, frase = 'Bruno... é você?';
-  const el = document.createElement('div');
-  el.id = 'susto'; el.className = 'susto'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Surpresa');
+  el.classList.remove('tres-d');
   el.innerHTML = `<div class="susto-vinheta"></div>
     <div class="susto-msg">${[...frase].map((c, i) => `<span style="--i:${i}">${esc(c)}</span>`).join('')}</div>
     <canvas class="susto-tela"></canvas><div class="susto-scan"></div>
     <div class="susto-fim"><b data-t="TE PEGUEI, BRUNO!">TE PEGUEI, BRUNO!</b><small>clique em qualquer lugar para fechar</small></div>`;
-  el.addEventListener('click', () => { if (el.classList.contains('fim')) fecharSusto(); });
-  document.body.appendChild(el);
-  sustoAudio = sustoSom(BANG);   // os sons começam já no clique
+  sustoAudio = sustoSom(BANG);
   sustoTimers = [
     setTimeout(() => { el.classList.add('bang'); animarSusto(el.querySelector('.susto-tela')); if (navigator.vibrate) navigator.vibrate([90, 40, 140, 40, 200]); }, BANG * 1000),
     setTimeout(() => el.classList.add('fim'), BANG * 1000 + 2400),
     setTimeout(fecharSusto, BANG * 1000 + 9000)
   ];
 }
+/* Versão 3D: three.js + GSAP (pasta vendor/) e a cena em susto/cena.js. Só baixa quando passa o mouse/clica no botão. */
+let sustoPronto = null, sustoAtual = null;
+function prepararSusto(){
+  if (!sustoPronto) sustoPronto = new Promise((ok, falha) => {
+    if (window.gsap) return ok();
+    const s = document.createElement('script'); s.src = 'vendor/gsap.min.js'; s.onload = ok; s.onerror = () => falha(new Error('gsap')); document.head.appendChild(s);
+  }).then(() => import('./susto/cena.js')).then(m => { m.precarregar(); return m; }).catch(e => { sustoPronto = null; throw e; });
+  sustoPronto.catch(() => {});
+  return sustoPronto;
+}
+function brunoSusto(){
+  if ($('susto')) return;
+  fecharPaineis(); fecharDialogo(null);
+  const el = document.createElement('div');
+  el.id = 'susto'; el.className = 'susto tres-d'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Surpresa');
+  el.innerHTML = `<div class="susto-msg"></div><div class="susto-fim"><b data-t="TE PEGUEI, BRUNO!">TE PEGUEI, BRUNO!</b><small>clique em qualquer lugar para fechar</small></div>`;
+  el.addEventListener('click', () => { if (el.classList.contains('fim')) fecharSusto(); });
+  document.body.appendChild(el);
+  // O som precisa ser liberado dentro do clique
+  let ctx = null;
+  if (config.sons) { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); ctx = actx; } catch(e) {} }
+  const reduzido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  prepararSusto().then(async m => {
+    if (!$('susto') || $('susto') !== el) return;
+    const sons = await Promise.race([m.precarregar(), new Promise(r => setTimeout(() => r({}), 250))]);
+    if ($('susto') !== el) return;
+    sustoAtual = m.rodar(el, { gsap: window.gsap, config, actx: ctx, sons, leve: !!config.modoLeve, calmo: reduzido, fechar: fecharSusto });
+    if (navigator.vibrate && !reduzido) setTimeout(() => navigator.vibrate([90, 40, 140, 40, 200]), 7200);
+  }).catch(() => { if ($('susto') === el) { if (sustoAtual) { try { sustoAtual.parar(); } catch(e) {} sustoAtual = null; } sustoSimples(el); } });
+}
 function fecharSusto(){
   sustoTimers.forEach(clearTimeout); sustoTimers = [];
   cancelAnimationFrame(sustoRaf);
+  if (sustoAtual) { const a = sustoAtual; sustoAtual = null; try { a.parar(); } catch(e) {} }
   if (sustoAudio && actx) {
     const m = sustoAudio.master, t = actx.currentTime;
     try { m.gain.cancelScheduledValues(t); m.gain.setValueAtTime(m.gain.value, t); m.gain.linearRampToValueAtTime(0, t + .2); } catch(e) {}
