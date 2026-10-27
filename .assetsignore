@@ -6,3 +6,5 @@
 wrangler.jsonc
 CLAUDE.md
 node_modules
+
+tests

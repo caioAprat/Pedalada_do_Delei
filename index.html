@@ -738,6 +738,21 @@ body.claro.modo-leve .top{background:var(--bg)}
 @media (max-width:760px){.marca span,.kbd-top{display:none}nav.top-grp .pill svg{display:block}.bt-tx{display:none}}
 @media (max-width:560px){.layout{padding-top:96px}.marca h1{display:none}.acoes{flex-direction:column;align-items:stretch;gap:20px}.acoes .btn-sec{align-self:flex-start}.marca h1{font-size:11px;letter-spacing:.14em}.top{gap:6px}.top-grp+.top-grp{padding-left:4px;margin-left:0}.pill{padding:0 9px}.row2{grid-template-columns:1fr;gap:20px}.seta-saldo{display:none}.tiles{grid-template-columns:1fr}.tile+.tile{padding-left:0;border-left:0;border-top:1px solid var(--ln2)}.tile+.tile::before{left:0}.prev-grid{grid-template-columns:1fr}.detalhes{grid-template-columns:1fr 1fr}.det:nth-child(3){grid-column:1/-1;border-left:0;padding-left:0;margin-top:14px}.add-doc-row{grid-template-columns:1fr 1fr}.stepper{font-size:10px;letter-spacing:.08em;margin-bottom:40px}.stepper span{gap:6px}.wz-nav{flex-wrap:wrap}.wz-nav .hint{order:5;flex-basis:100%;margin-top:4px}.wz-nav .nav.pri{margin-left:auto}.docs-list.adicao .doc-item{grid-template-columns:1fr 1fr}.ph,.tools,.pc{padding-left:20px;padding-right:20px}}
 @media (prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition-duration:.01ms!important}.ok-ov circle,.ok-ov path{stroke-dashoffset:0!important}}
+
+/* Superfícies de trabalho: ajuste atual à frente, contexto nas laterais. */
+.layout{gap:24px}
+.rail{gap:16px}
+.rbox,.rbox:first-child{padding:18px;border:1px solid var(--ln2);border-radius:8px;background:var(--sf)}
+.centro>section{padding:clamp(18px,3vw,32px);background:var(--sf);border:1px solid var(--ln2);border-top:3px solid var(--pri);border-radius:10px;box-shadow:0 16px 48px -32px #000}
+.stepper{padding-bottom:20px;border-bottom:1px solid var(--ln2);margin-bottom:28px}
+.info-box{padding:18px;background:var(--sf2);border:1px solid var(--ln);border-radius:6px;margin-bottom:24px}
+.row2{padding:20px 0}
+.previa:not(.vazia){padding:20px;background:var(--sf2);border:1px solid var(--ln2);border-radius:6px}
+.limite-erp{font-size:13px;color:var(--mu);margin:12px 0 20px;line-height:1.5}
+.resumo{padding-bottom:18px;border-bottom:1px solid var(--ln2)}
+.wz{padding:20px;background:var(--sf2);border:1px solid var(--ln2);border-radius:6px}
+@media(max-width:560px){.centro>section{padding:16px}.info-box,.wz{padding:14px}.layout{gap:16px}.row2 input{font-size:36px}}
+
 </style>
 <script defer src="vendor/gsap.min.js"></script>
 <script defer src="vendor/ScrollTrigger.min.js"></script>
@@ -928,6 +943,7 @@ body.claro.modo-leve .top{background:var(--bg)}
           <div class="g"><label class="lbl" for="saldoAlvo">Saldo desejado</label><input type="text" inputmode="decimal" autocomplete="off" id="saldoAlvo" oninput="atualizarPrevia()"><span class="eco" id="ecoAlvo"></span></div>
         </div>
         <div class="previa vazia" id="previa"></div>
+        <p class="limite-erp">Limite do ERP: 999,99% por documento. O que não couber fica indicado como saldo sem cobertura.</p>
         <div class="motivos" id="motivos" role="group" aria-label="Motivo do ajuste (opcional)"></div>
 
         <div class="acoes">
@@ -973,7 +989,7 @@ body.claro.modo-leve .top{background:var(--bg)}
    Pedalada do Delei
    Ao publicar uma versão nova, aumente VERSAO aqui e no sw.js.
    ========================================================= */
-const VERSAO = '6.0.1';
+const VERSAO = '6.0.2';
 /* Efeitos visuais (fx/movimento.js e fx/vivo.js): são só enfeite, então qualquer falha aqui é ignorada */
 const fx = (nome, ...a) => { try { if (window.FXM) window.FXM(nome, ...a); if (window.FXV) window.FXV(nome, ...a); } catch(e) {} };
 
@@ -1558,8 +1574,13 @@ function setPeriodo(){
 function limparPeriodo(){ $('perDe').value = ''; $('perAte').value = ''; setPeriodo(); }
 
 /* Monta um passo do ajuste: % sempre com 4 casas, arredondado (regra do projeto) */
+const MAX_PCT_ERP = 999.99;
+const pctValido = n => Number.isFinite(n) && n >= 0 && n <= MAX_PCT_ERP;
+// Arredonda a capacidade para baixo: a quantidade nunca deve ultrapassar o teto.
+const maxQtdErp = tam => tam > 0 && Number.isFinite(tam) ? Math.floor(tam * MAX_PCT_ERP / 100 * 10000) / 10000 : 0;
 function montarPasso(numeroDoc, tam, q, extra = {}){
   const pctNum = r4(q / tam * 100);
+  if (!pctValido(pctNum)) throw new RangeError('O ERP aceita no máximo 999,99% por ajuste.');
   return { numeroDoc, tamanhoOriginal: tam, q, pctNum, pctStr: pctNum.toFixed(4).replace('.', ','), erpQtd: r4(tam * pctNum / 100), dec: !Number.isInteger(q), ...extra };
 }
 const nFixos = () => docsDisponiveis.filter(d => d.fixo).length;
@@ -1626,7 +1647,7 @@ function planejar(atual, alvo){
 
   // Limite de cada documento:
   //  estorno -> margem de segurança (não pode tirar 100%)
-  //  adição  -> sem limite pelo tamanho; só o "saldo na data", se você informou
+  //  adição  -> saldo na data e teto de 999,99% por documento
   const limite = d => op === 'estorno' ? calcularMaxEstorno(d.tamanhoOriginal) : (d.saldoMin != null && !isNaN(d.saldoMin) ? d.saldoMin : Infinity);
   const usadas = config.evitarUsadas ? reqsDoProduto(produtoAtual.cod) : {};
   const foiUsada = d => usadas[d.numeroDoc] && usadas[d.numeroDoc].length ? 1 : 0;
@@ -1653,7 +1674,7 @@ function planejar(atual, alvo){
     if (rest <= 0) break;
     let cap = limite(d);
     if (op === 'adicao') cap = Math.min(cap - alocado, atual - alocado); // nunca deixa o saldo negativo
-    let q = r4(Math.min(rest, cap));
+    let q = r4(Math.min(rest, cap, maxQtdErp(d.tamanhoOriginal)));
     const lim = recusados[d.numeroDoc];
     if (lim != null && q > lim) { limitados.push({ doc:d.numeroDoc, max:lim }); q = lim; }   // o ERP já recusou mais que isso
     if (!(q > 0)) continue;
@@ -1999,6 +2020,7 @@ function desfazerPasso(){
 function acaoCopiar(tipo, avancar, win){
   const s = sol; if (!s || s.idx >= s.passos.length) return;
   const idx = s.idx, p = s.passos[idx], val = tipo === 'doc' ? p.numeroDoc : p.pctStr;
+  if (!pctValido(lerNumero(p.pctStr))) { toast('Este passo excede 999,99%. Volte aos saldos e calcule novamente.', 'err'); return; }
   copiar(val, win || window).then(() => {
     if (sol !== s) return;
     if (tipo === 'doc') p.cDoc = true; else p.cPct = true;
@@ -2168,7 +2190,7 @@ async function desfazerAjuste(id){
   const passos = feitos.map((p, i) => {
     const tam0 = p.tam > 0 ? p.tam : p.q / (lerNumero(p.pctStr) / 100);
     const tam = r4(h.op === 'estorno' ? tam0 - p.q : tam0 + p.q);
-    const q = op === 'estorno' ? r4(Math.min(p.q, calcularMaxEstorno(tam))) : p.q;
+    const q = r4(Math.min(p.q, maxQtdErp(tam), op === 'estorno' ? calcularMaxEstorno(tam) : Infinity));
     falta = r4(falta + p.q - q);
     return montarPasso(p.numeroDoc, tam, q, { docIdx:i, data:'', saldoMin:null, cDoc:false, cPct:false, pulado:false, avancou:false });
   }).filter(p => p.q > 0);
@@ -2179,7 +2201,7 @@ async function desfazerAjuste(id){
   const depois = [...new Set(historicoGlobal.filter(x => x !== h && x.produto === h.produto && tsHist(x) > t)
     .flatMap(x => (x.passos || []).filter(p => p.copiado && nums.has(p.numeroDoc)).map(p => p.numeroDoc)))];
   const ok = await dialogo({ titulo:'Desfazer este ajuste no ERP?', texto:`O app monta os passos contrários nos mesmos documentos (${op === 'estorno' ? 'estornar' : 'adicionar'} ${br(mov)} pçs) para o saldo voltar de ${br(agora)} para ${br(h.atual)}.`
-    + (falta > 0 ? ` A margem de ${config.margemSeguranca}% não deixa estornar tudo: faltarão ${br(falta)} pçs.` : '')
+    + (falta > 0 ? ` Os limites de segurança e de 999,99% não permitem desfazer tudo: faltarão ${br(falta)} pçs.` : '')
     + (depois.length ? ` Atenção: ${depois.length === 1 ? 'a REQ ' + depois[0] + ' foi usada' : 'as REQs ' + depois.join(', ') + ' foram usadas'} em outro ajuste depois. Confira o tamanho no ERP antes de lançar.` : ''), confirmar:'Montar os passos' });
   if (!ok) return;
   if (!passos.length) { toast('Pela margem de segurança, nada pode ser estornado nestes documentos.', 'warn'); return; }
@@ -2191,7 +2213,7 @@ async function desfazerAjuste(id){
   $('saldoAtual').value = fmtCampo(agora); $('saldoAlvo').value = fmtCampo(h.atual);
   salvarSessao(); preencherInfoProduto(); renderListaDocs();
   renderResumo(); mudarTela('fase3'); renderPasso(0);
-  toast(falta > 0 ? `Passos prontos. Faltam ${br(falta)} pçs por causa da margem de segurança.` : 'Passos para desfazer prontos. Lance no ERP como um ajuste normal.', falta > 0 ? 'warn' : 'ok');
+  toast(falta > 0 ? `Passos prontos. Faltam ${br(falta)} pçs por causa dos limites de segurança do ERP.` : 'Passos para desfazer prontos. Lance no ERP como um ajuste normal.', falta > 0 ? 'warn' : 'ok');
   if (config.flutuante && pipSuportado()) abrirFlutuante(true);
 }
 
@@ -2842,12 +2864,14 @@ function copiarResumo(periodo){
 let calcValor = '';
 function calcPct(){
   const tam = lerNumero($('calcTam').value), q = lerNumero($('calcQtd').value);
-  const ok = tam > 0 && q >= 0;
+  const pct = r4(q / tam * 100);
+  const excede = tam > 0 && q >= 0 && !pctValido(pct);
+  const ok = tam > 0 && q >= 0 && pctValido(pct);
   calcValor = ok ? r4(q / tam * 100).toFixed(4).replace('.', ',') : '';
-  $('calcRes').innerHTML = ok ? `${calcValor}<small>%</small>` : '–';
+  $('calcRes').innerHTML = ok ? `${calcValor}<small>%</small>` : (excede ? '<small>Máximo 999,99%</small>' : '–');
   $('calcCopiar').disabled = !ok;
 }
-function copiarCalc(){ if (calcValor) copiar(calcValor).then(() => { tocarSom('copy'); toast(`${calcValor}% copiado.`, 'ok'); }).catch(() => toast('Não foi possível copiar.', 'err')); }
+function copiarCalc(){ calcPct(); if (calcValor) copiar(calcValor).then(() => { tocarSom('copy'); toast(`${calcValor}% copiado.`, 'ok'); }).catch(() => toast('Não foi possível copiar.', 'err')); }
 
 /* ===== BOTÕES COM data-acao (histórico e laterais) ===== */
 document.addEventListener('click', e => {

@@ -66,7 +66,7 @@ documentos de requisição (REQ). Fluxo em 3 fases:
   Tailwind, shadcn ou outras dependências (as skills de React/Vercel/Supabase não se aplicam a este app).
 - Direção visual atual (v6.0.0, pedido da usuária após ler o Jarvão): "oficina à noite". Preto quente (#080706),
   UMA cor de destaque (âmbar #ff9a4d; verde/azul/rosa são opções nas Configurações), fontes Saira (textos), JetBrains Mono
-  (números e rótulos) e Michroma (só o nome do app), as mesmas do Jarvão. SEM cartões: seções separadas por fios finos,
+  (números e rótulos) e Michroma (só o nome do app), as mesmas do Jarvão. Superfícies delimitadas: área principal do ajuste e cartões de contexto nas laterais,
   números enormes, botão principal é um retângulo âmbar e o resto é texto com fio embaixo, cantos quase retos, sem
   gradiente em texto, sem ícones em quadradinhos, sem pílulas. Mantenha essa linha; evite os "queridinhos" de IA
   (roxo/índigo, caixas arredondadas com sombra, badges em pílula, brilho neon).
@@ -80,7 +80,8 @@ documentos de requisição (REQ). Fluxo em 3 fases:
 ## Regras de cálculo (confirmadas pela usuária)
 - Estorno de saídas (aumentar o saldo): não pode tirar 100% de um documento. Usa a margem
   configurável (padrão 95%) por documento.
-- Adição de saídas (reduzir o saldo): pode adicionar qualquer quantidade num documento, desde que o
+- Todo ajuste deve respeitar o teto de 999,99% por documento, inclusive na calculadora e ao desfazer. Distribua entre outras REQs e indique a quantidade sem cobertura quando necessário.
+- Adição de saídas (reduzir o saldo): pode adicionar quantidade até o teto de 999,99% num documento, desde que o
   saldo da ficha nunca fique negativo. O limite de cada REQ é o MENOR saldo da ficha daquela linha
   em diante (coluna SALDO). Ao usar várias REQs, o app desconta o que já foi alocado (regra conservadora).
 - O percentual sempre tem 4 casas decimais, arredondado (nunca truncado). Ex.: 58,3333.
