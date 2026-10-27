@@ -753,6 +753,36 @@ body.claro.modo-leve .top{background:var(--bg)}
 .wz{padding:20px;background:var(--sf2);border:1px solid var(--ln2);border-radius:6px}
 @media(max-width:560px){.centro>section{padding:16px}.info-box,.wz{padding:14px}.layout{gap:16px}.row2 input{font-size:36px}}
 
+/* ===== Lançamento no ERP: os 5 dados que não podem passar despercebidos ficam enormes ===== */
+.wz-top{align-items:baseline}
+.wz-nome{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;color:var(--di)}
+.lanc{margin:14px 0 18px;border-top:2px solid var(--pri)}
+.lanc-linha{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.15fr) minmax(0,1.1fr);gap:0;align-items:stretch}
+.lc{min-width:0;padding:14px 16px 12px 0}
+.lc+.lc{padding-left:18px;border-left:1px solid var(--ln2)}
+.lc>span{display:block;font-family:var(--f-num);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
+.lc>b{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:clamp(19px,2.3vw,30px);font-weight:600;line-height:1.1;letter-spacing:-.01em;color:var(--tx)}
+.lc>small{display:block;margin-top:5px;font-family:var(--f-num);font-size:11px;letter-spacing:.06em;color:var(--mu)}
+.lc-prod>b{font-family:var(--f-num);font-weight:500;letter-spacing:-.03em;overflow-wrap:anywhere}
+.lc-op>b{text-transform:uppercase;letter-spacing:.02em}
+.lc-op.adicao>b{color:var(--er)}
+.lc-op.estorno>b{color:var(--ok)}
+.lc-dec{margin:8px 0 8px 14px;padding:10px 12px 10px;border-left:0!important;border:2px solid var(--ln2)}
+.lc-dec+.lc,.lc+.lc-dec{padding-left:16px}
+.lc-dec>b{text-transform:uppercase;letter-spacing:0;font-weight:700;font-size:clamp(18px,2.1vw,27px)}
+.lc-dec>b svg{width:1.2em;height:1.2em;stroke-width:2.6}
+.lc-dec.on{background:var(--warn);border-color:var(--warn);color:#1d1300}
+.lc-dec.on>span,.lc-dec.on>small{color:rgba(29,19,0,.78)}
+.lc-dec.on>b{color:#1d1300}
+.lc-dec.off>b{color:var(--tx)}
+.tiles{margin:0;border-top:1px solid var(--ln2)}
+.tiles{grid-template-columns:1fr 1.5fr}
+.tile .v{font-size:clamp(30px,4.4vw,60px);white-space:nowrap;word-break:normal}
+body.fase-3 .stepper{margin-bottom:20px;padding-bottom:12px}
+body.fase-3 .resumo{margin-bottom:14px;padding-bottom:10px}
+body.fase-3 .prog{margin-bottom:16px}
+body.claro .lc-dec.on{color:#1d1300}
+@media (max-width:760px){.lanc-linha{grid-template-columns:1fr 1fr}.lc-prod{grid-column:1/-1;padding-bottom:6px;border-bottom:1px solid var(--ln2)}.lc-op{padding-left:0!important;border-left:0!important}.lc-dec{margin-left:8px}}
 </style>
 <script defer src="vendor/gsap.min.js"></script>
 <script defer src="vendor/ScrollTrigger.min.js"></script>
@@ -989,7 +1019,7 @@ body.claro.modo-leve .top{background:var(--bg)}
    Pedalada do Delei
    Ao publicar uma versão nova, aumente VERSAO aqui e no sw.js.
    ========================================================= */
-const VERSAO = '6.0.2';
+const VERSAO = '6.0.3';
 /* Efeitos visuais (fx/movimento.js e fx/vivo.js): são só enfeite, então qualquer falha aqui é ignorada */
 const fx = (nome, ...a) => { try { if (window.FXM) window.FXM(nome, ...a); if (window.FXV) window.FXV(nome, ...a); } catch(e) {} };
 
@@ -1685,6 +1715,9 @@ function planejar(atual, alvo){
 }
 
 const rotuloOp = op => op === 'estorno' ? 'Estornar saídas' : 'Adicionar saídas';
+/* Nome da operação como no ERP: subtração aumenta o saldo atual; adição diminui o saldo atual */
+const nomeOp = op => op === 'estorno' ? 'Subtração' : 'Adição';
+const efeitoAtual = op => op === 'estorno' ? 'aumenta o saldo atual' : 'diminui o saldo atual';
 const efeitoOp = op => op === 'estorno' ? 'aumenta o saldo' : 'reduz o saldo';
 
 function atualizarPrevia(){
@@ -1810,9 +1843,10 @@ function renderPasso(idx, opts = {}){
   salvarSessao();
 
   const p = s.passos[s.idx], last = s.idx === n - 1;
+  const temCod = s.produto.cod && s.produto.cod !== 'N/D';
   const dec = p.dec
-    ? `<div class="dec on">${IC.dec}Marque a opção de decimais no ERP</div>`
-    : `<div class="dec off">${IC.decOff}Deixe a opção de decimais desmarcada</div>`;
+    ? `<div class="lc lc-dec on" id="lcDec"><span>Decimais</span><b>${IC.dec}Marcar</b><small>Marque a opção de decimais no ERP</small></div>`
+    : `<div class="lc lc-dec off" id="lcDec"><span>Decimais</span><b>${IC.decOff}Não marcar</b><small>Deixe a opção de decimais desmarcada</small></div>`;
   let lembrete = '';
   if (s.op === 'adicao') {
     lembrete = p.saldoMin != null
@@ -1820,15 +1854,21 @@ function renderPasso(idx, opts = {}){
       : `<div class="lembrete">${IC.warn}<span>Confira na ficha: a partir de <b>${esc(p.data || 'a data do documento')}</b>, o saldo precisa ter pelo menos <b>${br(p.q)} pçs</b> para não ficar negativo.</span></div>`;
   }
   box.innerHTML = `<div class="wz${cls}" id="wizCard">
-    <div class="wz-top"><span class="wz-n">Passo ${s.idx + 1} de ${n}</span><span class="badge ${s.op}">${rotuloOp(s.op)}</span></div>
-    <p class="wz-instr">No ERP, localize o documento <b>${esc(p.numeroDoc)}</b> e informe o percentual abaixo.</p>
-    <div class="tiles">${tile('tDoc','doc',1,'Documento',esc(p.numeroDoc),p.cDoc)}${tile('tPct','pct',2,'Percentual para o ERP',p.pctStr + '<small>%</small>',p.cPct)}</div>
+    <div class="wz-top"><span class="wz-n">Passo ${s.idx + 1} de ${n}</span><span class="wz-nome">${esc(s.produto.nome || '')}</span></div>
+    <div class="lanc">
+      <div class="lanc-linha">
+        <div class="lc lc-prod"><span>Produto</span><b>${temCod ? esc(s.produto.cod) : 'sem código'}</b></div>
+        <div class="lc lc-op ${s.op}"><span>Operação</span><b>${nomeOp(s.op)}</b><small>${efeitoAtual(s.op)}</small></div>
+        ${dec}
+      </div>
+      <div class="tiles">${tile('tDoc','doc',1,'Documento',esc(p.numeroDoc),p.cDoc)}${tile('tPct','pct',2,'Percentual para o ERP',p.pctStr + '<small>%</small>',p.cPct)}</div>
+    </div>
     <div class="detalhes">
       <div class="det"><span>Movimenta</span><b>${br(p.q)} pçs</b></div>
       <div class="det"><span>Tamanho da REQ</span><b>${br(p.tamanhoOriginal)} pçs</b></div>
       <div class="det"><span>Data</span><b>${esc(p.data || 'sem data')}</b></div>
     </div>
-    ${dec}${lembrete}
+    ${lembrete}
     <div class="wz-nav">
       <button class="btn nav" onclick="irPasso(${s.idx - 1})"${s.idx ? '' : ' disabled'} title="Passo anterior" aria-label="Passo anterior">${IC.l}</button>
       <button class="btn nav" onclick="desfazerPasso()" title="Desmarca este passo no app. Não altera nada no ERP.">${IC.undo}Desfazer</button>
@@ -2061,8 +2101,10 @@ body{font-family:'Saira','Segoe UI',system-ui,sans-serif;background:#080706;colo
 button{font:inherit;color:inherit;cursor:pointer}
 .top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:#b6a590}
 .top b{color:#f4ead9;font-family:'JetBrains Mono',Consolas,monospace;font-weight:500}
-.op{font-family:'JetBrains Mono',Consolas,monospace;font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;color:#f4ead9}
-.op.estorno{color:#7bf0b4}.op.adicao{color:#ff6b5e}
+.prod{font-size:12px;color:#b6a590}.prod b{font-size:20px;font-weight:500;letter-spacing:-.02em;color:#fff}
+.opx{display:flex;flex-direction:column;gap:1px;padding:6px 0 6px 12px;border-left:5px solid #ff6b5e;font-size:19px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#ff6b5e;line-height:1.15}
+.opx.estorno{border-left-color:#7bf0b4;color:#7bf0b4}
+.opx small{font-family:'JetBrains Mono',Consolas,monospace;font-size:10px;font-weight:400;letter-spacing:.1em;color:#b6a590}
 .tile{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:8px 12px 9px 14px;border:0;border-left:2px solid __PRI__;border-bottom:1px solid rgba(255,184,120,.22);background:none;text-align:left;transition:background-color .2s,scale .15s}
 .tile:hover{background:rgba(255,176,110,.06)}
 .tile:active{scale:.985}
@@ -2074,8 +2116,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tile.feito b{color:#7bf0b4}
 .tile:not(.feito)~.tile:not(.feito){border-left-color:rgba(255,184,120,.24)}
 .tile:not(.feito)~.tile:not(.feito) b{color:#f4ead9}
-.dec{font-size:12.5px;font-weight:500;text-align:left;padding:6px 0 6px 12px;color:#b6a590;border-left:2px solid rgba(255,184,120,.24)}
-.dec.on{color:#ffc247;border-left:6px solid transparent;border-image:repeating-linear-gradient(-45deg,#ffc247 0 4px,transparent 4px 8px) 1}
+.dec{font-size:16px;font-weight:700;letter-spacing:.02em;text-align:center;padding:10px 8px;color:#f4ead9;border:2px solid rgba(255,184,120,.35)}
+.dec.on{color:#1d1300;background:#ffc247;border-color:#ffc247}
 .nav{display:flex;align-items:center;gap:10px}
 .nav button{min-height:36px;padding:6px 0;border:0;border-bottom:1px solid rgba(255,184,120,.3);background:none;font-family:'JetBrains Mono',Consolas,monospace;font-weight:500;font-size:11px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;transition:scale .15s,border-color .2s}
 .nav button:hover:not(:disabled){border-bottom-color:__PRI__}
@@ -2096,7 +2138,7 @@ async function abrirFlutuante(auto){
   if (!pipSuportado()) { if (!auto) toast('Seu navegador não tem janela flutuante. Use o Chrome ou o Edge atualizados.', 'warn'); return; }
   if (!sol) return;
   if (pipWin) { try { pipWin.focus(); } catch(e) {} return; }
-  try { pipWin = await documentPictureInPicture.requestWindow({ width: 340, height: 300 }); }
+  try { pipWin = await documentPictureInPicture.requestWindow({ width: 360, height: 400 }); }
   catch(e) { pipWin = null; if (!auto) toast('Não foi possível abrir a janela flutuante.', 'err'); return; }
   const w = pipWin, d = w.document;
   d.title = 'Pedalada';
@@ -2144,10 +2186,12 @@ function renderPip(){
   }
   const p = s.passos[s.idx], feito = completo(p), pular = rt.pular === s.idx;
   const dica = pular ? 'Não copiado. Clique de novo para pular.' : (feito ? 'Passo concluído ✓' : (!p.cDoc ? 'Enter copia o documento' : 'Enter copia o %'));
-  box.innerHTML = `<div class="top"><span>Passo <b>${s.idx + 1}</b> de ${n}</span><span class="op ${s.op}">${esc(rotuloOp(s.op))}</span></div>
+  const codPip = s.produto.cod && s.produto.cod !== 'N/D' ? s.produto.cod : 'sem código';
+  box.innerHTML = `<div class="top"><span>Passo <b>${s.idx + 1}</b> de ${n}</span><span class="prod">Produto <b>${esc(codPip)}</b></span></div>
+    <div class="opx ${s.op}">${esc(nomeOp(s.op))}<small>${efeitoAtual(s.op)}</small></div>
     <button class="tile${p.cDoc ? ' feito' : ''}" data-pip="doc"><small>Documento${p.cDoc ? ' · copiado ✓' : ''}</small><b>${esc(p.numeroDoc)}</b></button>
     <button class="tile${p.cPct ? ' feito' : ''}" data-pip="pct"><small>Percentual${p.cPct ? ' · copiado ✓' : ''}</small><b>${esc(p.pctStr)}<i>%</i></b></button>
-    <div class="dec${p.dec ? ' on' : ''}">${p.dec ? 'Marque a opção de decimais no ERP' : 'Deixe decimais desmarcado'}</div>
+    <div class="dec${p.dec ? ' on' : ''}">${p.dec ? '☑ MARCAR decimais no ERP' : '☐ NÃO marcar decimais'}</div>
     <div class="nav"><button data-pip="ant"${s.idx ? '' : ' disabled'} title="Passo anterior">‹</button><span class="hint${feito ? ' feito' : ''}${pular ? ' alerta' : ''}">${dica}</span><button class="pri" data-pip="prox">${s.idx === n - 1 ? 'Concluir' : 'Próximo'} ›</button></div>`;
 }
 

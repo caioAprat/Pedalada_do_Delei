@@ -30,6 +30,11 @@ documentos de requisição (REQ). Fluxo em 3 fases:
   (e o IndexedDB `pedalada`, store `kv`, chaves `db` e `hist` — cópia de segurança dos produtos e do histórico).
 - Campos de número são texto com leitura no formato brasileiro (`lerNumero`). Para colocar um número
   num campo por código, use `fmtCampo` (nunca o número cru com ponto, que seria lido como milhar).
+- Na execução (fase 3, passo a passo e janela flutuante) estes cinco dados têm que estar SEMPRE enormes e à vista, sem
+  rolar a tela num notebook 1366x768: código do produto, nº do documento, percentual, operação e decimais (marcar ou
+  não marcar). A operação usa o nome do ERP: **Adição** diminui o saldo atual e **Subtração** aumenta o saldo atual
+  (no código: `adicao` / `estorno`; use `nomeOp()` e `efeitoAtual()`). Decimais "Marcar" é um bloco amarelo cheio;
+  "Não marcar" é um bloco com borda e a mesma letra grande. Não esconda nem encolha esses campos em mudanças futuras.
 - As laterais mostram só informação útil (pendências, gráfico da ficha, painel do dia, calculadora,
   relatórios). Não colocar textos de tutorial ou listas de atalhos nelas.
 - Cada produto salvo pode ter `lembrete` ({texto, quando}); `null` quer dizer que foi apagado (não restaurar do IndexedDB).
