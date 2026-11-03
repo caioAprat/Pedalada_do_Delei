@@ -99,3 +99,6 @@ PRODUTO :11070016 CHAPA ALUMINIO 2000 X 1000 X 1.5 MM - PESO DA CHAPA 8,136 KG U
 ```
 Cada movimento: TIPO NÚMERO DATA QUANTIDADE CUSTO VALOR SALDO. Números no formato brasileiro
 (1.234,5678). Só as linhas REQ podem ser ajustadas; as outras (TRE etc.) entram no cálculo do saldo.
+
+## Equipe de IAs
+Leia também `AGENTS.md` (regras da equipe e o bloco "PARA O CÉREBRO" ao terminar).
