@@ -44,8 +44,9 @@ export function criar({ gsap }) {
     };
   }
   function drawRibbon() {
-    const size = Math.min(width * 0.17, height * 0.72);
-    const cx = width * 0.74,
+    const lateral = height > width * 0.55;
+    const size = Math.min(width * (lateral ? 0.39 : 0.17), height * 0.72);
+    const cx = width * (lateral ? 0.49 : 0.74),
       cy = height * 0.53;
     const strips = [];
     for (let i = 0; i < 128; i++) {
