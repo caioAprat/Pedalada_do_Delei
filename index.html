@@ -832,6 +832,30 @@ body.fase-2 .ambiente .prod-l{display:flex;align-items:center;gap:8px;max-width:
 body:not(.claro) :is(.painel,.cmdk,.dlg,.nv,#toast,.graf-tip){background:var(--sf)}
 body.modo-leve #vivo{visibility:hidden}
 @media(prefers-reduced-motion:reduce){#vivo{visibility:hidden}}
+
+/* O formulário principal e os instrumentos laterais têm hierarquias distintas. */
+@media(min-width:861px){
+  .layout{max-width:1380px;padding:88px clamp(32px,4vw,64px) 36px;gap:24px;grid-template-columns:minmax(0,1fr) minmax(286px,.39fr)}
+  body:not(.fase-3) .centro>.card{border:1px solid var(--ln2);border-top:2px solid var(--pri);border-radius:8px;padding:0 clamp(24px,2.4vw,38px) 26px;background:linear-gradient(135deg,var(--sf),var(--bg) 82%)}
+  body.fase-1 .ambiente{height:200px;margin-bottom:2px}
+  .ambiente h1{font-size:clamp(48px,5.8vw,82px);font-weight:300;letter-spacing:-.055em;line-height:.96}
+  .titulo-ficha{display:block;max-width:9ch}
+  body.fase-2 .ambiente{height:138px}
+  body.fase-2 .ambiente h1{font-size:clamp(42px,4.5vw,64px)}
+  .rodape{margin-top:20px}
+}
+.rail-dir{background:transparent;border:0;border-radius:0;top:88px}
+.pulso-dia,.ferramentas-dia{background:var(--sf);border:1px solid var(--ln2);border-radius:8px;overflow:hidden}
+.pulso-dia{margin-bottom:14px}
+.pulso-dia .rbox{padding:13px 18px}
+.pulso-dia .rtit{margin-bottom:8px}
+.rail-dir .calc{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.rail-dir .calc input{min-width:0;font-size:20px}
+.magic-top span{font-family:var(--f-ui);font-size:15px;font-weight:400;line-height:1.5;color:var(--mu)}
+#textoPdf{border:1px solid var(--ln);border-left:2px solid var(--ln2);border-radius:2px;padding:12px 18px;background:repeating-linear-gradient(transparent 0 27px,var(--ln) 27px 28px);background-position:0 5px;line-height:28px}
+#textoPdf:focus{border-left-color:var(--pri);box-shadow:inset 3px 0 12px -9px var(--pri)}
+.rtit,.calc label,.prev-cel span{font-weight:500;font-size:11px;letter-spacing:.12em}
+@media(max-width:860px){.ferramentas-dia{order:-1}.rail-dir{display:flex;flex-direction:column;gap:14px}}
 </style>
 <script defer src="vendor/gsap.min.js"></script>
 <script defer src="vendor/ScrollTrigger.min.js"></script>
@@ -1043,23 +1067,22 @@ body.modo-leve #vivo{visibility:hidden}
     <div class="rodape"><div class="assinatura" aria-label="Pedalada do Delei"><img src="icon.svg" alt=""><span>Pedalada do<svg viewBox="0 0 135 25" aria-hidden="true"><g transform="skewX(-12) translate(6 0)" fill="currentColor" stroke="none" fill-rule="evenodd"><path d="M0 1h17l7 6v10l-8 7H0zm7 6v11h7l4-4v-4l-4-3z M29 1h23v6H36v3h12v5H36v3h16v6H29z M57 1h7v17h15v6H57z M84 1h23v6H91v3h12v5H91v3h16v6H84z M114 1h8v23h-8z"/></g></svg></span></div><span>Feito por Caio A.</span><span class="ver" id="lblVersao"></span><button type="button" class="ovo" onclick="brunoSusto()" onmouseenter="prepararSusto()" onfocus="prepararSusto()" ontouchstart="prepararSusto()">Clique aqui se você é o Bruno</button></div>
   </main>
 
-<aside class="rail rail-dir" aria-label="Ferramentas"><div class="abas" role="tablist" aria-label="Ferramentas"><button type="button" id="aba-calc" role="tab" aria-controls="painel-calc" aria-selected="true" tabindex="0">Calculadora</button><button type="button" id="aba-contexto" role="tab" aria-controls="painel-contexto" aria-selected="false" tabindex="-1">Contexto</button><button type="button" id="aba-atividade" role="tab" aria-controls="painel-atividade" aria-selected="false" tabindex="-1">Atividade</button></div><div role="tabpanel" id="painel-calc" aria-labelledby="aba-calc">    <div class="rbox"><div class="rtit">Calculadora de %</div>
+<aside class="rail rail-dir" aria-label="Ferramentas"><section class="pulso-dia" aria-label="Resumo de atividade"><div class="rbox"><div class="rtit">Hoje</div><div class="hoje" id="railHoje"></div></div>
+    <div class="rbox"><div class="rtit">Últimos 7 dias <span id="railSemanaTot" style="text-transform:none;letter-spacing:0;font-weight:700"></span></div><div class="sem" id="railSemana"></div></div></section><section class="ferramentas-dia"><div class="abas" role="tablist" aria-label="Ferramentas"><button type="button" id="aba-calc" role="tab" aria-controls="painel-calc" aria-selected="true" tabindex="0">Calculadora</button><button type="button" id="aba-contexto" role="tab" aria-controls="painel-contexto" aria-selected="false" tabindex="-1">Contexto</button><button type="button" id="aba-atividade" role="tab" aria-controls="painel-atividade" aria-selected="false" tabindex="-1">Atividade</button></div><div role="tabpanel" id="painel-calc" aria-labelledby="aba-calc">    <div class="rbox"><div class="rtit">Calculadora de %</div>
       <div class="calc">
         <div><label for="calcTam">Tamanho da REQ</label><input type="text" inputmode="decimal" autocomplete="off" id="calcTam" oninput="calcPct()"></div>
         <div><label for="calcQtd">Quantidade</label><input type="text" inputmode="decimal" autocomplete="off" id="calcQtd" oninput="calcPct()"></div>
         <div class="calc-res"><b id="calcRes">–</b><button class="rbtn pri" id="calcCopiar" onclick="copiarCalc()" disabled>Copiar</button></div>
       </div>
     </div>
-</div><div role="tabpanel" id="painel-contexto" aria-labelledby="aba-contexto" hidden><div id="railEsq" class="rail-esq"></div></div><div role="tabpanel" id="painel-atividade" aria-labelledby="aba-atividade" hidden>    <div class="rbox"><div class="rtit">Hoje</div><div class="hoje" id="railHoje"></div></div>
-    <div class="rbox"><div class="rtit">Últimos 7 dias <span id="railSemanaTot" style="text-transform:none;letter-spacing:0;font-weight:700"></span></div><div class="sem" id="railSemana"></div></div>
-    <div class="rbox"><div class="rtit">Este mês <span id="railMesNome" style="text-transform:none;letter-spacing:0;font-weight:700"></span></div><div class="mes" id="railMes"></div></div>
+</div><div role="tabpanel" id="painel-contexto" aria-labelledby="aba-contexto" hidden><div id="railEsq" class="rail-esq"></div></div><div role="tabpanel" id="painel-atividade" aria-labelledby="aba-atividade" hidden>    <div class="rbox"><div class="rtit">Este mês <span id="railMesNome" style="text-transform:none;letter-spacing:0;font-weight:700"></span></div><div class="mes" id="railMes"></div></div>
     <div class="rbox"><div class="rtit">Relatórios</div>
       <div class="racoes">
         <button class="btn mini" onclick="copiarResumo('hoje')" title="Copia um resumo dos ajustes de hoje para colar no e-mail ou Teams">Resumo do dia</button>
         <button class="btn mini" onclick="exportarCSV('30')" title="Baixa uma planilha com os ajustes dos últimos 30 dias">Excel 30 dias</button>
       </div>
     </div>
-  </div></aside>
+  </div></section></aside>
 </div>
 
 <script>
@@ -1068,7 +1091,7 @@ body.modo-leve #vivo{visibility:hidden}
    Pedalada do Delei
    Ao publicar uma versão nova, aumente VERSAO aqui e no sw.js.
    ========================================================= */
-const VERSAO = '7.0.0';
+const VERSAO = '7.0.1';
 /* Efeitos visuais (fx/movimento.js e fx/vivo.js): são só enfeite, então qualquer falha aqui é ignorada */
 const fx = (nome, ...a) => { try { if (window.FXM) window.FXM(nome, ...a); if (window.FXV) window.FXV(nome, ...a); } catch(e) {} };
 
