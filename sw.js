@@ -1,10 +1,10 @@
 // Pedalada do Delei - Service Worker
 // IMPORTANTE: sempre que publicar uma versão nova do app, aumente o número abaixo
 // (e o VERSAO dentro do index.html). É isso que faz aparecer o aviso "Nova versão disponível".
-const VERSAO = '6.0.3';
+const VERSAO = '7.0.0';
 const CACHE = 'pedalada-app-' + VERSAO;
 const CACHE_FONTES = 'pedalada-fontes';
-const ARQUIVOS = ['./', './index.html', './manifest.json', './icon.svg'];
+const ARQUIVOS = ['./', './index.html', './manifest.json', './icon.svg', './fx/vivo.js', './vendor/gsap.min.js'];
 const FONTE_CSS = 'https://fonts.googleapis.com/css2?family=Saira:wght@100;200;300;400;500;600;700&family=Michroma&family=JetBrains+Mono:wght@100;200;300;400;500;600&display=swap';
 
 // Instalação: guarda os arquivos do app. A fonte é opcional (se estiver sem internet, não trava).

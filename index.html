@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#080706">
+<meta name="theme-color" content="#091722">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -783,6 +783,55 @@ body.fase-3 .resumo{margin-bottom:14px;padding-bottom:10px}
 body.fase-3 .prog{margin-bottom:16px}
 body.claro .lc-dec.on{color:#1d1300}
 @media (max-width:760px){.lanc-linha{grid-template-columns:1fr 1fr}.lc-prod{grid-column:1/-1;padding-bottom:6px;border-bottom:1px solid var(--ln2)}.lc-op{padding-left:0!important;border-left:0!important}.lc-dec{margin-left:8px}}
+
+:root{--bg:#091722;--sf:#102331;--sf2:rgba(142,203,213,.055);--sf3:#0d202c;--tx:#edf7f7;--mu:#aec3cd;--di:#8fa8b4;--ln:rgba(166,210,219,.14);--ln2:rgba(166,210,219,.29);--f-num:var(--f-ui)}
+body.claro{--bg:#edf4f4;--sf:#fff;--sf2:#e3eff0;--tx:#102b33;--mu:#375664;--di:#4c6871}
+.fundo{background:radial-gradient(ellipse at 42% 8%,rgba(var(--pri-rgb),.07),transparent 54%)}
+.top{background:var(--bg);border-bottom:1px solid var(--ln);justify-content:flex-end}
+.top .stepper{margin:0 auto 0 0;padding:0;border:0;gap:16px}
+.top .stepper span{padding:10px 0;font:600 14px var(--f-ui);letter-spacing:.02em;text-transform:none}
+.top .stepper i,.top .stepper span::before{display:none}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(290px,.42fr);gap:clamp(24px,4vw,64px);padding-top:94px;max-width:1450px}
+.centro{grid-column:1}.rail-dir{grid-column:2;grid-row:1;display:block;position:sticky;top:88px;border:1px solid var(--ln2);border-radius:9px;background:var(--sf);max-height:calc(100dvh - 105px);overflow:auto}
+.rail-dir .rail-esq{display:block}.rail-dir .rbox{border:0;border-radius:0;background:none;margin:0}.rail-dir .rbox+.rbox{border-top:1px solid var(--ln)}
+.abas{display:flex;border-bottom:1px solid var(--ln);padding:0 10px;position:sticky;top:0;background:var(--sf);z-index:2}
+.abas button{flex:1;padding:13px 3px;color:var(--mu);background:none;border:0;cursor:pointer;font-size:14px}
+.abas button[aria-selected=true]{box-shadow:inset 0 -2px var(--pri);color:var(--tx);font-weight:650}
+.abas button:hover{color:var(--pri)}
+.centro>section{padding:0;background:none;border:0;box-shadow:none}
+.ambiente{position:relative;isolation:isolate;display:flex;align-items:center;height:clamp(120px,13vw,174px);margin-bottom:16px}
+.ambiente h1{font-size:clamp(25px,3.5vw,55px);letter-spacing:-.05em;line-height:.98;font-weight:560;max-width:54%}
+#vivo,#vivo.on{position:absolute;inset:0;opacity:1;mask-image:none;z-index:-1}
+body.fase-3 .ambiente,.titulo-saldos,body.fase-2 .titulo-ficha{display:none}body.fase-2 .titulo-saldos{display:inline}
+.magic-top{margin:0 0 16px}.magic-top .magic-ico{display:none}.magic-top span{max-width:none}
+textarea,.row2 input,.calc input{background:var(--sf2);border:1px solid var(--ln2);border-radius:5px;padding:10px 14px}
+.row2{padding:0 0 14px}.row2 input{font-size:clamp(28px,3.4vw,52px)}
+.conta-saldo{font:600 clamp(22px,3vw,40px)/1.2 var(--f-ui);letter-spacing:-.03em;margin-bottom:14px}.conta-saldo b{color:var(--pri)}
+.btn-pri,.nav.pri{border-radius:4px}.btn-pri:hover,.nav.pri:hover:not(:disabled){background:var(--lt)}
+.assinatura{display:flex;align-items:center;gap:9px;color:var(--tx)}.assinatura img{width:38px;height:38px}.assinatura span{font:700 9px/1 var(--f-ui);letter-spacing:.19em;text-transform:uppercase}.assinatura svg{display:block;width:88px;height:20px}
+.rodape{flex-wrap:wrap;gap:14px}
+@media(max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}.rail-dir{position:static;grid-column:1;grid-row:auto;max-height:none}.top .stepper{gap:5px}.top .stepper span{font-size:12px}.top .stepper i{display:none}}
+@media(max-width:560px){.top{padding:0 8px;gap:4px}.top .pill{padding:0 6px}.top .stepper{gap:4px}.top .stepper span{font-size:11px}.layout{padding-top:76px}.ambiente{height:96px}.ambiente h1{font-size:27px}.conta-saldo{overflow-wrap:anywhere}}
+
+.ambiente{flex-direction:column;justify-content:center;align-items:flex-start}
+.ambiente .prod-l{display:none}
+body.fase-2 .ambiente .prod-l{display:flex;align-items:center;gap:8px;max-width:55%;margin-top:8px}
+.ambiente .prod-l b,.ambiente .prod-l span{font:500 14px/1.3 var(--f-ui);color:var(--mu);letter-spacing:0}
+.ambiente .prod-l span{margin-left:6px}
+#vivo.on{mask-image:linear-gradient(0deg,transparent,#000 12%,#000 88%,transparent)}
+#fase2 .acoes{margin:16px 0 24px}
+#fase2 .previa:not(.vazia){padding:14px 18px}
+#fase2 .prev-grid{display:flex;flex-wrap:wrap;gap:8px 24px}
+#fase2 .prev-cel{flex:1 1 115px;border:0;padding:0}
+#fase2 .prev-cel b{font-size:15px}
+#fase2 .row2{margin:0;padding:0 0 8px}
+#fase2 .conta-saldo{margin-bottom:10px}
+.rail-dir .calc{grid-template-columns:minmax(0,1fr);gap:18px}
+.rail-dir .calc label{font-size:12px;letter-spacing:.04em}
+.rail-dir .calc-res b{font-size:36px;font-weight:550;color:var(--pri)}
+body:not(.claro) :is(.painel,.cmdk,.dlg,.nv,#toast,.graf-tip){background:var(--sf)}
+body.modo-leve #vivo{visibility:hidden}
+@media(prefers-reduced-motion:reduce){#vivo{visibility:hidden}}
 </style>
 <script defer src="vendor/gsap.min.js"></script>
 <script defer src="vendor/ScrollTrigger.min.js"></script>
@@ -794,14 +843,11 @@ body.claro .lc-dec.on{color:#1d1300}
 </head>
 <body class="fase-1">
 <div class="fundo" aria-hidden="true"></div>
-<div id="vivo" aria-hidden="true"></div>
+
 <div class="grao" aria-hidden="true"></div>
 
 <header class="top">
-  <div class="marca">
-    <div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17"/><circle cx="20" cy="20" r="2.2"/><path d="M20 3v14.8M20 22.2V37M3 20h14.8M22.2 20H37M8 8l10.4 10.4M21.6 21.6 32 32M32 8 21.6 18.4M18.4 21.6 8 32"/></svg></div>
-    <div><h1>Pedalada do Delei</h1><span>Ajuste de saldo no ERP</span></div>
-  </div>
+      <div class="stepper" aria-hidden="true"><span data-f="1"><i>1</i>Ficha</span><span class="sep"></span><span data-f="2"><i>2</i>Saldos</span><span class="sep"></span><span data-f="3"><i>3</i>Execução</span></div>
   <nav class="top-grp" aria-label="Navegação">
     <button class="pill" onclick="abrirPainel('esq')"><svg viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/></svg><span class="bt-tx">Salvos</span></button>
     <button class="pill" onclick="abrirBusca()" title="Busca rápida (Ctrl+K)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="bt-tx">Buscar</span><kbd class="bt-tx kbd-top">Ctrl K</kbd></button>
@@ -888,7 +934,7 @@ body.claro .lc-dec.on{color:#1d1300}
       </div>
       <div class="cfg-row">
         <div><span class="cfg-lbl">Cor de destaque</span><span class="cfg-desc">Cor dos botões e destaques do app.</span></div>
-        <div class="cores" id="cfgCor"><button type="button" class="cor" data-v="ambar" style="background:#ff9a4d" title="Âmbar" aria-label="Âmbar" onclick="setAparencia('cor','ambar')"></button><button type="button" class="cor" data-v="verde" style="background:#3fd29a" title="Verde" aria-label="Verde" onclick="setAparencia('cor','verde')"></button><button type="button" class="cor" data-v="azul" style="background:#6c8cff" title="Azul" aria-label="Azul" onclick="setAparencia('cor','azul')"></button><button type="button" class="cor" data-v="rosa" style="background:#ff6b9d" title="Rosa" aria-label="Rosa" onclick="setAparencia('cor','rosa')"></button></div>
+        <div class="cores" id="cfgCor"><button type="button" class="cor" data-v="menta" style="background:#91edc6" title="Menta" aria-label="Menta" onclick="setAparencia('cor','menta')"></button><button type="button" class="cor" data-v="ambar" style="background:#ff9a4d" title="Âmbar" aria-label="Âmbar" onclick="setAparencia('cor','ambar')"></button><button type="button" class="cor" data-v="verde" style="background:#3fd29a" title="Verde" aria-label="Verde" onclick="setAparencia('cor','verde')"></button><button type="button" class="cor" data-v="azul" style="background:#6c8cff" title="Azul" aria-label="Azul" onclick="setAparencia('cor','azul')"></button><button type="button" class="cor" data-v="rosa" style="background:#ff6b9d" title="Rosa" aria-label="Rosa" onclick="setAparencia('cor','rosa')"></button></div>
       </div>
       <div class="cfg-row" id="rowFlutuante">
         <div><span class="cfg-lbl">Janela flutuante automática</span><span class="cfg-desc">Ao calcular um ajuste, abre uma janelinha que fica por cima do ERP com o documento e o %. Funciona no Chrome e no Edge.</span></div>
@@ -916,19 +962,22 @@ body.claro .lc-dec.on{color:#1d1300}
 </aside>
 
 <div class="layout">
-  <aside class="rail rail-esq" id="railEsq" aria-label="Contexto"></aside>
+
 
   <main class="centro">
     <section class="card">
-      <div class="numeral" aria-hidden="true"></div>
-      <div class="stepper" aria-hidden="true"><span data-f="1"><i>1</i>Ficha</span><span class="sep"></span><span data-f="2"><i>2</i>Saldos</span><span class="sep"></span><span data-f="3"><i>3</i>Execução</span></div>
+      <div class="ambiente"><div id="vivo" aria-hidden="true"></div>
+        <h1><span class="titulo-ficha">Ficha de movimento</span><span class="titulo-saldos">Ajustar saldo</span></h1>
+        <div class="prod-l"><div><b id="lblCodProd">Produto</b><span id="lblNomeProd"></span></div><button type="button" class="btn mini" id="btnLembrete" onclick="editarLembrete()" title="Anotação que aparece sempre que a ficha deste produto for colada" hidden>Lembrete</button></div>
+      </div>
+
       <!-- FASE 1 -->
       <div id="fase1" class="tela-fluxo ativa">
         <div class="contexto" id="faixaCorrecao" hidden></div>
         <div class="magic">
           <div class="magic-top">
             <div class="magic-ico"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div>
-            <div><b>Ficha de movimento</b><span>Copie as linhas no ERP e cole aqui. A leitura começa sozinha.</span></div>
+            <div><span>Copie as linhas no ERP e cole aqui. A leitura começa sozinha.</span></div>
           </div>
           <label for="textoPdf" class="lbl" hidden>Texto da ficha</label>
           <textarea id="textoPdf" placeholder="Cole aqui as linhas de REQ da ficha de movimento"></textarea>
@@ -942,8 +991,18 @@ body.claro .lc-dec.on{color:#1d1300}
       <!-- FASE 2 -->
       <div id="fase2" class="tela-fluxo">
         <div id="lembreteProd" hidden></div>
+        <div class="row2">
+          <div class="g"><label class="lbl" for="saldoAtual">Saldo atual no ERP <span class="lbl-ficha" id="lblSaldoFicha" hidden>lido da ficha, confira</span></label><input type="text" inputmode="decimal" autocomplete="off" id="saldoAtual" oninput="$('lblSaldoFicha').hidden=true;atualizarPrevia()"><span class="eco" id="ecoAtual"></span></div>
+          <span class="seta-saldo" aria-hidden="true">→</span>
+          <div class="g"><label class="lbl" for="saldoAlvo">Saldo desejado</label><input type="text" inputmode="decimal" autocomplete="off" id="saldoAlvo" oninput="atualizarPrevia()"><span class="eco" id="ecoAlvo"></span></div>
+        </div>
+        <div class="previa vazia" id="previa"></div>
+        <div class="acoes">
+          <button class="btn btn-pri" onclick="processarFase2(true)">Calcular ajuste</button>
+          <button class="btn btn-sec" onclick="limparGeral()">Cancelar</button>
+        </div>
         <div class="info-box">
-          <div class="prod-l"><div><b id="lblCodProd">Produto</b><span id="lblNomeProd"></span></div><button type="button" class="btn mini" id="btnLembrete" onclick="editarLembrete()" title="Anotação que aparece sempre que a ficha deste produto for colada" hidden>Lembrete</button></div>
+
           <div id="lblAvisoHist" class="aviso-hoje" hidden></div>
           <div class="docs-wrap" id="docsWrap">
             <button type="button" class="docs-header" onclick="alternarListaDocs()">
@@ -967,19 +1026,10 @@ body.claro .lc-dec.on{color:#1d1300}
           </div>
         </div>
 
-        <div class="row2">
-          <div class="g"><label class="lbl" for="saldoAtual">Saldo atual no ERP <span class="lbl-ficha" id="lblSaldoFicha" hidden>lido da ficha, confira</span></label><input type="text" inputmode="decimal" autocomplete="off" id="saldoAtual" oninput="$('lblSaldoFicha').hidden=true;atualizarPrevia()"><span class="eco" id="ecoAtual"></span></div>
-          <span class="seta-saldo" aria-hidden="true">→</span>
-          <div class="g"><label class="lbl" for="saldoAlvo">Saldo desejado</label><input type="text" inputmode="decimal" autocomplete="off" id="saldoAlvo" oninput="atualizarPrevia()"><span class="eco" id="ecoAlvo"></span></div>
-        </div>
-        <div class="previa vazia" id="previa"></div>
         <p class="limite-erp">Limite do ERP: 999,99% por documento. O que não couber fica indicado como saldo sem cobertura.</p>
         <div class="motivos" id="motivos" role="group" aria-label="Motivo do ajuste (opcional)"></div>
 
-        <div class="acoes">
-          <button class="btn btn-pri" onclick="processarFase2(true)">Calcular ajuste</button>
-          <button class="btn btn-sec" onclick="limparGeral()">Cancelar</button>
-        </div>
+
       </div>
 
       <!-- FASE 3 -->
@@ -990,19 +1040,18 @@ body.claro .lc-dec.on{color:#1d1300}
         <div id="listaPassos"></div>
       </div>
     </section>
-    <div class="rodape"><span>Feito por Caio A.</span><span class="ver" id="lblVersao"></span><button type="button" class="ovo" onclick="brunoSusto()" onmouseenter="prepararSusto()" onfocus="prepararSusto()" ontouchstart="prepararSusto()">Clique aqui se você é o Bruno</button></div>
+    <div class="rodape"><div class="assinatura" aria-label="Pedalada do Delei"><img src="icon.svg" alt=""><span>Pedalada do<svg viewBox="0 0 135 25" aria-hidden="true"><g transform="skewX(-12) translate(6 0)" fill="currentColor" stroke="none" fill-rule="evenodd"><path d="M0 1h17l7 6v10l-8 7H0zm7 6v11h7l4-4v-4l-4-3z M29 1h23v6H36v3h12v5H36v3h16v6H29z M57 1h7v17h15v6H57z M84 1h23v6H91v3h12v5H91v3h16v6H84z M114 1h8v23h-8z"/></g></svg></span></div><span>Feito por Caio A.</span><span class="ver" id="lblVersao"></span><button type="button" class="ovo" onclick="brunoSusto()" onmouseenter="prepararSusto()" onfocus="prepararSusto()" ontouchstart="prepararSusto()">Clique aqui se você é o Bruno</button></div>
   </main>
 
-  <aside class="rail rail-dir" aria-label="Painel do dia">
-    <div class="rbox"><div class="rtit">Hoje</div><div class="hoje" id="railHoje"></div></div>
-    <div class="rbox"><div class="rtit">Últimos 7 dias <span id="railSemanaTot" style="text-transform:none;letter-spacing:0;font-weight:700"></span></div><div class="sem" id="railSemana"></div></div>
-    <div class="rbox"><div class="rtit">Calculadora de %</div>
+<aside class="rail rail-dir" aria-label="Ferramentas"><div class="abas" role="tablist" aria-label="Ferramentas"><button type="button" id="aba-calc" role="tab" aria-controls="painel-calc" aria-selected="true" tabindex="0">Calculadora</button><button type="button" id="aba-contexto" role="tab" aria-controls="painel-contexto" aria-selected="false" tabindex="-1">Contexto</button><button type="button" id="aba-atividade" role="tab" aria-controls="painel-atividade" aria-selected="false" tabindex="-1">Atividade</button></div><div role="tabpanel" id="painel-calc" aria-labelledby="aba-calc">    <div class="rbox"><div class="rtit">Calculadora de %</div>
       <div class="calc">
         <div><label for="calcTam">Tamanho da REQ</label><input type="text" inputmode="decimal" autocomplete="off" id="calcTam" oninput="calcPct()"></div>
         <div><label for="calcQtd">Quantidade</label><input type="text" inputmode="decimal" autocomplete="off" id="calcQtd" oninput="calcPct()"></div>
         <div class="calc-res"><b id="calcRes">–</b><button class="rbtn pri" id="calcCopiar" onclick="copiarCalc()" disabled>Copiar</button></div>
       </div>
     </div>
+</div><div role="tabpanel" id="painel-contexto" aria-labelledby="aba-contexto" hidden><div id="railEsq" class="rail-esq"></div></div><div role="tabpanel" id="painel-atividade" aria-labelledby="aba-atividade" hidden>    <div class="rbox"><div class="rtit">Hoje</div><div class="hoje" id="railHoje"></div></div>
+    <div class="rbox"><div class="rtit">Últimos 7 dias <span id="railSemanaTot" style="text-transform:none;letter-spacing:0;font-weight:700"></span></div><div class="sem" id="railSemana"></div></div>
     <div class="rbox"><div class="rtit">Este mês <span id="railMesNome" style="text-transform:none;letter-spacing:0;font-weight:700"></span></div><div class="mes" id="railMes"></div></div>
     <div class="rbox"><div class="rtit">Relatórios</div>
       <div class="racoes">
@@ -1010,7 +1059,7 @@ body.claro .lc-dec.on{color:#1d1300}
         <button class="btn mini" onclick="exportarCSV('30')" title="Baixa uma planilha com os ajustes dos últimos 30 dias">Excel 30 dias</button>
       </div>
     </div>
-  </aside>
+  </div></aside>
 </div>
 
 <script>
@@ -1019,7 +1068,7 @@ body.claro .lc-dec.on{color:#1d1300}
    Pedalada do Delei
    Ao publicar uma versão nova, aumente VERSAO aqui e no sw.js.
    ========================================================= */
-const VERSAO = '6.0.3';
+const VERSAO = '7.0.0';
 /* Efeitos visuais (fx/movimento.js e fx/vivo.js): são só enfeite, então qualquer falha aqui é ignorada */
 const fx = (nome, ...a) => { try { if (window.FXM) window.FXM(nome, ...a); if (window.FXV) window.FXV(nome, ...a); } catch(e) {} };
 
@@ -1094,10 +1143,10 @@ const IC = {
 };
 
 let historicoGlobal = [], mem = {}, sol = null, tt = null, ultimaPrevia = null;
-let config = { modoLeve:false, margemSeguranca:95, sons:true, volume:60, estrategia:'menos', evitarUsadas:false, flutuante:false, tema:'escuro', cor:'ambar', visual:6 };
+let config = { modoLeve:false, margemSeguranca:95, sons:true, volume:60, estrategia:'menos', evitarUsadas:false, flutuante:false, tema:'escuro', cor:'menta', visual:7 };
 /* Cores de destaque: principal, secundária, clara e RGB */
 /* [cor, cor 2, cor clara (texto no escuro), rgb, cor no tema claro, rgb no tema claro] */
-const CORES = { ambar:['#ff9a4d','#ff7a26','#ffc58a','255,154,77','#c4600f','196,96,15'], verde:['#3fd29a','#2bb59a','#9ff0cd','63,210,154','#0e8a59','14,138,89'], azul:['#6c8cff','#7a6cf0','#b3c2ff','108,140,255','#3a56d4','58,86,212'], rosa:['#ff6b9d','#ff5a8a','#ffb3cf','255,107,157','#c4306a','196,48,106'] };
+const CORES = { menta:['#91edc6','#59d9b8','#b9ffe4','145,237,198','#08745d','8,116,93'], ambar:['#ff9a4d','#ff7a26','#ffc58a','255,154,77','#c4600f','196,96,15'], verde:['#3fd29a','#2bb59a','#9ff0cd','63,210,154','#0e8a59','14,138,89'], azul:['#6c8cff','#7a6cf0','#b3c2ff','108,140,255','#3a56d4','58,86,212'], rosa:['#ff6b9d','#ff5a8a','#ffb3cf','255,107,157','#c4306a','196,48,106'] };
 let docsDisponiveis = [], produtoAtual = { cod:'', nome:'' }, filtro = { de:'', ate:'' };
 let faseAtual = 'fase1', motivoAtual = '', fichaInfo = null, correcao = null;
 let filtroHist = { periodo:'tudo', status:'' };
@@ -1132,7 +1181,11 @@ function carregarConfig(){
   try { const c = ls.get(CFG_KEY); if (c) config = { ...config, ...JSON.parse(c) }; } catch(e) {}
   if (!['menos','antigos','recentes'].includes(config.estrategia)) config.estrategia = 'menos';
   if (!['escuro','claro'].includes(config.tema)) config.tema = 'escuro';
-  if (config.visual !== 6) { config.cor = 'ambar'; config.visual = 6; ls.set(CFG_KEY, JSON.stringify(config)); }   // visual novo (v6): volta ao âmbar uma vez
+  if (config.visual !== 7) {
+    if (config.cor === 'ambar') config.cor = 'menta';
+    config.visual = 7;
+    ls.set(CFG_KEY, JSON.stringify(config));
+  }
   if (!CORES[config.cor]) config.cor = 'ambar';
   config.margemSeguranca = Math.min(99, Math.max(1, parseInt(config.margemSeguranca, 10) || 95));
   $('cfgLeve').checked = !!config.modoLeve;
@@ -1164,7 +1217,7 @@ function aplicarConfigVisual(){
   document.body.classList.toggle('claro', claro);
   r.setProperty('--pri', claro ? c[4] : c[0]); r.setProperty('--pu', c[1]); r.setProperty('--pri-rgb', claro ? c[5] : c[3]);
   r.setProperty('--lt', claro ? c[4] : c[2]);
-  const mt = document.querySelector('meta[name="theme-color"]'); if (mt) mt.content = claro ? '#f4efe6' : '#080706';
+  const mt = document.querySelector('meta[name="theme-color"]'); if (mt) mt.content = claro ? '#edf4f4' : '#091722';
   document.querySelectorAll('#cfgTema button').forEach(b => b.classList.toggle('on', b.dataset.v === (claro ? 'claro' : 'escuro')));
   document.querySelectorAll('#cfgCor .cor').forEach(b => b.classList.toggle('on', b.dataset.v === config.cor));
   $('rowVolume').classList.toggle('off', !config.sons);
@@ -1736,7 +1789,7 @@ function atualizarPrevia(){
     const semSaldo = pl.op === 'adicao' && pl.passos.some(p => p.saldoMin == null);
     const travouSaldo = pl.op === 'adicao' && pl.rest > 0;
     box.className = 'previa';
-    box.innerHTML = `<div class="prev-grid">
+    box.innerHTML = `<p class="conta-saldo"><span>${br(Math.max(a,b))} − ${br(Math.min(a,b))} = </span><b>${br(pl.dif)}</b></p><div class="prev-grid">
       <div class="prev-cel"><span>Operação</span><b>${rotuloOp(pl.op)}</b></div>
       <div class="prev-cel"><span>Quantidade</span><b>${br(pl.dif)} pçs (${efeitoOp(pl.op)})</b></div>
       <div class="prev-cel ${n ? '' : 'er'}"><span>Documentos usados${pl.escolhidos ? ' (escolhidos por você)' : ''}</span><b>${n ? n + ': ' + pl.passos.map(p => esc(p.numeroDoc)).join(', ') : 'Nenhum'}</b></div>
@@ -2142,7 +2195,7 @@ async function abrirFlutuante(auto){
   catch(e) { pipWin = null; if (!auto) toast('Não foi possível abrir a janela flutuante.', 'err'); return; }
   const w = pipWin, d = w.document;
   d.title = 'Pedalada';
-  const st = d.createElement('style'); st.textContent = PIP_CSS.replace(/__PRI__/g, (CORES[config.cor] || CORES.azul)[0]); d.head.appendChild(st);
+  const st = d.createElement('style'); st.textContent = PIP_CSS.replace(/__PRI__/g, (config.cor === 'menta' ? CORES.ambar : CORES[config.cor] || CORES.azul)[0]); d.head.appendChild(st);
   d.body.innerHTML = '<div id="pip"></div>';
   d.addEventListener('click', e => { const b = e.target.closest('[data-pip]'); if (b && !b.disabled) acaoPip(b.dataset.pip); });
   d.addEventListener('keydown', e => {
@@ -2934,7 +2987,28 @@ document.addEventListener('click', e => {
   }
 });
 
-/* ===== LATERAIS ===== */
+/* Mantém os painéis montados ao alternar, inclusive a conta em digitação. */
+const abas = [...document.querySelectorAll('.abas [role="tab"]')];
+function selecionarAba(ativa) {
+  for (const aba of abas) {
+    const atual = aba === ativa;
+    aba.setAttribute('aria-selected', String(atual));
+    aba.tabIndex = atual ? 0 : -1;
+    document.getElementById(aba.getAttribute('aria-controls')).hidden = !atual;
+  }
+  atualizarRails();
+}
+for (const [i, aba] of abas.entries()) {
+  aba.onclick = () => selecionarAba(aba);
+  aba.onkeydown = e => {
+    const destino = {ArrowRight:(i+1)%abas.length, ArrowLeft:(i+abas.length-1)%abas.length, Home:0, End:abas.length-1}[e.key];
+    if (destino === undefined) return;
+    e.preventDefault();
+    abas[destino].focus();
+    selecionarAba(abas[destino]);
+  };
+}
+
 function atualizarRails(){
   renderRailDir(); fx('rails');
   const esq = $('railEsq'); if (!esq || getComputedStyle(esq).display === 'none') return;
@@ -3176,7 +3250,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-/* ===== FUNDO VIVO (three.js): a roda e as faíscas. Carrega só depois que o app abriu e só se der para animar ===== */
+/* Fundo ambiente em Canvas 2D, carregado depois da abertura do app. */
 let vivoIniciado = false;
 function iniciarVivo(){
   if (vivoIniciado || config.modoLeve || matchMedia('(prefers-reduced-motion: reduce)').matches || !window.gsap) return;

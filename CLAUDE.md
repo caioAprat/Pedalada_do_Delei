@@ -15,9 +15,7 @@ documentos de requisição (REQ). Fluxo em 3 fases:
 ## Arquivos
 - `index.html` — o app inteiro (HTML, CSS e JavaScript no mesmo arquivo). Não há build, npm nem framework.
 - `sw.js` — service worker (funcionar offline e avisar "Nova versão disponível").
-- `manifest.json`, `icon.svg`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png` — instalação como aplicativo. O ícone
-  (v6.0.1) é a roda de bicicleta âmbar em linhas, com fundo TRANSPARENTE (pedido da usuária). Os PNGs saem do `icon.svg`
-  (renderizados com fundo transparente); se mudar o SVG, gere os PNGs de novo.
+- `manifest.json`, `icon.svg`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png` — instalação como aplicativo. O símbolo da v7 é uma mudança de direção em dois traços. Gere os PNGs a partir do SVG quando ele mudar.
 - Publicação: Cloudflare Workers (projeto `pedalada-do-delei`) ligado a este repositório; cada mudança na
   branch principal publica sozinha. `wrangler.jsonc` diz para publicar a pasta como site estático e
   `.assetsignore` tira do site o que não é do app. Não apague esses dois arquivos.
@@ -44,7 +42,7 @@ documentos de requisição (REQ). Fluxo em 3 fases:
   diferença de saldo nem como REQ usada. Enquanto não for resolvido, `limitesRecusados` limita a próxima
   tentativa nas mesmas REQs (de 1 em 1 peça, ou pela metade se a quantidade não for inteira).
 - Mantenha tudo em um único `index.html`, sem dependências externas além da fonte do Google.
-  **Exceções (aprovadas pela usuária):** (1) a partir da v6.0.0 o visual usa GSAP e three.js em `vendor/` e `fx/` (ver "Movimento e fundo vivo" abaixo); (2) o susto escondido do botão do Bruno (v5.3.0/5.4.0) usa `vendor/three.min.js`
+  **Exceções (aprovadas pela usuária):** (1) o visual usa GSAP em `vendor/` e animações locais em `fx/`; (2) o susto escondido do botão do Bruno (v5.3.0/5.4.0) usa `vendor/three.min.js`
   (three.js enxuto: corredor 3D e efeitos de imagem), `vendor/gsap.min.js` + plugins do GSAP (`SplitText`,
   `ScrambleTextPlugin`, `CustomWiggle`, `CustomEase`, `EasePack`), `susto/cena.js` (fases, textos, sons) e
   `susto/menina.js` (a menina pintada em 2D por código, em 5 poses). Esses arquivos só são baixados quando ela passa
@@ -69,18 +67,10 @@ documentos de requisição (REQ). Fluxo em 3 fases:
   `make-interfaces-feel-better`, `gpt-taste` e `frontend-skill`.
 - Siga essas skills sem quebrar as regras acima: tudo continua num único `index.html`, sem React,
   Tailwind, shadcn ou outras dependências (as skills de React/Vercel/Supabase não se aplicam a este app).
-- Direção visual atual (v6.0.0, pedido da usuária após ler o Jarvão): "oficina à noite". Preto quente (#080706),
-  UMA cor de destaque (âmbar #ff9a4d; verde/azul/rosa são opções nas Configurações), fontes Saira (textos), JetBrains Mono
-  (números e rótulos) e Michroma (só o nome do app), as mesmas do Jarvão. Superfícies delimitadas: área principal do ajuste e cartões de contexto nas laterais,
-  números enormes, botão principal é um retângulo âmbar e o resto é texto com fio embaixo, cantos quase retos, sem
-  gradiente em texto, sem ícones em quadradinhos, sem pílulas. Mantenha essa linha; evite os "queridinhos" de IA
-  (roxo/índigo, caixas arredondadas com sombra, badges em pílula, brilho neon).
-- Movimento e fundo vivo (v6): `fx/movimento.js` (GSAP + ScrollTrigger/SplitText/ScrambleText/CustomEase; letras que
-  sobem, dígitos que giram, contadores, faíscas ao copiar, rolagem) e `fx/vivo.js` (three.js: roda de bicicleta em linhas
-  e faíscas, que avança a cada passo e gira inteira quando o ajuste termina). O app chama `fx('evento', ...)`; qualquer
-  falha é ignorada. Nada disso roda com Modo Leve ou "reduzir movimento"; o `vivo.js` só carrega depois que o app abriu
-  (`iniciarVivo()`), usa poucas partículas e pausa em outra aba/janela ou durante o susto. O app tem que funcionar igual
-  sem esses arquivos.
+- Direção visual v7: saldo sistêmico, fundo azul-tinta, menta como destaque padrão, tipografia Saira e assinatura vetorial “Pedalada do Delei” no rodapé. As cores alternativas continuam nas configurações. O objeto ambiente é uma fita abstrata, alusiva ao drible, com movimento próprio e partículas reativas ao ponteiro.
+- O painel lateral reúne Calculadora, Contexto e Atividade. Preserve documentos, histórico, relatórios, backup e acessos por teclado. Em Execução, dê prioridade aos cinco dados do lançamento.
+- O script Python do Caio automatiza a mini janela sobre o ERP. Preserve a posição, as dimensões, os textos e as ações dos controles em todos os estados. Compare os retângulos da mini janela 360 × 400 com os da versão 6.0.3 no mesmo navegador e escala.
+- O fundo em `fx/vivo.js` usa Canvas 2D e o relógio do GSAP. Ele reage aos eventos existentes, pausa fora de foco e respeita Modo Leve e movimento reduzido. Three.js continua disponível para o susto do Bruno.
 
 ## Regras de cálculo (confirmadas pela usuária)
 - Estorno de saídas (aumentar o saldo): não pode tirar 100% de um documento. Usa a margem
